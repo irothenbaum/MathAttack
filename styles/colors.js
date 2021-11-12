@@ -1,0 +1,13 @@
+export const black = '#000'
+export const darkGrey = '#333'
+export const grey = '#777'
+export const middleGrey = '#aaa'
+export const lightGrey = '#ccc'
+export const nearWhite = '#e4e4e4'
+export const white = '#fff'
+
+export const neonMagenta = '#e600ff'
+export const neonOrange = '#ff7700'
+export const neonGreen = '#37ff00'
+export const neonBlue = '#00aeff'
+export const neonRed = '#ff0000'
