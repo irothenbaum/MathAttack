@@ -1,9 +1,15 @@
 import React from 'react'
-import {Text} from 'react-native'
-import fontStyles from '../styles/typography'
+import {Text, StyleSheet} from 'react-native'
+import {titleText} from '../styles/typography'
+
+const styles = StyleSheet.create({
+  text: {
+    ...titleText,
+  },
+})
 
 function TitleText(props) {
-  return <Text style={fontStyles.titleText}>{props.children}</Text>
+  return <Text style={styles.text}>{props.children}</Text>
 }
 
 export default TitleText

@@ -1,26 +1,28 @@
 import {createSlice} from '@reduxjs/toolkit'
+import GameSettings from '../models/GameSettings'
 
 const settingsSlice = createSlice({
   name: 'Settings',
-  initialState: {
-    minValue: 0,
-    maxValue: 100,
-    allowDecimals: false,
-  },
+  initialState: {...GameSettings},
   reducers: {
     setMinMaxValues: (state, {payload}) => {
       state.minValue = payload.min
       state.maxValue = payload.max
     },
-    setAllowDecimals: (state, {payload}) => {
-      state.allowDecimals = payload
+    setDecimalPlaces: (state, {payload}) => {
+      state.decimalPlaces = payload
+    },
+    setEquationDuration: (state, {payload}) => {
+      state.equationDuration = payload
     },
   },
 })
 
 export const setMinMaxValues = (min, max) => dispatch =>
   dispatch(settingsSlice.actions.setMinMaxValues({min: min, max: max}))
-export const setAllowDecimals = isAllowed => dispatch =>
-  dispatch(settingsSlice.actions.setAllowDecimals(isAllowed))
+export const setDecimalPlaces = places => dispatch =>
+  dispatch(settingsSlice.actions.setDecimalPlaces(places))
+export const setEquationDuration = durationMS => dispatch =>
+  dispatch(settingsSlice.action.setEquationDuration(durationMS))
 
 export default settingsSlice.reducer

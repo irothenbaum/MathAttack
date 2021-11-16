@@ -16,13 +16,17 @@ const SceneMap = {
 function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
 
-  let scene = SceneMap[currentScene]
+  let SceneComponent = SceneMap[currentScene]
 
-  if (!scene) {
+  if (!SceneComponent) {
     throw new Error(`Scene missing "${currentScene}"`)
   }
 
-  return <View>{scene}</View>
+  return (
+    <View>
+      <SceneComponent />
+    </View>
+  )
 }
 
 export default MathAttack

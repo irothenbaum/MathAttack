@@ -1,10 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {Menu} from '../constants/scenes'
+import {Scene_Menu} from '../constants/scenes'
 
 const navigationSlice = createSlice({
   name: 'Navigation',
   initialState: {
-    currentScene: Menu,
+    currentScene: Scene_Menu,
   },
   reducers: {
     goToScene: (state, {payload}) => {
