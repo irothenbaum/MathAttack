@@ -16,7 +16,6 @@ function Menu() {
   const dispatch = useDispatch()
   const settings = useSelector(selectClassicGameSettings)
   const handlePlay = useCallback(() => {
-    console.log('GOING TO ' + Scene_GameClassic)
     dispatch(startNewGame(settings))
     dispatch(goToScene(Scene_GameClassic))
   }, [dispatch, settings])

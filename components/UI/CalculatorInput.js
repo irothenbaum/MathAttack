@@ -5,7 +5,7 @@ import {RoundBox} from '../../styles/elements'
 import {useSelector} from 'react-redux'
 import {selectUserInput} from '../../redux/selectors'
 import {spaceExtraLarge, spaceExtraSmall} from '../../styles/layout'
-import {fontTitle} from '../../styles/typography'
+import {font4} from '../../styles/typography'
 import {darkGrey} from '../../styles/colors'
 
 function CalculatorInput(props) {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     paddingRight: spaceExtraLarge,
   },
   answerText: {
-    fontSize: fontTitle,
+    fontSize: font4,
     color: darkGrey,
     width: '100%',
     textAlign: 'right',

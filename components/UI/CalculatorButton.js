@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
 import {darkGrey, grey} from '../../styles/colors'
-import {fontHeader} from '../../styles/typography'
+import {font3} from '../../styles/typography'
 
 export const DECIMAL = -1
 export const CLEAR = -2
@@ -58,11 +58,11 @@ const styles = StyleSheet.create({
   },
   number: {
     color: darkGrey,
-    fontSize: fontHeader,
+    fontSize: font3,
   },
   numberDisabled: {
     color: grey,
-    fontSize: fontHeader,
+    fontSize: font3,
   },
 })
 

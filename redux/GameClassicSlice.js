@@ -20,9 +20,6 @@ const gameClassicSlice = createSlice({
         state.settings,
       ).toPlainObject()
     },
-    setCurrentQuestion: (state, {payload}) => {
-      state.currentQuestion = payload
-    },
     startNewGame: (state, {payload}) => {
       state.questionResults = []
       state.isPlaying = true
@@ -49,8 +46,8 @@ export const recordAnswer = answer => dispatch =>
 export const startNewGame = classicGameSettings => dispatch => {
   dispatch(gameClassicSlice.actions.startNewGame(classicGameSettings))
 }
-export const setCurrentQuestion = gameQuestion => dispatch =>
-  dispatch(gameClassicSlice.actions.setCurrentQuestion(gameQuestion))
+export const generateNewQuestion = () => dispatch =>
+  dispatch(gameClassicSlice.actions.generateNewQuestion())
 
 export const deductTimeRemaining = amount => dispatch =>
   dispatch(gameClassicSlice.actions.deductTimeRemaining(amount))

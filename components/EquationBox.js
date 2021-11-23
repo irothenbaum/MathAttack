@@ -6,19 +6,25 @@ import {RoundBox} from '../styles/elements'
 import {selectEquationDuration} from '../redux/selectors'
 import {useSelector} from 'react-redux'
 import {darkGrey, neonRed} from '../styles/colors'
-import {fontHeader, fontTitle} from '../styles/typography'
-import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
+import {font4} from '../styles/typography'
+import {spaceDefault, spaceLarge} from '../styles/layout'
 
 function EquationBox(props) {
   const shrinkAnim = useRef(new Animated.Value(0)).current
   const equationDuration = useSelector(selectEquationDuration)
 
   useEffect(() => {
-    shrinkAnim.setValue(1 - props.question.getMSRemaining() / equationDuration)
+    let value = 1 - props.question.getMSRemaining() / equationDuration
+    console.log('Setting value: ' + value)
+    shrinkAnim.setValue(value)
     Animated.timing(shrinkAnim, {
       toValue: 1,
       duration: props.question.getMSRemaining(),
-    }).start(() => props.onTimeout(props.question))
+      useNativeDriver: false,
+    }).start(() => {
+      console.log('Animation done')
+      props.onTimeout(props.question)
+    })
   }, [props, shrinkAnim, equationDuration])
 
   return (
@@ -52,8 +58,8 @@ const styles = StyleSheet.create({
   },
 
   equationText: {
-    fontSize: fontTitle,
-    lineHeight: fontTitle,
+    fontSize: font4,
+    lineHeight: font4,
     color: darkGrey,
     zIndex: 2,
     margin: spaceDefault,

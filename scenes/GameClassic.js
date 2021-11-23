@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react'
-import {View, Text, StyleSheet} from 'react-native'
+import {Alert, View, Text, StyleSheet} from 'react-native'
 import EquationBox from '../components/EquationBox'
 import {useDispatch, useSelector} from 'react-redux'
 import {
@@ -7,7 +7,11 @@ import {
   selectCurrentQuestion,
   selectClassicGameSettings,
 } from '../redux/selectors'
-import {deductTimeRemaining, recordAnswer} from '../redux/GameClassicSlice'
+import {
+  deductTimeRemaining,
+  recordAnswer,
+  generateNewQuestion,
+} from '../redux/GameClassicSlice'
 import {ANSWER_TIMEOUT} from '../constants/game'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
@@ -36,35 +40,42 @@ function GameClassic() {
   const currentQuestion = GameQuestion.createFromPlainObject(
     useSelector(selectCurrentQuestion),
   )
+
+  console.log('Render')
+
   const gameSettings = useSelector(selectClassicGameSettings)
 
   const [questionsRemaining, setQuestionsRemaining] = useState(
     gameSettings.classicNumberOfRounds,
   )
 
+  const handleNextQuestion = useCallback(() => {
+    if (questionsRemaining > 0) {
+      dispatch(generateNewQuestion())
+      setQuestionsRemaining(questionsRemaining - 1)
+    } else {
+      // TODO: handle end game
+      Alert.alert(null, 'GAME OVER!')
+    }
+  }, [dispatch, questionsRemaining, setQuestionsRemaining])
+
   const handleGuess = useCallback(() => {
     let result = new QuestionResult(currentQuestion, userAnswer)
     if (result.isCorrect()) {
       dispatch(recordAnswer(userAnswer))
+      handleNextQuestion()
     } else {
       dispatch(
         // cut the time remaining in half
         deductTimeRemaining((currentQuestion.expiresAt - Date.now()) / 2),
       )
     }
-  }, [dispatch, currentQuestion, userAnswer])
+  }, [dispatch, currentQuestion, userAnswer, handleNextQuestion])
 
   const handleTimeout = useCallback(() => {
-    return
     dispatch(recordAnswer(ANSWER_TIMEOUT))
-
-    if (questionsRemaining > 0) {
-      setQuestionsRemaining(questionsRemaining - 1)
-    } else {
-      // TODO: handle end game
-      console.log('GAME OVER!')
-    }
-  }, [dispatch, questionsRemaining, setQuestionsRemaining])
+    handleNextQuestion()
+  }, [dispatch, handleNextQuestion])
 
   return (
     <View style={styles.window}>
