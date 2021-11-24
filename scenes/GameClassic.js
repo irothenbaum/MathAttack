@@ -16,6 +16,7 @@ import {ANSWER_TIMEOUT} from '../constants/game'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
 import GameQuestion from '../models/GameQuestion'
+import Glitter from "../components/FX/Glitter";
 
 const styles = StyleSheet.create({
   window: {
@@ -34,12 +35,16 @@ const styles = StyleSheet.create({
   },
 })
 
+const GLITTER_DURATION = 1000
+const GLITTER_AMOUNT = 20
+
 function GameClassic() {
   const dispatch = useDispatch()
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = GameQuestion.createFromPlainObject(
     useSelector(selectCurrentQuestion),
   )
+  const [glitteringTimeout, setGlitteringTimeout] = useState(null)
 
   console.log('Render')
 
@@ -49,7 +54,14 @@ function GameClassic() {
     gameSettings.classicNumberOfRounds,
   )
 
-  const handleNextQuestion = useCallback(() => {
+  const celebrate = () => {
+    if (glitteringTimeout) {
+      clearTimeout(glitteringTimeout)
+    }
+    setGlitteringTimeout(setTimeout(() => setGlitteringTimeout(null), GLITTER_DURATION))
+  }
+
+  const handleNextQuestion = () => {
     if (questionsRemaining > 0) {
       dispatch(generateNewQuestion())
       setQuestionsRemaining(questionsRemaining - 1)
@@ -57,12 +69,13 @@ function GameClassic() {
       // TODO: handle end game
       Alert.alert(null, 'GAME OVER!')
     }
-  }, [dispatch, questionsRemaining, setQuestionsRemaining])
+  }
 
-  const handleGuess = useCallback(() => {
+  const handleGuess = () => {
     let result = new QuestionResult(currentQuestion, userAnswer)
     if (result.isCorrect()) {
       dispatch(recordAnswer(userAnswer))
+      celebrate()
       handleNextQuestion()
     } else {
       dispatch(
@@ -70,21 +83,23 @@ function GameClassic() {
         deductTimeRemaining((currentQuestion.expiresAt - Date.now()) / 2),
       )
     }
-  }, [dispatch, currentQuestion, userAnswer, handleNextQuestion])
+  }
 
-  const handleTimeout = useCallback(() => {
+  const handleTimeout = () => {
     dispatch(recordAnswer(ANSWER_TIMEOUT))
     handleNextQuestion()
-  }, [dispatch, handleNextQuestion])
+  }
 
   return (
     <View style={styles.window}>
       <View style={styles.equationContainer}>
         <EquationBox
+          key={`${currentQuestion.equation.getSolution()}::${questionsRemaining}`}
           onPress={handleGuess}
           onTimeout={handleTimeout}
           question={currentQuestion}
         />
+        {glitteringTimeout && <Glitter key={glitteringTimeout} amount={GLITTER_AMOUNT} duration={GLITTER_DURATION} />}
       </View>
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
