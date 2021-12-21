@@ -18,7 +18,7 @@ class GameQuestion extends Serializable {
    * @returns {number}
    */
   getMSRemaining() {
-    return this.expiresAt - this.createdAt
+    return this.expiresAt - Date.now()
   }
 
   /**

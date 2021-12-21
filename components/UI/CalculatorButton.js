@@ -5,7 +5,7 @@ import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
-import {darkGrey, grey} from '../../styles/colors'
+import {darkGrey, grey, lightGrey} from '../../styles/colors'
 import {font3} from '../../styles/typography'
 
 export const DECIMAL = -1
@@ -25,13 +25,19 @@ function CalculatorButton(props) {
   const handlePress = useCallback(() => {
     if (props.value === CLEAR) {
       dispatch(setAnswer(''))
+    } else if (props.value === 0 && !userInput) {
+      // no leading 0s
+      return
     } else {
-      let toAppend = props.value === DECIMAL ? '.' : props.value
-      let newAnswer = userInput + toAppend
-
-      if (isNaN(parseFloat(newAnswer))) {
-        // do nothing
-        return
+      let newAnswer
+      if (props.value === DECIMAL) {
+        if (!userInput) {
+          newAnswer = '0.'
+        } else {
+          newAnswer = userInput + '.'
+        }
+      } else {
+        newAnswer = userInput + props.value
       }
 
       dispatch(setAnswer(newAnswer))
@@ -42,7 +48,10 @@ function CalculatorButton(props) {
 
   return (
     <TouchableOpacity
-      style={{...styles.container, ...props.style}}
+      style={{
+        ...(isDisabled ? styles.containerDisabled : styles.container),
+        ...props.style,
+      }}
       disabled={isDisabled}
       onPress={handlePress}>
       <Text style={isDisabled ? styles.numberDisabled : styles.number}>
@@ -55,6 +64,10 @@ function CalculatorButton(props) {
 const styles = StyleSheet.create({
   container: {
     ...RoundBox,
+  },
+  containerDisabled: {
+    ...RoundBox,
+    backgroundColor: lightGrey,
   },
   number: {
     color: darkGrey,

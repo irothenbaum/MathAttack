@@ -14,7 +14,7 @@ function CalculatorInput(props) {
   return (
     <View style={styles.container}>
       <View style={styles.answerBar}>
-        <Text style={styles.answerText}>{userInput}</Text>
+        <Text style={styles.answerText}>{userInput || 0}</Text>
       </View>
       <View style={styles.buttonsContainer}>
         <View style={styles.calculatorRow}>

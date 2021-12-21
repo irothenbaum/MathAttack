@@ -6,6 +6,7 @@ import {
   selectUserAnswer,
   selectCurrentQuestion,
   selectClassicGameSettings,
+  selectEquationDuration,
 } from '../redux/selectors'
 import {
   deductTimeRemaining,
@@ -16,6 +17,7 @@ import {ANSWER_TIMEOUT} from '../constants/game'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
 import GameQuestion from '../models/GameQuestion'
+import {setAnswer} from '../redux/UISlice'
 
 const styles = StyleSheet.create({
   window: {
@@ -40,16 +42,16 @@ function GameClassic() {
   const currentQuestion = GameQuestion.createFromPlainObject(
     useSelector(selectCurrentQuestion),
   )
-
-  console.log('Render')
-
   const gameSettings = useSelector(selectClassicGameSettings)
 
   const [questionsRemaining, setQuestionsRemaining] = useState(
     gameSettings.classicNumberOfRounds,
   )
 
-  const handleNextQuestion = useCallback(() => {
+  const handleNextQuestion = () => {
+    // always reset the input
+    dispatch(setAnswer(''))
+
     if (questionsRemaining > 0) {
       dispatch(generateNewQuestion())
       setQuestionsRemaining(questionsRemaining - 1)
@@ -57,9 +59,9 @@ function GameClassic() {
       // TODO: handle end game
       Alert.alert(null, 'GAME OVER!')
     }
-  }, [dispatch, questionsRemaining, setQuestionsRemaining])
+  }
 
-  const handleGuess = useCallback(() => {
+  const handleGuess = () => {
     let result = new QuestionResult(currentQuestion, userAnswer)
     if (result.isCorrect()) {
       dispatch(recordAnswer(userAnswer))
@@ -70,21 +72,24 @@ function GameClassic() {
         deductTimeRemaining((currentQuestion.expiresAt - Date.now()) / 2),
       )
     }
-  }, [dispatch, currentQuestion, userAnswer, handleNextQuestion])
+  }
 
-  const handleTimeout = useCallback(() => {
+  const handleTimeout = () => {
     dispatch(recordAnswer(ANSWER_TIMEOUT))
     handleNextQuestion()
-  }, [dispatch, handleNextQuestion])
+  }
 
   return (
     <View style={styles.window}>
       <View style={styles.equationContainer}>
-        <EquationBox
-          onPress={handleGuess}
-          onTimeout={handleTimeout}
-          question={currentQuestion}
-        />
+        {!!currentQuestion && (
+          <EquationBox
+            onPress={handleGuess}
+            onTimeout={handleTimeout}
+            equationStr={currentQuestion.equation.getLeftSide()}
+            timeRemaining={currentQuestion.getMSRemaining()}
+          />
+        )}
       </View>
       <View style={styles.calculatorContainer}>
         <CalculatorInput />

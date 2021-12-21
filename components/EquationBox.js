@@ -1,7 +1,13 @@
 import React, {useEffect, useRef} from 'react'
-import {Animated, View, Text, TouchableOpacity, StyleSheet} from 'react-native'
+import {
+  Animated,
+  Easing,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native'
 import PropTypes from 'prop-types'
-import GameQuestion from '../models/GameQuestion'
 import {RoundBox} from '../styles/elements'
 import {selectEquationDuration} from '../redux/selectors'
 import {useSelector} from 'react-redux'
@@ -14,32 +20,36 @@ function EquationBox(props) {
   const equationDuration = useSelector(selectEquationDuration)
 
   useEffect(() => {
-    let value = 1 - props.question.getMSRemaining() / equationDuration
-    console.log('Setting value: ' + value)
+    if (!props.timeRemaining) {
+      return
+    }
+    let value = props.timeRemaining / equationDuration
+
     shrinkAnim.setValue(value)
+
     Animated.timing(shrinkAnim, {
-      toValue: 1,
-      duration: props.question.getMSRemaining(),
+      toValue: 0,
+      duration: props.timeRemaining,
+      easing: Easing.linear,
       useNativeDriver: false,
-    }).start(() => {
-      console.log('Animation done')
-      props.onTimeout(props.question)
+    }).start(({finished}) => {
+      if (finished) {
+        props.onTimeout()
+      }
     })
-  }, [props, shrinkAnim, equationDuration])
+  }, [props.timeRemaining, equationDuration, shrinkAnim, props.onTimeout])
 
   return (
-    <TouchableOpacity onPress={() => props.onPress(props.question)}>
+    <TouchableOpacity onPress={() => props.onPress()}>
       <View style={styles.box}>
-        <Text style={styles.equationText}>
-          {props.question ? props.question.equation.getLeftSide() : ''}
-        </Text>
+        <Text style={styles.equationText}>{props.equationStr}</Text>
         <Animated.View
           style={[
             styles.timerBar,
             {
               width: shrinkAnim.interpolate({
                 inputRange: [0, 1],
-                outputRange: ['100%', '0%'],
+                outputRange: ['0%', '100%'],
               }),
             },
           ]}
@@ -77,9 +87,10 @@ const styles = StyleSheet.create({
 })
 
 EquationBox.propTypes = {
-  question: PropTypes.instanceOf(GameQuestion),
+  equationStr: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
   onTimeout: PropTypes.func.isRequired,
+  timeRemaining: PropTypes.number,
 }
 
 export default EquationBox
