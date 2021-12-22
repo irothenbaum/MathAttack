@@ -53,7 +53,8 @@ function CalculatorButton(props) {
         ...props.style,
       }}
       disabled={isDisabled}
-      onPress={handlePress}>
+      onPress={handlePress}
+    >
       <Text style={isDisabled ? styles.numberDisabled : styles.number}>
         {valueStr}
       </Text>

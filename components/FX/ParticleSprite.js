@@ -18,31 +18,33 @@ function ParticleSprite(props) {
     })
   })
 
-  const durationSeconds = props.particle.duration/1000
+  const durationSeconds = props.particle.duration / 1000
 
   return (
-    <Animated.View style={[
-      {
-        left: particleAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, durationSeconds * props.particle.speed],
-        }),
-        top: particleAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, durationSeconds * GRAVITY]
-        }),
-        opacity: particleAnim.interpolate({
-          inputRange: [0, 0.5, 1],
-          outputRange: [1, 1, 0]
-        })
-      }
-    ]} />
+    <Animated.View
+      style={[
+        {
+          left: particleAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, durationSeconds * props.particle.speed],
+          }),
+          top: particleAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, durationSeconds * GRAVITY],
+          }),
+          opacity: particleAnim.interpolate({
+            inputRange: [0, 0.5, 1],
+            outputRange: [1, 1, 0],
+          }),
+        },
+      ]}
+    />
   )
 }
 
 ParticleSprite.propTypes = {
   particle: PropTypes.instanceOf(Particle).isRequired,
-  onAnimationEnd: PropTypes.func.isRequired
+  onAnimationEnd: PropTypes.func.isRequired,
 }
 
 export default ParticleSprite
