@@ -15,8 +15,11 @@ import {
 import {ANSWER_TIMEOUT} from '../constants/game'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
+import GameQuestion from '../models/GameQuestion'
 import {setAnswer} from '../redux/UISlice'
 import Glitter from '../components/FX/Glitter'
+import doOnceTimer from '../hooks/doOnceTimer'
+import {v4 as uuid} from 'uuid'
 
 const styles = StyleSheet.create({
   window: {
@@ -40,6 +43,7 @@ const GLITTER_AMOUNT = 20
 
 function GameClassic() {
   const dispatch = useDispatch()
+  const {activeTimers, setTimer} = doOnceTimer()
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = GameQuestion.createFromPlainObject(
     useSelector(selectCurrentQuestion),
@@ -52,12 +56,7 @@ function GameClassic() {
   )
 
   const celebrate = () => {
-    if (glitteringTimeout) {
-      clearTimeout(glitteringTimeout)
-    }
-    setGlitteringTimeout(
-      setTimeout(() => setGlitteringTimeout(null), GLITTER_DURATION),
-    )
+    setTimer(uuid(), GLITTER_DURATION)
   }
 
   const handleNextQuestion = () => {
@@ -104,13 +103,13 @@ function GameClassic() {
             timeRemaining={currentQuestion.getMSRemaining()}
           />
         )}
-        {glitteringTimeout && (
+        {activeTimers.map(t => (
           <Glitter
-            key={glitteringTimeout}
+            key={t}
             amount={GLITTER_AMOUNT}
             duration={GLITTER_DURATION}
           />
-        )}
+        ))}
       </View>
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
