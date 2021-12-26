@@ -19,7 +19,11 @@ import GameQuestion from '../models/GameQuestion'
 import {setAnswer} from '../redux/UISlice'
 import Glitter from '../components/FX/Glitter'
 import doOnceTimer from '../hooks/doOnceTimer'
-import {v4 as uuid} from 'uuid'
+// import {v4 as uuid} from 'uuid'
+
+function uuid() {
+  return '' + Date.now()
+}
 
 const styles = StyleSheet.create({
   window: {
@@ -38,8 +42,8 @@ const styles = StyleSheet.create({
   },
 })
 
-const GLITTER_DURATION = 1000
-const GLITTER_AMOUNT = 20
+const GLITTER_DURATION = 2000
+const GLITTER_AMOUNT = 5
 
 function GameClassic() {
   const dispatch = useDispatch()
@@ -50,13 +54,12 @@ function GameClassic() {
   )
   const gameSettings = useSelector(selectClassicGameSettings)
 
-  const [glitteringTimeout, setGlitteringTimeout] = useState(null)
   const [questionsRemaining, setQuestionsRemaining] = useState(
     gameSettings.classicNumberOfRounds,
   )
 
   const celebrate = () => {
-    setTimer(uuid(), GLITTER_DURATION)
+    setTimer(uuid(), () => {}, GLITTER_DURATION)
   }
 
   const handleNextQuestion = () => {
@@ -79,6 +82,7 @@ function GameClassic() {
       celebrate()
       handleNextQuestion()
     } else {
+      dispatch(setAnswer(''))
       dispatch(
         // cut the time remaining in half
         deductTimeRemaining((currentQuestion.expiresAt - Date.now()) / 2),
@@ -103,17 +107,13 @@ function GameClassic() {
             timeRemaining={currentQuestion.getMSRemaining()}
           />
         )}
-        {activeTimers.map(t => (
-          <Glitter
-            key={t}
-            amount={GLITTER_AMOUNT}
-            duration={GLITTER_DURATION}
-          />
-        ))}
       </View>
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
       </View>
+      {[1].map(t => (
+        <Glitter key={t} amount={GLITTER_AMOUNT} duration={GLITTER_DURATION} />
+      ))}
     </View>
   )
 }

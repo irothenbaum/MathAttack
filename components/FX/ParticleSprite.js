@@ -1,50 +1,30 @@
-import React, {useState, useEffect, useRef} from 'react'
-import {View, Animated} from 'react-native'
-import PropTypes from 'prop-types'
 import Particle from '../../models/Particle'
+import Renderable from '../../models/Renderable'
+import {TAU} from '../../constants/engine'
 
-const GRAVITY = 1
+class ParticleSprite extends Renderable {
+  /**
+   * @param {Particle} particle
+   */
+  constructor(particle) {
+    super()
+    this.particle = particle
+  }
 
-function ParticleSprite(props) {
-  const particleAnim = useRef(new Animated.Value(0)).current
+  step(timeDelta) {
+    this.particle.stepFrame(timeDelta)
+  }
 
-  useEffect(() => {
-    Animated.timing(particleAnim, {
-      toValue: 1,
-      duration: props.particle.duration,
-      useNativeDriver: false,
-    }).start(() => {
-      props.onAnimationEnd(props.particle)
-    })
-  })
-
-  const durationSeconds = props.particle.duration / 1000
-
-  return (
-    <Animated.View
-      style={[
-        {
-          left: particleAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, durationSeconds * props.particle.speed],
-          }),
-          top: particleAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, durationSeconds * GRAVITY],
-          }),
-          opacity: particleAnim.interpolate({
-            inputRange: [0, 0.5, 1],
-            outputRange: [1, 1, 0],
-          }),
-        },
-      ]}
-    />
-  )
-}
-
-ParticleSprite.propTypes = {
-  particle: PropTypes.instanceOf(Particle).isRequired,
-  onAnimationEnd: PropTypes.func.isRequired,
+  draw(ctx) {
+    const pos = this.particle.position
+    ctx.beginPath()
+    ctx.arc(pos.x, pos.y, this.particle.size, 0, TAU, false)
+    ctx.fillStyle = this.particle.color
+    ctx.fill()
+    ctx.lineWidth = 5
+    ctx.strokeStyle = '#000033'
+    ctx.stroke()
+  }
 }
 
 export default ParticleSprite
