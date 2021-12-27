@@ -9,20 +9,35 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 import {RoundBox} from '../styles/elements'
-import {selectEquationDuration} from '../redux/selectors'
+import {
+  selectClassicGameSettings,
+  selectEquationDuration,
+} from '../redux/selectors'
 import {useSelector} from 'react-redux'
-import {darkGrey, neonRed} from '../styles/colors'
+import {darkGrey, lightGrey, neonRed} from '../styles/colors'
 import {font4} from '../styles/typography'
 import {spaceDefault, spaceLarge} from '../styles/layout'
+import {zeroPad} from '../lib/utilities'
+
+function generatePlaceholderText(gameSettings) {
+  let numberOfDigits = ('' + gameSettings.maxValue).length
+  let zeroPadded = zeroPad(0, numberOfDigits)
+  return `${zeroPadded} - ${zeroPadded}`
+}
 
 function EquationBox(props) {
   const shrinkAnim = useRef(new Animated.Value(0)).current
   const equationDuration = useSelector(selectEquationDuration)
+  const gameSettings = useSelector(selectClassicGameSettings)
+  const placeholder = useRef(generatePlaceholderText(gameSettings)).current
 
   useEffect(() => {
-    if (!props.timeRemaining) {
+    if (!props.timeRemaining || props.timeRemaining < 0) {
+      Animated.timing(shrinkAnim).stop()
+      shrinkAnim.setValue(0)
       return
     }
+
     let value = props.timeRemaining / equationDuration
 
     shrinkAnim.setValue(value)
@@ -39,24 +54,41 @@ function EquationBox(props) {
     })
   }, [props.timeRemaining, equationDuration, shrinkAnim, props.onTimeout])
 
+  const textComponent = props.equationStr ? (
+    <Text style={styles.equationText}>{props.equationStr}</Text>
+  ) : (
+    <Text style={styles.equationTextPlaceholder}>{placeholder}</Text>
+  )
+
   return (
     <TouchableOpacity onPress={() => props.onPress()}>
-      <View style={styles.box}>
-        <Text style={styles.equationText}>{props.equationStr}</Text>
-        <Animated.View
-          style={[
-            styles.timerBar,
-            {
-              width: shrinkAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0%', '100%'],
-              }),
-            },
-          ]}
-        />
-      </View>
+      <Animated.View style={[styles.box, props.style]}>
+        {textComponent}
+        {!!props.equationStr && (
+          <Animated.View
+            style={[
+              styles.timerBar,
+              {
+                width: shrinkAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0%', '100%'],
+                }),
+              },
+            ]}
+          />
+        )}
+      </Animated.View>
     </TouchableOpacity>
   )
+}
+
+const equationText = {
+  fontSize: font4,
+  lineHeight: font4,
+  color: darkGrey,
+  zIndex: 2,
+  margin: spaceDefault,
+  marginHorizontal: spaceLarge,
 }
 
 const styles = StyleSheet.create({
@@ -68,29 +100,30 @@ const styles = StyleSheet.create({
   },
 
   equationText: {
-    fontSize: font4,
-    lineHeight: font4,
-    color: darkGrey,
-    zIndex: 2,
-    margin: spaceDefault,
-    marginHorizontal: spaceLarge,
+    ...equationText,
+  },
+
+  equationTextPlaceholder: {
+    ...equationText,
+    color: lightGrey,
   },
 
   timerBar: {
     position: 'absolute',
     bottom: 0,
-    top: 0,
     left: 0,
     width: '100%',
+    height: 4,
     backgroundColor: neonRed,
   },
 })
 
 EquationBox.propTypes = {
-  equationStr: PropTypes.string.isRequired,
+  equationStr: PropTypes.string,
   onPress: PropTypes.func.isRequired,
   onTimeout: PropTypes.func.isRequired,
   timeRemaining: PropTypes.number,
+  style: PropTypes.any,
 }
 
 export default EquationBox

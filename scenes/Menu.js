@@ -15,10 +15,10 @@ const styles = StyleSheet.create({
 function Menu() {
   const dispatch = useDispatch()
   const settings = useSelector(selectClassicGameSettings)
-  const handlePlay = useCallback(() => {
+  const handlePlay = () => {
     dispatch(startNewGame(settings))
     dispatch(goToScene(Scene_GameClassic))
-  }, [dispatch, settings])
+  }
 
   return (
     <View style={styles.window}>
