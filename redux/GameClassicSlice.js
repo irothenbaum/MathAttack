@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit'
 import GameQuestion from '../models/GameQuestion'
 import QuestionResult from '../models/QuestionResult'
+import {serializeObject} from '../lib/utilities'
 
 const gameClassicSlice = createSlice({
   name: 'GameClassic',
@@ -13,20 +14,23 @@ const gameClassicSlice = createSlice({
   reducers: {
     recordAnswer: (state, {payload}) => {
       let result = new QuestionResult(state.currentQuestion, payload)
-      state.questionResults = [...state.questionResults, result.toPlainObject()]
+      state.questionResults = [
+        ...state.questionResults,
+        serializeObject(result),
+      ]
     },
     generateNewQuestion: state => {
-      state.currentQuestion = GameQuestion.getRandomFromSettings(
-        state.settings,
-      ).toPlainObject()
+      state.currentQuestion = serializeObject(
+        GameQuestion.getRandomFromSettings(state.settings),
+      )
     },
     startNewGame: (state, {payload}) => {
       state.questionResults = []
       state.isPlaying = true
       state.settings = payload
-      state.currentQuestion = GameQuestion.getRandomFromSettings(
-        state.settings,
-      ).toPlainObject()
+      state.currentQuestion = serializeObject(
+        GameQuestion.getRandomFromSettings(state.settings),
+      )
     },
     deductTimeRemaining: (state, {payload}) => {
       // you lose half the time remaining

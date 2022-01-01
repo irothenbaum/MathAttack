@@ -1,31 +1,15 @@
 import Equation from './Equation'
-import Serializable from './Serializable'
 
-class GameQuestion extends Serializable {
+class GameQuestion {
   /**
    * @param {Equation} equation
    * @param {number} createdAt
    * @param {number} expiresAt
    */
   constructor(equation, createdAt, expiresAt) {
-    super()
     this.equation = equation
     this.createdAt = createdAt
     this.expiresAt = expiresAt
-  }
-
-  /**
-   * @returns {number}
-   */
-  getMSRemaining() {
-    return this.expiresAt - Date.now()
-  }
-
-  /**
-   * @returns {string}
-   */
-  toString() {
-    return this.equation.toString()
   }
 
   /**
@@ -41,15 +25,11 @@ class GameQuestion extends Serializable {
   }
 
   /**
-   * @param {{equation: *, createdAt: number, expiresAt: number}} obj
-   * @returns {GameQuestion}
+   * @param {{expiresAt: number}} obj
+   * @returns {number}
    */
-  static createFromPlainObject(obj) {
-    return new GameQuestion(
-      Equation.createFromPlainObject(obj.equation),
-      obj.createdAt,
-      obj.expiresAt,
-    )
+  static getMSRemaining(obj) {
+    return obj.expiresAt - Date.now()
   }
 }
 

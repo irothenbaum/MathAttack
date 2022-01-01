@@ -1,5 +1,5 @@
 import React, {useRef} from 'react'
-import {Animated, Text, TouchableOpacity, StyleSheet, View} from 'react-native'
+import {Animated, Text, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import {RoundBox} from '../styles/elements'
 import {selectClassicGameSettings} from '../redux/selectors'
@@ -8,6 +8,7 @@ import {darkGrey, lightGrey, neonRed} from '../styles/colors'
 import {font4} from '../styles/typography'
 import {spaceDefault, spaceLarge} from '../styles/layout'
 import {zeroPad} from '../lib/utilities'
+import Equation from '../models/Equation'
 
 function generatePlaceholderText(gameSettings) {
   let numberOfDigits = ('' + gameSettings.maxValue).length
@@ -19,33 +20,33 @@ function EquationBox(props) {
   const gameSettings = useSelector(selectClassicGameSettings)
   const placeholder = useRef(generatePlaceholderText(gameSettings)).current
 
-  const textComponent = props.equationStr ? (
-    <Text style={styles.equationText}>{props.equationStr}</Text>
+  const textComponent = props.equation ? (
+    <Text style={styles.equationText}>
+      {Equation.getLeftSide(props.equation)}
+    </Text>
   ) : (
     <Text style={styles.equationTextPlaceholder}>{placeholder}</Text>
   )
 
   return (
-    <TouchableOpacity onPress={() => props.onPress()}>
-      <Animated.View style={[styles.box, props.style]}>
-        {textComponent}
-        <View style={styles.equalBar} />
-        {!!props.timerAnimation && (
-          <Animated.View
-            style={[
-              styles.equalBar,
-              {
-                backgroundColor: neonRed,
-                width: props.timerAnimation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0%', '100%'],
-                }),
-              },
-            ]}
-          />
-        )}
-      </Animated.View>
-    </TouchableOpacity>
+    <Animated.View style={[styles.box, props.style]}>
+      {textComponent}
+      <View style={styles.equalBar} />
+      {!!props.timerAnimation && (
+        <Animated.View
+          style={[
+            styles.equalBar,
+            {
+              backgroundColor: neonRed,
+              width: props.timerAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0%', '100%'],
+              }),
+            },
+          ]}
+        />
+      )}
+    </Animated.View>
   )
 }
 
@@ -86,9 +87,7 @@ const styles = StyleSheet.create({
 })
 
 EquationBox.propTypes = {
-  equationStr: PropTypes.string,
-  onPress: PropTypes.func.isRequired,
-  onTimeout: PropTypes.func.isRequired,
+  equation: PropTypes.object,
   timerAnimation: PropTypes.object,
   style: PropTypes.object,
 }

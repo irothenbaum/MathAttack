@@ -1,42 +1,21 @@
-import Plus from './Plus'
-import Minus from './Minus'
-import Serializable from './Serializable'
-
 function roundIfNeeded(value, decimalPlaces) {
   let decimalBase = Math.round(Math.pow(10, decimalPlaces))
   return Math.round(value * decimalBase) / decimalBase
 }
 
-class Equation extends Serializable {
+const OPERATION_ADD = '+'
+const OPERATION_SUBTRACT = '-'
+
+class Equation {
   /**
    * @param {number} term1
    * @param {Operation} operation
    * @param {number} term2
    */
   constructor(term1, operation, term2) {
-    super()
     this.term1 = term1
     this.operation = operation
     this.term2 = term2
-  }
-
-  /**
-   * @returns {number}
-   */
-  getSolution() {
-    if (typeof this.__solutionCache !== 'number') {
-      this.__solutionCache = this.operation.operate(this.term1, this.term2)
-    }
-
-    return this.__solutionCache
-  }
-
-  getLeftSide() {
-    return `${this.term1} ${this.operation.toString()} ${this.term2}`
-  }
-
-  toString() {
-    return `${this.getLeftSide()} = ${this.getSolution()}`
   }
 
   /**
@@ -70,9 +49,9 @@ class Equation extends Serializable {
 
     let operation
     if (term2 > 0) {
-      operation = new Plus()
+      operation = OPERATION_ADD
     } else {
-      operation = new Minus()
+      operation = OPERATION_SUBTRACT
       term2 = Math.abs(term2)
     }
 
@@ -80,29 +59,27 @@ class Equation extends Serializable {
   }
 
   /**
-   * @param {{term1: number, operation: string, term2: number}} obj
-   * @returns {Equation}
+   * @param {Equation} obj
+   * @returns {string}
    */
-  static createFromPlainObject(obj) {
-    return new Equation(
-      obj.term1,
-      Equation.getOperationFromCharacter(obj.operation),
-      obj.term2,
-    )
+  static getLeftSide(obj) {
+    return `${obj.term1} ${obj.operation.toString()} ${obj.term2}`
   }
 
   /**
-   * @param {string} char
-   * @returns {Operation}
+   * @param {Equation} obj
    */
-  static getOperationFromCharacter(char) {
-    switch (char) {
-      case '+':
-        return new Plus()
-      case '-':
-        return new Minus()
+  static getSolution(obj) {
+    switch (obj.operation) {
+      case OPERATION_ADD:
+        return obj.term1 + obj.term2
+
+      case OPERATION_SUBTRACT:
+        return obj.term1 - obj.term2
+
+      default:
+        throw new Error('Unrecognized operation ' + obj.operation)
     }
-    throw new Error(`Unrecognized character "${char}"`)
   }
 }
 

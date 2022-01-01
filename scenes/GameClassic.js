@@ -1,5 +1,11 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react'
-import {Alert, View, StyleSheet, Animated, Easing} from 'react-native'
+import {
+  Alert,
+  View,
+  StyleSheet,
+  Animated,
+  TouchableWithoutFeedback,
+} from 'react-native'
 import EquationBox from '../components/EquationBox'
 import {useDispatch, useSelector} from 'react-redux'
 import {
@@ -7,11 +13,7 @@ import {
   selectCurrentQuestion,
   selectClassicGameSettings,
 } from '../redux/selectors'
-import {
-  deductTimeRemaining,
-  recordAnswer,
-  generateNewQuestion,
-} from '../redux/GameClassicSlice'
+import {recordAnswer, generateNewQuestion} from '../redux/GameClassicSlice'
 import {ANSWER_TIMEOUT} from '../constants/game'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
@@ -19,29 +21,20 @@ import GameQuestion from '../models/GameQuestion'
 import {setAnswer} from '../redux/UISlice'
 import {white, neonGreen, neonRed, nearWhite} from '../styles/colors'
 import answerReactionResults from '../hooks/answerReactionResults'
-import doOnceTimer from '../hooks/doOnceTimer'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_Menu} from '../constants/scenes'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
 import animationStation from '../hooks/animationStation'
-// import {v4 as uuid} from 'uuid'
-
-function uuid() {
-  return '' + Date.now()
-}
-
-const CHANGE_ANSWER_DELAY = 500
 
 function GameClassic() {
   const dispatch = useDispatch()
-  const {animation: equationTimer} = animationStation()
+  const {animation: equationTimer, animate: startEquationTimer} =
+    animationStation()
   const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} =
     answerReactionResults()
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestionRaw = useSelector(selectCurrentQuestion)
-  const currentQuestion = GameQuestion.createFromPlainObject(currentQuestionRaw)
   const [isChangingAnswers, setIsChangingAnswers] = useState(false)
-  const {setTimer} = doOnceTimer()
   const gameSettings = useSelector(selectClassicGameSettings)
 
   const [questionsRemaining, setQuestionsRemaining] = useState(
@@ -50,9 +43,9 @@ function GameClassic() {
 
   useEffect(() => {
     if (currentQuestionRaw) {
-      let q = GameQuestion.createFromPlainObject(currentQuestionRaw)
-      let amountRemaining = q.getMSRemaining() / gameSettings.equationDuration
-      // TODO: Restart the equationTimer animation from here, handle timeout internally
+      let msRemaining = GameQuestion.getMSRemaining(currentQuestionRaw)
+      let amountRemaining = 1 - msRemaining / gameSettings.equationDuration
+      startEquationTimer(msRemaining, handleTimeout, amountRemaining)
     } else {
     }
   }, [currentQuestionRaw])
@@ -71,8 +64,8 @@ function GameClassic() {
   }
 
   const handleGuess = () => {
-    let result = new QuestionResult(currentQuestion, userAnswer)
-    if (result.isCorrect()) {
+    let result = new QuestionResult(currentQuestionRaw, userAnswer)
+    if (QuestionResult.isCorrect(result)) {
       dispatch(recordAnswer(userAnswer))
       animateCorrect()
       handleNextQuestion()
@@ -88,7 +81,6 @@ function GameClassic() {
   }
 
   const handleTimeout = () => {
-    console.log('TIMEOUT')
     dispatch(recordAnswer(ANSWER_TIMEOUT))
     animateIncorrect()
     handleNextQuestion()
@@ -110,26 +102,21 @@ function GameClassic() {
           ]}
         />
       )}
-      <View style={styles.equationContainer}>
-        {!!currentQuestion && (
-          <EquationBox
-            style={
-              !!animation && !isAnimatingForCorrect
-                ? getVibrateStylesForAnimation(animation)
-                : null
-            }
-            key={`${currentQuestion.equation.getSolution()}::${questionsRemaining}`}
-            onPress={handleGuess}
-            onTimeout={handleTimeout}
-            equationStr={
-              isChangingAnswers ? null : currentQuestion.equation.getLeftSide()
-            }
-            timerAnimation={
-              !!animation && isAnimatingForCorrect ? null : equationTimer
-            }
-          />
-        )}
-      </View>
+      <TouchableWithoutFeedback onPress={handleGuess}>
+        <View style={styles.equationContainer}>
+          {!!currentQuestionRaw && (
+            <EquationBox
+              style={
+                !!animation && !isAnimatingForCorrect
+                  ? getVibrateStylesForAnimation(animation)
+                  : null
+              }
+              equation={isChangingAnswers ? null : currentQuestionRaw.equation}
+              timerAnimation={equationTimer}
+            />
+          )}
+        </View>
+      </TouchableWithoutFeedback>
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
       </View>

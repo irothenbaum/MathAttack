@@ -1,50 +1,51 @@
 import {ANSWER_TIMEOUT} from '../constants/game'
 import GameQuestion from './GameQuestion'
-import Serializable from './Serializable'
+import Equation from './Equation'
 
-class QuestionResult extends Serializable {
+class QuestionResult {
   /**
    * @param {GameQuestion} question
    * @param {number} answer
    */
   constructor(question, answer) {
-    super()
     this.question = question
     this.answer = answer
   }
 
-  isTimeout() {
-    return this.answer === ANSWER_TIMEOUT
+  /**
+   * @param {QuestionResult} obj
+   * @returns {boolean}
+   */
+  static isTimeout(obj) {
+    return obj.answer === ANSWER_TIMEOUT
   }
 
-  isCorrect() {
-    return this.question.equation.getSolution() === this.answer
+  /**
+   * @param {QuestionResult} obj
+   * @returns {boolean}
+   */
+  static isCorrect(obj) {
+    let correctAnswer = Equation.getSolution(obj.question.equation)
+    return correctAnswer === obj.answer
   }
 
-  scoreValue() {
-    if (!this.isCorrect()) {
+  /**
+   * @param {QuestionResult} obj
+   * @returns {number}
+   */
+  static scoreValue(obj) {
+    if (!QuestionResult.isCorrect(obj)) {
       return 0
     }
 
     let baseValue =
-      Math.abs(this.question.equation.term1) +
-      Math.abs(this.question.equation.term2) +
-      Math.abs(this.question.equation.getSolution())
+      Math.abs(obj.question.equation.term1) +
+      Math.abs(obj.question.equation.term2) +
+      Math.abs(Equation.getSolution(obj.question.equation))
 
-    let timeBoost = 1 / (this.question.getMSRemaining() / 1000)
+    let timeBoost = 1 / (GameQuestion.getMSRemaining(obj.question) / 1000)
 
     return baseValue * timeBoost
-  }
-
-  /**
-   * @param {{question: *, answer: number}} obj
-   * @returns {QuestionResult}
-   */
-  static createFromPlainObject(obj) {
-    return new QuestionResult(
-      GameQuestion.createFromPlainObject(obj.question),
-      obj.answer,
-    )
   }
 }
 

@@ -4,7 +4,7 @@ import {useState} from 'react'
 const ANIMATION_DURATION = 1000
 
 function answerReactionResults() {
-  const {animate, animation, isAnimating, cancelAnimation} = animationStation()
+  const {animate, animation, isAnimating} = animationStation()
   const [isAnimatingForCorrect, setIsAnimatingForCorrect] = useState(false)
 
   const animateCorrect = onComplete => {
@@ -19,7 +19,7 @@ function answerReactionResults() {
 
   return {
     isAnimatingForCorrect,
-    animation,
+    animation: isAnimating ? animation : null,
     animateCorrect,
     animateIncorrect,
   }
