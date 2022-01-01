@@ -11,3 +11,6 @@ export const neonOrange = '#ff7700'
 export const neonGreen = '#37ff00'
 export const neonBlue = '#00aeff'
 export const neonRed = '#ff0000'
+
+export const transparent = 'rgba(255,255,255, 0)'
+export const shadow = 'rgba(70, 70, 70, 0.3)'

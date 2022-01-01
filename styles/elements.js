@@ -1,8 +1,8 @@
-import {darkGrey, white} from './colors'
+import {darkGrey, transparent} from './colors'
 import {spaceDefault, spaceSmall} from './layout'
 
 export const RoundBox = {
-  backgroundColor: white,
+  backgroundColor: transparent,
   padding: spaceDefault,
   borderRadius: spaceSmall,
   alignItems: 'center',

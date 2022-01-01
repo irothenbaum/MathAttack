@@ -5,7 +5,7 @@ import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
-import {darkGrey, grey, lightGrey} from '../../styles/colors'
+import {darkGrey, grey, lightGrey, shadow} from '../../styles/colors'
 import {font3} from '../../styles/typography'
 
 export const DECIMAL = -1
@@ -53,8 +53,7 @@ function CalculatorButton(props) {
         ...props.style,
       }}
       disabled={isDisabled}
-      onPress={handlePress}
-    >
+      onPress={handlePress}>
       <Text style={isDisabled ? styles.numberDisabled : styles.number}>
         {valueStr}
       </Text>
@@ -68,14 +67,13 @@ const styles = StyleSheet.create({
   },
   containerDisabled: {
     ...RoundBox,
-    backgroundColor: lightGrey,
   },
   number: {
     color: darkGrey,
     fontSize: font3,
   },
   numberDisabled: {
-    color: grey,
+    color: shadow,
     fontSize: font3,
   },
 })

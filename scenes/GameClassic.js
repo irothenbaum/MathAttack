@@ -23,31 +23,23 @@ import doOnceTimer from '../hooks/doOnceTimer'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_Menu} from '../constants/scenes'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
+import animationStation from '../hooks/animationStation'
 // import {v4 as uuid} from 'uuid'
 
 function uuid() {
   return '' + Date.now()
 }
 
-const CELEBRATE_DURATION = 1000
-const MOURN_DURATION = 500
 const CHANGE_ANSWER_DELAY = 500
 
 function GameClassic() {
   const dispatch = useDispatch()
-
-  const {
-    celebrate,
-    mourn,
-    isCelebrating,
-    isMourning,
-    celebrateAnim,
-    mournAnim,
-  } = answerReactionResults()
+  const {animation: equationTimer} = animationStation()
+  const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} =
+    answerReactionResults()
   const userAnswer = useSelector(selectUserAnswer)
-  const currentQuestion = GameQuestion.createFromPlainObject(
-    useSelector(selectCurrentQuestion),
-  )
+  const currentQuestionRaw = useSelector(selectCurrentQuestion)
+  const currentQuestion = GameQuestion.createFromPlainObject(currentQuestionRaw)
   const [isChangingAnswers, setIsChangingAnswers] = useState(false)
   const {setTimer} = doOnceTimer()
   const gameSettings = useSelector(selectClassicGameSettings)
@@ -56,21 +48,21 @@ function GameClassic() {
     gameSettings.classicNumberOfRounds,
   )
 
+  useEffect(() => {
+    if (currentQuestionRaw) {
+      let q = GameQuestion.createFromPlainObject(currentQuestionRaw)
+      let amountRemaining = q.getMSRemaining() / gameSettings.equationDuration
+      // TODO: Restart the equationTimer animation from here, handle timeout internally
+    } else {
+    }
+  }, [currentQuestionRaw])
+
   const handleNextQuestion = () => {
     // always reset the input
     dispatch(setAnswer(''))
-    setIsChangingAnswers(true)
-
     if (questionsRemaining > 0) {
-      setTimer(
-        'changingQuestions',
-        () => {
-          setIsChangingAnswers(false)
-          dispatch(generateNewQuestion())
-          setQuestionsRemaining(questionsRemaining - 1)
-        },
-        CHANGE_ANSWER_DELAY,
-      )
+      dispatch(generateNewQuestion())
+      setQuestionsRemaining(questionsRemaining - 1)
     } else {
       // TODO: handle end game
       Alert.alert(null, 'GAME OVER!')
@@ -81,13 +73,12 @@ function GameClassic() {
   const handleGuess = () => {
     let result = new QuestionResult(currentQuestion, userAnswer)
     if (result.isCorrect()) {
-      console.log('HANDLE CORRECT')
       dispatch(recordAnswer(userAnswer))
-      celebrate(CELEBRATE_DURATION, handleNextQuestion)
+      animateCorrect()
+      handleNextQuestion()
     } else {
-      console.log('HANDLE INCORRECT')
       dispatch(setAnswer(''))
-      mourn(MOURN_DURATION)
+      animateIncorrect()
       /*
       dispatch(
         // cut the time remaining by 25%
@@ -99,32 +90,19 @@ function GameClassic() {
   const handleTimeout = () => {
     console.log('TIMEOUT')
     dispatch(recordAnswer(ANSWER_TIMEOUT))
-    mourn(MOURN_DURATION, handleNextQuestion)
+    animateIncorrect()
+    handleNextQuestion()
   }
 
   return (
     <View style={styles.window}>
-      {isCelebrating && (
+      {!!animation && (
         <Animated.View
           style={[
             styles.celebrationBG,
             {
-              backgroundColor: neonGreen,
-              opacity: celebrateAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            },
-          ]}
-        />
-      )}
-      {isMourning && (
-        <Animated.View
-          style={[
-            styles.celebrationBG,
-            {
-              backgroundColor: neonRed,
-              opacity: mournAnim.interpolate({
+              backgroundColor: isAnimatingForCorrect ? neonGreen : neonRed,
+              opacity: animation.interpolate({
                 inputRange: [0, 1],
                 outputRange: [1, 0],
               }),
@@ -135,15 +113,19 @@ function GameClassic() {
       <View style={styles.equationContainer}>
         {!!currentQuestion && (
           <EquationBox
-            style={isMourning ? getVibrateStylesForAnimation(mournAnim) : null}
+            style={
+              !!animation && !isAnimatingForCorrect
+                ? getVibrateStylesForAnimation(animation)
+                : null
+            }
             key={`${currentQuestion.equation.getSolution()}::${questionsRemaining}`}
             onPress={handleGuess}
             onTimeout={handleTimeout}
             equationStr={
               isChangingAnswers ? null : currentQuestion.equation.getLeftSide()
             }
-            timeRemaining={
-              isCelebrating ? null : currentQuestion.getMSRemaining()
+            timerAnimation={
+              !!animation && isAnimatingForCorrect ? null : equationTimer
             }
           />
         )}

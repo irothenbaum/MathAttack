@@ -1,40 +1,27 @@
 import animationStation from './animationStation'
+import {useState} from 'react'
+
+const ANIMATION_DURATION = 1000
 
 function answerReactionResults() {
-  const {
-    animate: animateCelebrate,
-    animation: celebrateAnim,
-    isAnimating: isCelebrating,
-    cancelAnimation: cancelCelebrate,
-  } = animationStation()
-  const {
-    animate: animateMourn,
-    animation: mournAnim,
-    isAnimating: isMourning,
-    cancel: cancelMourn,
-  } = animationStation()
+  const {animate, animation, isAnimating, cancelAnimation} = animationStation()
+  const [isAnimatingForCorrect, setIsAnimatingForCorrect] = useState(false)
 
-  const celebrate = (duration, onComplete) => {
-    if (isMourning) {
-      cancelMourn()
-    }
-    return animateCelebrate(duration, onComplete)
+  const animateCorrect = onComplete => {
+    animate(ANIMATION_DURATION, onComplete)
+    setIsAnimatingForCorrect(true)
   }
 
-  const mourn = (duration, onComplete) => {
-    if (isCelebrating) {
-      cancelCelebrate()
-    }
-    return animateMourn(duration, onComplete)
+  const animateIncorrect = onComplete => {
+    animate(ANIMATION_DURATION, onComplete)
+    setIsAnimatingForCorrect(false)
   }
 
   return {
-    celebrate,
-    mourn,
-    isCelebrating,
-    isMourning,
-    celebrateAnim,
-    mournAnim,
+    isAnimatingForCorrect,
+    animation,
+    animateCorrect,
+    animateIncorrect,
   }
 }
 

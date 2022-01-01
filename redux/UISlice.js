@@ -1,5 +1,4 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {Scene_Menu} from '../constants/scenes'
 
 const navigationSlice = createSlice({
   name: 'Navigation',
