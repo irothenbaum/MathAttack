@@ -8,7 +8,7 @@ import {darkGrey, lightGrey, neonRed} from '../styles/colors'
 import {font4} from '../styles/typography'
 import {spaceDefault, spaceLarge} from '../styles/layout'
 import {zeroPad} from '../lib/utilities'
-import Equation from '../models/Equation'
+import {OPERATION_SUBTRACT} from '../models/Equation'
 
 function generatePlaceholderText(gameSettings) {
   let numberOfDigits = ('' + gameSettings.maxValue).length
@@ -21,9 +21,17 @@ function EquationBox(props) {
   const placeholder = useRef(generatePlaceholderText(gameSettings)).current
 
   const textComponent = props.equation ? (
-    <Text style={styles.equationText}>
-      {Equation.getLeftSide(props.equation)}
-    </Text>
+    <View style={styles.longFormContainer}>
+      <Text style={styles.operationText}>
+        {props.equation.operation === OPERATION_SUBTRACT
+          ? '—'
+          : props.equation.operation}
+      </Text>
+      <View>
+        <Text style={styles.equationText}>{props.equation.term1}</Text>
+        <Text style={styles.equationText}>{props.equation.term2}</Text>
+      </View>
+    </View>
   ) : (
     <Text style={styles.equationTextPlaceholder}>{placeholder}</Text>
   )
@@ -55,8 +63,9 @@ const equationText = {
   lineHeight: font4,
   color: darkGrey,
   zIndex: 2,
-  margin: spaceDefault,
+  marginBottom: spaceDefault,
   marginHorizontal: spaceLarge,
+  textAlign: 'right',
 }
 
 const styles = StyleSheet.create({
@@ -67,8 +76,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
+  longFormContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+
   equationText: {
     ...equationText,
+  },
+
+  operationText: {
+    ...equationText,
+    textAlign: 'left',
   },
 
   equationTextPlaceholder: {

@@ -3,13 +3,13 @@ function roundIfNeeded(value, decimalPlaces) {
   return Math.round(value * decimalBase) / decimalBase
 }
 
-const OPERATION_ADD = '+'
-const OPERATION_SUBTRACT = '-'
+export const OPERATION_ADD = '+'
+export const OPERATION_SUBTRACT = '-'
 
 class Equation {
   /**
    * @param {number} term1
-   * @param {Operation} operation
+   * @param {string} operation
    * @param {number} term2
    */
   constructor(term1, operation, term2) {
