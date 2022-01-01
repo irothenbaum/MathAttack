@@ -34,7 +34,6 @@ function GameClassic() {
     answerReactionResults()
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestionRaw = useSelector(selectCurrentQuestion)
-  const [isChangingAnswers, setIsChangingAnswers] = useState(false)
   const gameSettings = useSelector(selectClassicGameSettings)
 
   const [questionsRemaining, setQuestionsRemaining] = useState(
@@ -111,7 +110,7 @@ function GameClassic() {
                   ? getVibrateStylesForAnimation(animation)
                   : null
               }
-              equation={isChangingAnswers ? null : currentQuestionRaw.equation}
+              equation={currentQuestionRaw.equation}
               timerAnimation={equationTimer}
             />
           )}
