@@ -1,27 +1,35 @@
 import React from 'react'
-import {StyleSheet} from 'react-native'
-import {Button} from 'react-native'
+import {Pressable, StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
-import {spaceSmall} from '../styles/layout'
-import {white, neonBlue} from '../styles/colors'
+import {spaceLarge, spaceSmall} from '../styles/layout'
+import {neonBlue, dimmedBlue} from '../styles/colors'
+import {getBackgroundColor, getUIColor} from '../lib/utilities'
+import isDarkMode from '../hooks/isDarkMode'
+import UIText from './UIText'
 
 function MenuButton(props) {
+  const isDark = isDarkMode()
+
   return (
-    <Button
-      style={styles.primary}
-      title={props.title}
-      onPress={() => {
-        props.onPress()
-      }}
-    />
+    <Pressable
+      style={[
+        styles.primary,
+        {
+          color: getUIColor(isDark),
+          backgroundColor: isDark ? dimmedBlue : neonBlue,
+        },
+      ]}
+      onPress={props.onPress}>
+      <UIText style={{color: getBackgroundColor(isDark)}}>{props.title}</UIText>
+    </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
   primary: {
     padding: spaceSmall,
-    backgroundColor: neonBlue,
-    color: white,
+    paddingHorizontal: spaceLarge,
+    borderRadius: 4,
   },
 })
 

@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 import {View, StyleSheet} from 'react-native'
 import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
@@ -7,9 +7,19 @@ import {goToScene} from '../redux/NavigationSlice'
 import {startNewGame} from '../redux/GameClassicSlice'
 import {Scene_GameClassic} from '../constants/scenes'
 import {selectClassicGameSettings} from '../redux/selectors'
+import {spaceExtraLarge} from '../styles/layout'
 
 const styles = StyleSheet.create({
-  window: {},
+  window: {
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  title: {
+    marginBottom: spaceExtraLarge,
+  },
 })
 
 function Menu() {
@@ -22,9 +32,9 @@ function Menu() {
 
   return (
     <View style={styles.window}>
-      <TitleText>Math, ATTACK!</TitleText>
-
+      <TitleText style={styles.title}>Math, ATTACK!</TitleText>
       <MenuButton title={'Play'} onPress={handlePlay} />
+      <View style={{marginTop: 200}} />
     </View>
   )
 }

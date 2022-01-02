@@ -1,12 +1,11 @@
 import React from 'react'
-import {View, Text, StyleSheet} from 'react-native'
+import {View, StyleSheet} from 'react-native'
 import CalculatorButton, {CLEAR, DECIMAL} from './CalculatorButton'
 import {RoundBox} from '../../styles/elements'
 import {useSelector} from 'react-redux'
 import {selectUserInput} from '../../redux/selectors'
 import {spaceExtraLarge, spaceExtraSmall} from '../../styles/layout'
-import {font4} from '../../styles/typography'
-import {darkGrey} from '../../styles/colors'
+import TitleText from '../TitleText'
 
 function CalculatorInput(props) {
   const userInput = useSelector(selectUserInput)
@@ -14,7 +13,7 @@ function CalculatorInput(props) {
   return (
     <View style={styles.container}>
       <View style={styles.answerBar}>
-        <Text style={styles.answerText}>{userInput || 0}</Text>
+        <TitleText style={styles.answerText}>{userInput || 0}</TitleText>
       </View>
       <View style={styles.buttonsContainer}>
         <View style={styles.calculatorRow}>
@@ -52,8 +51,6 @@ const styles = StyleSheet.create({
     paddingRight: spaceExtraLarge,
   },
   answerText: {
-    fontSize: font4,
-    color: darkGrey,
     width: '100%',
     textAlign: 'right',
   },

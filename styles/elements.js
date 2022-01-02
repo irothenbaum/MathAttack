@@ -1,4 +1,4 @@
-import {darkGrey, transparent} from './colors'
+import {transparent} from './colors'
 import {spaceDefault, spaceSmall} from './layout'
 
 export const RoundBox = {
@@ -7,5 +7,4 @@ export const RoundBox = {
   borderRadius: spaceSmall,
   alignItems: 'center',
   justifyContent: 'center',
-  color: darkGrey,
 }

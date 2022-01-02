@@ -1,20 +1,21 @@
 import React from 'react'
 import {SafeAreaView, StatusBar, useColorScheme} from 'react-native'
-import {darkGrey, nearWhite} from './styles/colors'
 import {Provider} from 'react-redux'
 import store from './redux/store'
 import MathAttack from './MathAttack'
+import {getBackgroundColor} from './lib/utilities'
+import isDarkMode from './hooks/isDarkMode'
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark'
+  const isDark = isDarkMode()
 
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? darkGrey : nearWhite,
+    backgroundColor: getBackgroundColor(isDark),
   }
 
   return (
     <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <Provider store={store}>
         <MathAttack />
       </Provider>

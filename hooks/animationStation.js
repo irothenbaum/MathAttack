@@ -19,7 +19,11 @@ function animationStation() {
    */
   const animate = (duration, onComplete, startValue = 0) => {
     if (typeof startValue === 'number' && startValue >= 1) {
-      throw new Error('Start value must be less than 1')
+      console.error('Start value must be less than 1, received: ' + startValue)
+      if (typeof onComplete === 'function') {
+        onComplete()
+      }
+      return
     }
 
     setIsAnimating(true)

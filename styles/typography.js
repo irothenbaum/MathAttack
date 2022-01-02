@@ -6,3 +6,15 @@ export const font4 = 48
 export const titleText = {
   fontSize: font4,
 }
+
+export const normalText = {
+  fontSize: font2,
+}
+
+export const uiText = {
+  fontSize: font3,
+}
+
+export const smallText = {
+  fontSize: font1,
+}

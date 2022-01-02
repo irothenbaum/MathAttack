@@ -1,12 +1,14 @@
 import React, {useCallback} from 'react'
-import {TouchableOpacity, Text, StyleSheet} from 'react-native'
+import {TouchableOpacity, StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
 import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
-import {darkGrey, grey, lightGrey, shadow} from '../../styles/colors'
-import {font3} from '../../styles/typography'
+import {OPACITY_AMOUNT} from '../../styles/colors'
+import UIText from '../UIText'
+import {getUIColor} from '../../lib/utilities'
+import isDarkMode from '../../hooks/isDarkMode'
 
 export const DECIMAL = -1
 export const CLEAR = -2
@@ -54,9 +56,13 @@ function CalculatorButton(props) {
       }}
       disabled={isDisabled}
       onPress={handlePress}>
-      <Text style={isDisabled ? styles.numberDisabled : styles.number}>
+      <UIText
+        style={[
+          {color: getUIColor(isDarkMode())},
+          isDisabled ? styles.numberDisabled : styles.number,
+        ]}>
         {valueStr}
-      </Text>
+      </UIText>
     </TouchableOpacity>
   )
 }
@@ -68,13 +74,9 @@ const styles = StyleSheet.create({
   containerDisabled: {
     ...RoundBox,
   },
-  number: {
-    color: darkGrey,
-    fontSize: font3,
-  },
+  number: {},
   numberDisabled: {
-    color: shadow,
-    fontSize: font3,
+    opacity: OPACITY_AMOUNT,
   },
 })
 

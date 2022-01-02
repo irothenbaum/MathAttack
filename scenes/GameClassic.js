@@ -12,6 +12,7 @@ import {
   selectUserAnswer,
   selectCurrentQuestion,
   selectClassicGameSettings,
+  selectClassicGameResults,
 } from '../redux/selectors'
 import {recordAnswer, generateNewQuestion} from '../redux/GameClassicSlice'
 import {ANSWER_TIMEOUT} from '../constants/game'
@@ -19,35 +20,41 @@ import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
 import GameQuestion from '../models/GameQuestion'
 import {setAnswer} from '../redux/UISlice'
-import {white, neonGreen, neonRed, nearWhite} from '../styles/colors'
+import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../styles/colors'
 import answerReactionResults from '../hooks/answerReactionResults'
 import {goToScene} from '../redux/NavigationSlice'
-import {Scene_Menu} from '../constants/scenes'
-import {getVibrateStylesForAnimation} from '../lib/utilities'
+import {Scene_GameResults} from '../constants/scenes'
+import {
+  getBackgroundColor,
+  getVibrateStylesForAnimation,
+} from '../lib/utilities'
 import animationStation from '../hooks/animationStation'
+import isDarkMode from '../hooks/isDarkMode'
 
 function GameClassic() {
   const dispatch = useDispatch()
+  const isDark = isDarkMode()
   const {animation: equationTimer, animate: startEquationTimer} =
     animationStation()
   const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} =
     answerReactionResults()
   const userAnswer = useSelector(selectUserAnswer)
-  const currentQuestionRaw = useSelector(selectCurrentQuestion)
+  const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectClassicGameSettings)
+  const allAnswers = useSelector(selectClassicGameResults)
 
   const [questionsRemaining, setQuestionsRemaining] = useState(
     gameSettings.classicNumberOfRounds,
   )
 
   useEffect(() => {
-    if (currentQuestionRaw) {
-      let msRemaining = GameQuestion.getMSRemaining(currentQuestionRaw)
+    if (currentQuestion) {
+      let msRemaining = GameQuestion.getMSRemaining(currentQuestion)
       let amountRemaining = 1 - msRemaining / gameSettings.equationDuration
       startEquationTimer(msRemaining, handleTimeout, amountRemaining)
     } else {
     }
-  }, [currentQuestionRaw])
+  }, [currentQuestion])
 
   const handleNextQuestion = () => {
     // always reset the input
@@ -56,14 +63,17 @@ function GameClassic() {
       dispatch(generateNewQuestion())
       setQuestionsRemaining(questionsRemaining - 1)
     } else {
-      // TODO: handle end game
-      Alert.alert(null, 'GAME OVER!')
-      dispatch(goToScene(Scene_Menu))
+      console.log(JSON.stringify(allAnswers))
+      dispatch(
+        goToScene(Scene_GameResults, {
+          results: allAnswers,
+        }),
+      )
     }
   }
 
   const handleGuess = () => {
-    let result = new QuestionResult(currentQuestionRaw, userAnswer)
+    let result = new QuestionResult(currentQuestion, userAnswer)
     if (QuestionResult.isCorrect(result)) {
       dispatch(recordAnswer(userAnswer))
       animateCorrect()
@@ -71,11 +81,6 @@ function GameClassic() {
     } else {
       dispatch(setAnswer(''))
       animateIncorrect()
-      /*
-      dispatch(
-        // cut the time remaining by 25%
-        deductTimeRemaining((currentQuestion.expiresAt - Date.now()) * 0.75),
-      )*/
     }
   }
 
@@ -85,14 +90,28 @@ function GameClassic() {
     handleNextQuestion()
   }
 
+  const getAnimationColor = () => {
+    return isAnimatingForCorrect
+      ? isDark
+        ? dimmedGreen
+        : neonGreen
+      : isDark
+      ? dimmedRed
+      : neonRed
+  }
+
   return (
-    <View style={styles.window}>
+    <View
+      style={[
+        styles.window,
+        {backgroundColor: getBackgroundColor(isDarkMode())},
+      ]}>
       {!!animation && (
         <Animated.View
           style={[
             styles.celebrationBG,
             {
-              backgroundColor: isAnimatingForCorrect ? neonGreen : neonRed,
+              backgroundColor: getAnimationColor(),
               opacity: animation.interpolate({
                 inputRange: [0, 1],
                 outputRange: [1, 0],
@@ -103,14 +122,14 @@ function GameClassic() {
       )}
       <TouchableWithoutFeedback onPress={handleGuess}>
         <View style={styles.equationContainer}>
-          {!!currentQuestionRaw && (
+          {!!currentQuestion && (
             <EquationBox
               style={
                 !!animation && !isAnimatingForCorrect
                   ? getVibrateStylesForAnimation(animation)
                   : null
               }
-              equation={currentQuestionRaw.equation}
+              equation={currentQuestion.equation}
               timerAnimation={equationTimer}
             />
           )}
@@ -128,7 +147,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     alignItems: 'center',
-    backgroundColor: nearWhite,
   },
 
   celebrationBG: {
