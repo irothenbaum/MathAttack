@@ -8,6 +8,7 @@ import {startNewGame} from '../redux/GameClassicSlice'
 import {Scene_GameClassic} from '../constants/scenes'
 import {selectClassicGameSettings} from '../redux/selectors'
 import {spaceExtraLarge} from '../styles/layout'
+import {setCurrentGame} from '../redux/GlobalSlice'
 
 const styles = StyleSheet.create({
   window: {
@@ -27,6 +28,7 @@ function Menu() {
   const settings = useSelector(selectClassicGameSettings)
   const handlePlay = () => {
     dispatch(startNewGame(settings))
+    dispatch(setCurrentGame(Scene_GameClassic))
     dispatch(goToScene(Scene_GameClassic))
   }
 

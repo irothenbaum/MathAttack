@@ -20,6 +20,21 @@ export const dimmedGreen = '#197900'
 export const dimmedBlue = '#005279'
 export const dimmedRed = '#800000'
 
+export const DimmedColors = [
+  dimmedMagenta,
+  dimmedOrange,
+  dimmedGreen,
+  dimmedBlue,
+  dimmedRed,
+]
+export const NeonColors = [
+  neonMagenta,
+  neonOrange,
+  neonGreen,
+  neonBlue,
+  neonRed,
+]
+
 export const transparent = 'rgba(255,255,255, 0)'
 export const shadow = `rgba(70, 70, 70, ${OPACITY_AMOUNT})`
 export const sunbeam = `rgba(190, 190, 190, ${OPACITY_AMOUNT})`

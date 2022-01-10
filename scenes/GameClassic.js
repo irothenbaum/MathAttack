@@ -1,18 +1,12 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react'
-import {
-  Alert,
-  View,
-  StyleSheet,
-  Animated,
-  TouchableWithoutFeedback,
-} from 'react-native'
+import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native'
 import EquationBox from '../components/EquationBox'
 import {useDispatch, useSelector} from 'react-redux'
 import {
   selectUserAnswer,
   selectCurrentQuestion,
   selectClassicGameSettings,
-  selectClassicGameResults,
+  selectUserInput,
 } from '../redux/selectors'
 import {recordAnswer, generateNewQuestion} from '../redux/GameClassicSlice'
 import {ANSWER_TIMEOUT} from '../constants/game'
@@ -20,20 +14,18 @@ import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
 import GameQuestion from '../models/GameQuestion'
 import {setAnswer} from '../redux/UISlice'
-import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../styles/colors'
 import answerReactionResults from '../hooks/answerReactionResults'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_GameResults} from '../constants/scenes'
-import {
-  getBackgroundColor,
-  getVibrateStylesForAnimation,
-} from '../lib/utilities'
+import {getVibrateStylesForAnimation} from '../lib/utilities'
 import animationStation from '../hooks/animationStation'
-import isDarkMode from '../hooks/isDarkMode'
+import GameBackground from '../components/FX/GameBackground'
+import TitleText from '../components/TitleText'
+import {RoundBox} from '../styles/elements'
+import {spaceExtraLarge, spaceLarge} from '../styles/layout'
 
 function GameClassic() {
   const dispatch = useDispatch()
-  const isDark = isDarkMode()
   const {animation: equationTimer, animate: startEquationTimer} =
     animationStation()
   const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} =
@@ -41,7 +33,7 @@ function GameClassic() {
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectClassicGameSettings)
-  const allAnswers = useSelector(selectClassicGameResults)
+  const userInput = useSelector(selectUserInput)
 
   const [questionsRemaining, setQuestionsRemaining] = useState(
     gameSettings.classicNumberOfRounds,
@@ -63,12 +55,7 @@ function GameClassic() {
       dispatch(generateNewQuestion())
       setQuestionsRemaining(questionsRemaining - 1)
     } else {
-      console.log(JSON.stringify(allAnswers))
-      dispatch(
-        goToScene(Scene_GameResults, {
-          results: allAnswers,
-        }),
-      )
+      dispatch(goToScene(Scene_GameResults))
     }
   }
 
@@ -90,36 +77,12 @@ function GameClassic() {
     handleNextQuestion()
   }
 
-  const getAnimationColor = () => {
-    return isAnimatingForCorrect
-      ? isDark
-        ? dimmedGreen
-        : neonGreen
-      : isDark
-      ? dimmedRed
-      : neonRed
-  }
-
   return (
-    <View
-      style={[
-        styles.window,
-        {backgroundColor: getBackgroundColor(isDarkMode())},
-      ]}>
-      {!!animation && (
-        <Animated.View
-          style={[
-            styles.celebrationBG,
-            {
-              backgroundColor: getAnimationColor(),
-              opacity: animation.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            },
-          ]}
-        />
-      )}
+    <View style={styles.window}>
+      <GameBackground
+        animation={animation}
+        isAnimatingForCorrect={isAnimatingForCorrect}
+      />
       <TouchableWithoutFeedback onPress={handleGuess}>
         <View style={styles.equationContainer}>
           {!!currentQuestion && (
@@ -133,6 +96,10 @@ function GameClassic() {
               timerAnimation={equationTimer}
             />
           )}
+
+          <View style={styles.answerBar}>
+            <TitleText style={styles.answerText}>{userInput || 0}</TitleText>
+          </View>
         </View>
       </TouchableWithoutFeedback>
       <View style={styles.calculatorContainer}>
@@ -149,12 +116,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  celebrationBG: {
-    height: '100%',
+  answerBar: {
+    ...RoundBox,
+    paddingRight: spaceLarge,
+  },
+
+  answerText: {
     width: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
+    textAlign: 'right',
   },
 
   equationContainer: {
@@ -163,7 +132,7 @@ const styles = StyleSheet.create({
   },
 
   calculatorContainer: {
-    flex: 2,
+    flex: 1,
   },
 })
 

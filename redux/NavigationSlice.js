@@ -11,6 +11,8 @@ const navigationSlice = createSlice({
     goToScene: (state, {payload}) => {
       state.currentScene = payload.scene
       state.currentSceneParams = payload.params
+
+      console.log(state.currentSceneParams)
     },
   },
 })

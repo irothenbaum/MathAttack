@@ -9,6 +9,7 @@ import {Scene_GameClassic, Scene_Menu} from '../constants/scenes'
 import {
   selectClassicGameSettings,
   selectCurrentSceneParams,
+  selectLastGameResults,
 } from '../redux/selectors'
 import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
@@ -83,7 +84,7 @@ function SingleGameResult({result}) {
 function GameResults() {
   const dispatch = useDispatch()
   const settings = useSelector(selectClassicGameSettings)
-  const sceneParams = useSelector(selectCurrentSceneParams)
+  const results = useSelector(selectLastGameResults)
 
   const handlePlayAgain = () => {
     dispatch(startNewGame(settings))
@@ -99,7 +100,7 @@ function GameResults() {
       <TitleText>Game Over</TitleText>
 
       <View style={styles.resultsContainer}>
-        {sceneParams.results.map((questionResult, i) => (
+        {results.map((questionResult, i) => (
           <SingleGameResult key={i} result={questionResult} />
         ))}
       </View>
