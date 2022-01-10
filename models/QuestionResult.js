@@ -1,5 +1,4 @@
 import {ANSWER_TIMEOUT} from '../constants/game'
-import GameQuestion from './GameQuestion'
 import Equation from './Equation'
 
 class QuestionResult {
@@ -10,6 +9,7 @@ class QuestionResult {
   constructor(question, answer) {
     this.question = question
     this.answer = answer
+    this.createdAt = Date.now()
   }
 
   /**
@@ -38,14 +38,11 @@ class QuestionResult {
       return 0
     }
 
-    let baseValue =
+    return (
       Math.abs(obj.question.equation.term1) +
       Math.abs(obj.question.equation.term2) +
-      Math.abs(Equation.getSolution(obj.question.equation))
-
-    let timeBoost = 1 / (GameQuestion.getMSRemaining(obj.question) / 1000)
-
-    return baseValue * timeBoost
+      Math.abs(obj.answer)
+    )
   }
 }
 

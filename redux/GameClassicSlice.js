@@ -3,14 +3,15 @@ import GameQuestion from '../models/GameQuestion'
 import QuestionResult from '../models/QuestionResult'
 import {serializeObject} from '../lib/utilities'
 
+const INITIAL_STATE = {
+  settings: {},
+  questionResults: [],
+  currentQuestion: undefined,
+}
+
 const gameClassicSlice = createSlice({
   name: 'GameClassic',
-  initialState: {
-    settings: {},
-    isPlaying: false,
-    questionResults: [],
-    currentQuestion: undefined,
-  },
+  initialState: INITIAL_STATE,
   reducers: {
     recordAnswer: (state, {payload}) => {
       let result = new QuestionResult(state.currentQuestion, payload)
@@ -25,12 +26,7 @@ const gameClassicSlice = createSlice({
       )
     },
     startNewGame: (state, {payload}) => {
-      state.questionResults = []
-      state.isPlaying = true
-      state.settings = payload
-      state.currentQuestion = serializeObject(
-        GameQuestion.getRandomFromSettings(state.settings),
-      )
+      Object.assign(state, INITIAL_STATE, {settings: payload})
     },
     deductTimeRemaining: (state, {payload}) => {
       // you lose half the time remaining

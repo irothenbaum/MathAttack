@@ -5,9 +5,9 @@ import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
 import {startNewGame} from '../redux/GameClassicSlice'
-import {Scene_GameClassic} from '../constants/scenes'
+import {Scene_GameClassic, Scene_GameResults} from '../constants/scenes'
 import {selectClassicGameSettings} from '../redux/selectors'
-import {spaceExtraLarge} from '../styles/layout'
+import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
 
 const styles = StyleSheet.create({
@@ -20,6 +20,10 @@ const styles = StyleSheet.create({
 
   title: {
     marginBottom: spaceExtraLarge,
+  },
+
+  gameButtonContainer: {
+    marginBottom: spaceDefault,
   },
 })
 
@@ -35,7 +39,14 @@ function Menu() {
   return (
     <View style={styles.window}>
       <TitleText style={styles.title}>Math, ATTACK!</TitleText>
-      <MenuButton title={'Play'} onPress={handlePlay} />
+      <View style={styles.gameButtonContainer}>
+        <MenuButton
+          size={MenuButton.SIZE_LARGE}
+          title={'Play'}
+          onPress={handlePlay}
+        />
+      </View>
+      <View style={styles.gameButtonContainer}></View>
       <View style={{marginTop: 200}} />
     </View>
   )

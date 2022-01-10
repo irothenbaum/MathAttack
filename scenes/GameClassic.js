@@ -22,7 +22,8 @@ import animationStation from '../hooks/animationStation'
 import GameBackground from '../components/FX/GameBackground'
 import TitleText from '../components/TitleText'
 import {RoundBox} from '../styles/elements'
-import {spaceExtraLarge, spaceLarge} from '../styles/layout'
+import {spaceLarge} from '../styles/layout'
+import GameStartTimer from '../components/GameStartTimer'
 
 function GameClassic() {
   const dispatch = useDispatch()
@@ -35,6 +36,7 @@ function GameClassic() {
   const gameSettings = useSelector(selectClassicGameSettings)
   const userInput = useSelector(selectUserInput)
 
+  const lastGuess = useRef(null)
   const [questionsRemaining, setQuestionsRemaining] = useState(
     gameSettings.classicNumberOfRounds,
   )
@@ -50,10 +52,11 @@ function GameClassic() {
 
   const handleNextQuestion = () => {
     // always reset the input
+    lastGuess.current = null
     dispatch(setAnswer(''))
     if (questionsRemaining > 0) {
-      dispatch(generateNewQuestion())
       setQuestionsRemaining(questionsRemaining - 1)
+      dispatch(generateNewQuestion())
     } else {
       dispatch(goToScene(Scene_GameResults))
     }
@@ -66,19 +69,27 @@ function GameClassic() {
       animateCorrect()
       handleNextQuestion()
     } else {
+      lastGuess.current = userAnswer
       dispatch(setAnswer(''))
       animateIncorrect()
     }
   }
 
   const handleTimeout = () => {
-    dispatch(recordAnswer(ANSWER_TIMEOUT))
+    dispatch(
+      recordAnswer(
+        typeof lastGuess.current === 'number'
+          ? lastGuess.current
+          : ANSWER_TIMEOUT,
+      ),
+    )
     animateIncorrect()
     handleNextQuestion()
   }
 
   return (
     <View style={styles.window}>
+      {!currentQuestion && <GameStartTimer onStart={handleNextQuestion} />}
       <GameBackground
         animation={animation}
         isAnimatingForCorrect={isAnimatingForCorrect}

@@ -4,6 +4,7 @@ import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../../styles/colors'
 import isDarkMode from '../../hooks/isDarkMode'
 import PropTypes from 'prop-types'
 import {getBackgroundColor} from '../../lib/utilities'
+import {FullScreenOverlay} from '../../styles/elements'
 
 const getAnimationColor = (isAnimatingForCorrect, isDark) => {
   return isAnimatingForCorrect
@@ -41,11 +42,7 @@ function GameBackground({animation, isAnimatingForCorrect}) {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
+    ...FullScreenOverlay,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -56,11 +53,7 @@ const styles = StyleSheet.create({
   },
 
   celebrationBG: {
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
+    ...FullScreenOverlay,
   },
 })
 

@@ -1,12 +1,16 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Animated, Easing} from 'react-native'
 
-function animationStation() {
+function animationStation(startAnimating) {
   const [isAnimating, setIsAnimating] = useState(false)
   const animation = useRef(new Animated.Value(0)).current
 
   // stop animating on unmount
   useEffect(() => {
+    if (startAnimating) {
+      animate()
+    }
+
     return () => {
       Animated.timing(animation).stop()
     }

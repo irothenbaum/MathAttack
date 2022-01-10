@@ -1,5 +1,5 @@
-import React, {useCallback} from 'react'
-import {View, StyleSheet, Text} from 'react-native'
+import React, {useCallback, useState} from 'react'
+import {View, StyleSheet, Text, FlatList} from 'react-native'
 import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
@@ -8,28 +8,54 @@ import {startNewGame} from '../redux/GameClassicSlice'
 import {Scene_GameClassic, Scene_Menu} from '../constants/scenes'
 import {
   selectClassicGameSettings,
-  selectCurrentSceneParams,
   selectLastGameResults,
 } from '../redux/selectors'
 import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
 import QuestionResult from '../models/QuestionResult'
-import FontAwesome, {SolidIcons} from 'react-native-fontawesome'
-import {neonGreen, neonRed} from '../styles/colors'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {faCheck} from '@fortawesome/free-solid-svg-icons'
+import {
+  dimmedBlue,
+  dimmedRed,
+  neonBlue,
+  neonGreen,
+  neonRed,
+} from '../styles/colors'
 import {font4} from '../styles/typography'
-import {spaceDefault} from '../styles/layout'
+import {spaceDefault, spaceSmall} from '../styles/layout'
+import UIText from '../components/UIText'
+import animationStation from '../hooks/animationStation'
+import isDarkMode from '../hooks/isDarkMode'
+import {formatNumber} from '../lib/utilities'
 
-const styles = StyleSheet.create({
-  window: {width: '100%', height: '100%'},
-
-  resultsContainer: {flex: 1},
-
-  singleResult: {
+const resultStyles = StyleSheet.create({
+  singleResultContainer: {
+    width: '100%',
     flexDirection: 'row',
+    marginVertical: spaceSmall,
   },
 
-  resultEquation: {
-    width: '50%',
+  singleResultCount: {
+    width: '15%',
+  },
+
+  singleResultEquals: {
+    width: '5%',
+  },
+
+  singleResultEquation: {
+    width: '40%',
+  },
+
+  singleResultAnswer: {
+    width: '20%',
+    alignItems: 'flex-end',
+  },
+
+  singleResultCanon: {
+    width: '15%',
+    alignItems: 'flex-end',
   },
 
   wrongAnswer: {
@@ -41,20 +67,9 @@ const styles = StyleSheet.create({
     color: neonGreen,
     fontSize: font4,
   },
-
-  wrongAnswerX: {
-    correctAnswerCheck: {
-      color: neonRed,
-      fontSize: font4,
-    },
-  },
-
-  buttonContainer: {
-    flexDirection: 'row',
-  },
 })
 
-function SingleGameResult({result}) {
+function SingleGameResult({result, count}) {
   const correctAnswer = Equation.getSolution(result.question.equation)
   const userAnswer = result.answer
 
@@ -62,21 +77,33 @@ function SingleGameResult({result}) {
   let isCorrect = QuestionResult.isCorrect(result)
 
   return (
-    <View style={styles.singleResult}>
-      <NormalText style={styles.resultEquation}>
-        {Equation.getLeftSide(result.question.equation)}
-      </NormalText>
-      <NormalText style={isCorrect ? null : styles.wrongAnswer}>
-        {isTimeout ? 'N/A' : userAnswer}
-      </NormalText>
-      {isCorrect ? (
-        <FontAwesome
-          icon={SolidIcons.check}
-          style={styles.correctAnswerCheck}
-        />
-      ) : (
-        <NormalText>{correctAnswer}</NormalText>
-      )}
+    <View style={resultStyles.singleResultContainer}>
+      <View style={resultStyles.singleResultCount}>
+        <NormalText>{count}.</NormalText>
+      </View>
+      <View style={resultStyles.singleResultEquation}>
+        <NormalText>
+          {Equation.getLeftSide(result.question.equation)}
+        </NormalText>
+      </View>
+      <NormalText style={resultStyles.singleResultEquals}>=</NormalText>
+      <View style={resultStyles.singleResultAnswer}>
+        <NormalText style={isCorrect ? null : resultStyles.wrongAnswer}>
+          {isTimeout ? 'N/A' : userAnswer}
+        </NormalText>
+      </View>
+      <View style={resultStyles.singleResultCanon}>
+        {isCorrect ? (
+          <FontAwesomeIcon
+            icon={faCheck}
+            style={resultStyles.correctAnswerCheck}
+          />
+        ) : (
+          <NormalText style={{color: isDarkMode() ? dimmedRed : neonRed}}>
+            {correctAnswer}
+          </NormalText>
+        )}
+      </View>
     </View>
   )
 }
@@ -84,7 +111,12 @@ function SingleGameResult({result}) {
 function GameResults() {
   const dispatch = useDispatch()
   const settings = useSelector(selectClassicGameSettings)
+  const [isShowingDetails, setIsShowingDetails] = useState(false)
   const results = useSelector(selectLastGameResults)
+
+  const score = results.reduce((total, r) => {
+    return total + QuestionResult.scoreValue(r)
+  }, 0)
 
   const handlePlayAgain = () => {
     dispatch(startNewGame(settings))
@@ -100,17 +132,65 @@ function GameResults() {
       <TitleText>Game Over</TitleText>
 
       <View style={styles.resultsContainer}>
-        {results.map((questionResult, i) => (
-          <SingleGameResult key={i} result={questionResult} />
-        ))}
+        <View>
+          <NormalText>Questions: {results.length}</NormalText>
+          <NormalText>
+            Correct: {results.filter(QuestionResult.isCorrect).length}
+          </NormalText>
+
+          <UIText>Score: {formatNumber(score)}</UIText>
+        </View>
+
+        <View style={styles.detailsContainer}>
+          {isShowingDetails && (
+            <FlatList
+              data={results}
+              renderItem={({item, index}) => (
+                <SingleGameResult count={index + 1} result={item} />
+              )}
+            />
+          )}
+          <NormalText
+            style={{color: isDarkMode() ? dimmedBlue : neonBlue}}
+            onPress={() => setIsShowingDetails(!isShowingDetails)}>
+            {isShowingDetails ? 'Hide details' : 'Show details'}
+          </NormalText>
+        </View>
       </View>
 
       <View style={styles.buttonContainer}>
         <MenuButton title={'Play Again'} onPress={handlePlayAgain} />
-        <MenuButton title={'Menu'} onPress={handleMenu} />
+        <MenuButton
+          variant={MenuButton.VARIANT_DESTRUCTIVE}
+          title={'Menu'}
+          onPress={handleMenu}
+        />
       </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  window: {
+    width: '100%',
+    height: '100%',
+    padding: spaceDefault,
+  },
+
+  resultsContainer: {
+    flex: 1,
+    marginTop: spaceDefault,
+  },
+
+  detailsContainer: {
+    padding: spaceDefault,
+    flex: 1,
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+})
 
 export default GameResults

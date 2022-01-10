@@ -1,12 +1,5 @@
 import React, {useCallback, useState} from 'react'
-import {
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  Animated,
-  Pressable,
-} from 'react-native'
+import {StyleSheet, Animated, Pressable} from 'react-native'
 import PropTypes from 'prop-types'
 import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
@@ -14,17 +7,15 @@ import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
 import {
   darkGrey,
-  DimmedColors,
   lightGrey,
-  NeonColors,
   OPACITY_AMOUNT,
   transparent,
-  white,
 } from '../../styles/colors'
 import UIText from '../UIText'
 import {getUIColor} from '../../lib/utilities'
 import isDarkMode from '../../hooks/isDarkMode'
 import animationStation from '../../hooks/animationStation'
+import randomColor from '../../hooks/randomColor'
 
 export const TINT_DURATION = 300
 export const DECIMAL = -1
@@ -34,20 +25,12 @@ const getBackgroundColor = (isDark, isDisabled) => {
   return isDisabled ? (isDark ? darkGrey : lightGrey) : transparent
 }
 
-const getRandomTintColor = isDark => {
-  return getBackgroundColor(isDark)
-
-  let options = isDark ? DimmedColors : NeonColors
-
-  return options[Math.floor(Math.random() * options.length)]
-}
-
 function CalculatorButton(props) {
   const isDark = isDarkMode()
   const dispatch = useDispatch()
   const userInput = useSelector(selectUserInput)
-  const [tintColor, setTintColor] = useState(white)
   const {animation, isAnimating, animate} = animationStation()
+  const {color: tintColor, randomizeColor} = randomColor()
 
   let valueStr =
     props.value === DECIMAL
@@ -57,7 +40,7 @@ function CalculatorButton(props) {
       : `${props.value}`
 
   const handlePress = useCallback(() => {
-    setTintColor(getRandomTintColor(isDark))
+    randomizeColor()
     animate(TINT_DURATION)
 
     if (props.value === CLEAR) {
@@ -79,41 +62,30 @@ function CalculatorButton(props) {
 
       dispatch(setAnswer(newAnswer))
     }
-  }, [props.value, dispatch, userInput])
+  }, [props.value, dispatch, userInput, animate, randomizeColor])
 
   const isDisabled = props.value === DECIMAL && userInput.includes('.')
 
-  const tint = isAnimating && (
-    <Animated.View
-      style={[
-        styles.buttonTint,
-        {
-          ...RoundBox,
-          backgroundColor: tintColor,
-          opacity: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0.5, 0],
-          }),
-        },
-      ]}
-    />
-  )
+  const textColor = getUIColor(isDark)
 
   return (
     <Pressable
+      disabled={isDisabled}
+      onPress={handlePress}
       style={[
         styles.container,
         props.style,
         {backgroundColor: getBackgroundColor(isDark, isDisabled)},
-      ]}
-      disabled={isDisabled}
-      onPress={handlePress}>
-      {tint}
+      ]}>
       <UIText
-        style={[
-          {color: getUIColor(isDarkMode())},
-          isDisabled ? styles.numberDisabled : styles.number,
-        ]}>
+        style={{
+          color: isAnimating
+            ? animation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [tintColor, tintColor, textColor],
+              })
+            : textColor,
+        }}>
         {valueStr}
       </UIText>
     </Pressable>
