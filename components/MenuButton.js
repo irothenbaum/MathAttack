@@ -1,7 +1,7 @@
 import React from 'react'
 import {Pressable, StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
-import {spaceLarge, spaceSmall} from '../styles/layout'
+import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
 import {
   neonBlue,
   dimmedBlue,
@@ -16,6 +16,7 @@ import {getBackgroundColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
 import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 
 function MenuButton(props) {
   const isDark = isDarkMode()
@@ -43,6 +44,8 @@ function MenuButton(props) {
       break
   }
 
+  const textColor = getBackgroundColor(isDark)
+
   return (
     <Pressable
       style={[
@@ -52,9 +55,15 @@ function MenuButton(props) {
         },
       ]}
       onPress={props.onPress}>
-      <UIText style={{color: getBackgroundColor(isDark), fontSize: size}}>
-        {props.title}
-      </UIText>
+      {!!props.icon && (
+        <FontAwesomeIcon
+          color={textColor}
+          icon={props.icon}
+          style={styles.icon}
+          size={font3}
+        />
+      )}
+      <UIText style={{color: textColor, fontSize: size}}>{props.title}</UIText>
     </Pressable>
   )
 }
@@ -62,8 +71,13 @@ function MenuButton(props) {
 const styles = StyleSheet.create({
   primary: {
     padding: spaceSmall,
-    paddingHorizontal: spaceLarge,
+    paddingHorizontal: spaceDefault,
     borderRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: spaceDefault,
   },
 })
 
@@ -72,6 +86,7 @@ MenuButton.propTypes = {
   onPress: PropTypes.func.isRequired,
   variant: PropTypes.string,
   size: PropTypes.number,
+  icon: PropTypes.any,
 }
 
 MenuButton.SIZE_X_LARGE = font4

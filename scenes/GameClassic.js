@@ -24,6 +24,13 @@ import TitleText from '../components/TitleText'
 import {RoundBox} from '../styles/elements'
 import {spaceLarge} from '../styles/layout'
 import GameStartTimer from '../components/GameStartTimer'
+import doOnceTimer from '../hooks/doOnceTimer'
+import Equation from '../models/Equation'
+import isDarkMode from '../hooks/isDarkMode'
+import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../styles/colors'
+
+const NEXT_QUESTION_TIMEOUT = 2000
+const NEXT_QUESTION_TIMER = 'next-question-timer'
 
 function GameClassic() {
   const dispatch = useDispatch()
@@ -35,6 +42,8 @@ function GameClassic() {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectClassicGameSettings)
   const userInput = useSelector(selectUserInput)
+  const {setTimer, isTimerSet} = doOnceTimer()
+  const isDark = isDarkMode()
 
   const lastGuess = useRef(null)
   const [questionsRemaining, setQuestionsRemaining] = useState(
@@ -50,15 +59,28 @@ function GameClassic() {
     }
   }, [currentQuestion])
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = skipTimer => {
     // always reset the input
     lastGuess.current = null
     dispatch(setAnswer(''))
     if (questionsRemaining > 0) {
       setQuestionsRemaining(questionsRemaining - 1)
-      dispatch(generateNewQuestion())
+
+      if (skipTimer) {
+        dispatch(generateNewQuestion())
+      } else {
+        setTimer(
+          NEXT_QUESTION_TIMER,
+          () => dispatch(generateNewQuestion()),
+          NEXT_QUESTION_TIMEOUT,
+        )
+      }
     } else {
-      dispatch(goToScene(Scene_GameResults))
+      setTimer(
+        NEXT_QUESTION_TIMER,
+        () => dispatch(goToScene(Scene_GameResults)),
+        NEXT_QUESTION_TIMEOUT,
+      )
     }
   }
 
@@ -87,14 +109,19 @@ function GameClassic() {
     handleNextQuestion()
   }
 
+  const isShowingAnswer = !!currentQuestion && isTimerSet(NEXT_QUESTION_TIMER)
+
   return (
     <View style={styles.window}>
-      {!currentQuestion && <GameStartTimer onStart={handleNextQuestion} />}
+      {!currentQuestion && (
+        <GameStartTimer onStart={() => handleNextQuestion(true)} />
+      )}
       <GameBackground
         animation={animation}
         isAnimatingForCorrect={isAnimatingForCorrect}
       />
-      <TouchableWithoutFeedback onPress={handleGuess}>
+      <TouchableWithoutFeedback
+        onPress={isShowingAnswer ? () => {} : handleGuess}>
         <View style={styles.equationContainer}>
           {!!currentQuestion && (
             <EquationBox
@@ -104,12 +131,28 @@ function GameClassic() {
                   : null
               }
               equation={currentQuestion.equation}
-              timerAnimation={equationTimer}
+              timerAnimation={isShowingAnswer ? null : equationTimer}
             />
           )}
 
           <View style={styles.answerBar}>
-            <TitleText style={styles.answerText}>{userInput || 0}</TitleText>
+            <TitleText
+              style={[
+                styles.answerText,
+                isShowingAnswer && {
+                  color: isAnimatingForCorrect
+                    ? isDark
+                      ? dimmedGreen
+                      : neonGreen
+                    : isDark
+                    ? dimmedRed
+                    : neonRed,
+                },
+              ]}>
+              {isShowingAnswer
+                ? Equation.getSolution(currentQuestion.equation)
+                : userInput || 0}
+            </TitleText>
           </View>
         </View>
       </TouchableWithoutFeedback>

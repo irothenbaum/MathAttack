@@ -10,6 +10,12 @@ import {selectClassicGameSettings} from '../redux/selectors'
 import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
 
+import {
+  faRunning,
+  faHourglassHalf,
+  faBullseye,
+} from '@fortawesome/free-solid-svg-icons'
+
 const styles = StyleSheet.create({
   window: {
     height: '100%',
@@ -23,7 +29,8 @@ const styles = StyleSheet.create({
   },
 
   gameButtonContainer: {
-    marginBottom: spaceDefault,
+    width: '100%',
+    padding: spaceDefault,
   },
 })
 
@@ -42,11 +49,27 @@ function Menu() {
       <View style={styles.gameButtonContainer}>
         <MenuButton
           size={MenuButton.SIZE_LARGE}
-          title={'Play'}
+          title={'Classic'}
           onPress={handlePlay}
+          icon={faHourglassHalf}
         />
       </View>
-      <View style={styles.gameButtonContainer}></View>
+      <View style={styles.gameButtonContainer}>
+        <MenuButton
+          size={MenuButton.SIZE_LARGE}
+          title={'Marathon'}
+          onPress={handlePlay}
+          icon={faRunning}
+        />
+      </View>
+      <View style={styles.gameButtonContainer}>
+        <MenuButton
+          size={MenuButton.SIZE_LARGE}
+          title={'Estimation'}
+          onPress={handlePlay}
+          icon={faBullseye}
+        />
+      </View>
       <View style={{marginTop: 200}} />
     </View>
   )
