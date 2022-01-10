@@ -4,11 +4,17 @@ import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
-import {startNewGame} from '../redux/GameClassicSlice'
-import {Scene_GameClassic, Scene_Menu} from '../constants/scenes'
+import {startNewGame as startNewClassicGame} from '../redux/GameClassicSlice'
+import {startNewGame as startNewMarathonGame} from '../redux/GameClassicSlice'
 import {
-  selectClassicGameSettings,
+  Scene_GameClassic,
+  Scene_GameMarathon,
+  Scene_Menu,
+} from '../constants/scenes'
+import {
+  selectGameSettings,
   selectLastGameResults,
+  selectLastGameTypePlayed,
 } from '../redux/selectors'
 import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
@@ -25,7 +31,6 @@ import {
 import {font4} from '../styles/typography'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
-import animationStation from '../hooks/animationStation'
 import isDarkMode from '../hooks/isDarkMode'
 import {formatNumber} from '../lib/utilities'
 
@@ -110,17 +115,30 @@ function SingleGameResult({result, count}) {
 
 function GameResults() {
   const dispatch = useDispatch()
-  const settings = useSelector(selectClassicGameSettings)
+  const settings = useSelector(selectGameSettings)
   const [isShowingDetails, setIsShowingDetails] = useState(false)
   const results = useSelector(selectLastGameResults)
+  const lastGameTypePlayed = useSelector(selectLastGameTypePlayed)
 
   const score = results.reduce((total, r) => {
     return total + QuestionResult.scoreValue(r)
   }, 0)
 
   const handlePlayAgain = () => {
-    dispatch(startNewGame(settings))
-    dispatch(goToScene(Scene_GameClassic))
+    switch (lastGameTypePlayed) {
+      case Scene_GameClassic:
+        dispatch(startNewClassicGame(settings))
+        break
+
+      case Scene_GameMarathon:
+        dispatch(startNewMarathonGame(settings))
+        break
+
+      default:
+        throw new Error('Cannot replay game, unknown type' + lastGameTypePlayed)
+    }
+
+    dispatch(goToScene(lastGameTypePlayed))
   }
 
   const handleMenu = () => {

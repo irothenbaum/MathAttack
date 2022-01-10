@@ -4,9 +4,10 @@ import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
-import {startNewGame} from '../redux/GameClassicSlice'
-import {Scene_GameClassic, Scene_GameResults} from '../constants/scenes'
-import {selectClassicGameSettings} from '../redux/selectors'
+import {startNewGame as startNewClassicGame} from '../redux/GameClassicSlice'
+import {startNewGame as startNewMarathonGame} from '../redux/GameClassicSlice'
+import {Scene_GameClassic, Scene_GameMarathon} from '../constants/scenes'
+import {selectGameSettings} from '../redux/selectors'
 import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
 
@@ -36,11 +37,21 @@ const styles = StyleSheet.create({
 
 function Menu() {
   const dispatch = useDispatch()
-  const settings = useSelector(selectClassicGameSettings)
-  const handlePlay = () => {
-    dispatch(startNewGame(settings))
+  const settings = useSelector(selectGameSettings)
+  const handlePlayClassic = () => {
+    dispatch(startNewClassicGame(settings))
     dispatch(setCurrentGame(Scene_GameClassic))
     dispatch(goToScene(Scene_GameClassic))
+  }
+
+  const handlePlayMarathon = () => {
+    dispatch(startNewMarathonGame(settings))
+    dispatch(setCurrentGame(Scene_GameMarathon))
+    dispatch(goToScene(Scene_GameMarathon))
+  }
+
+  const handlePlayEstimation = () => {
+    throw new Error('not yet')
   }
 
   return (
@@ -50,7 +61,7 @@ function Menu() {
         <MenuButton
           size={MenuButton.SIZE_LARGE}
           title={'Classic'}
-          onPress={handlePlay}
+          onPress={handlePlayClassic}
           icon={faHourglassHalf}
         />
       </View>
@@ -58,7 +69,7 @@ function Menu() {
         <MenuButton
           size={MenuButton.SIZE_LARGE}
           title={'Marathon'}
-          onPress={handlePlay}
+          onPress={handlePlayMarathon}
           icon={faRunning}
         />
       </View>
@@ -66,7 +77,7 @@ function Menu() {
         <MenuButton
           size={MenuButton.SIZE_LARGE}
           title={'Estimation'}
-          onPress={handlePlay}
+          onPress={handlePlayEstimation}
           icon={faBullseye}
         />
       </View>
