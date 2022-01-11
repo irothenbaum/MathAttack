@@ -161,7 +161,7 @@ function GameClassic() {
         </View>
       </TouchableWithoutFeedback>
       <View style={styles.calculatorContainer}>
-        <CalculatorInput />
+        <CalculatorInput isDisabled={isShowingAnswer} />
       </View>
     </View>
   )

@@ -23,9 +23,8 @@ class Equation {
     let answer
     do {
       answer = roundIfNeeded(
-        Math.random() *
-          (GameSettings.minValue +
-            (GameSettings.maxValue - GameSettings.minValue)),
+        GameSettings.minValue +
+          Math.random() * (GameSettings.maxValue - GameSettings.minValue),
         GameSettings.decimalPlaces,
       )
     } while (answer === term1)

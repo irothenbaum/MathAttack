@@ -4,6 +4,7 @@ import {View} from 'react-native'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
+  Scene_GameEstimate,
   Scene_GameMarathon,
   Scene_GameResults,
   Scene_Menu,
@@ -14,6 +15,7 @@ import Menu from './scenes/Menu'
 import Settings from './scenes/Settings'
 import GameResults from './scenes/GameResults'
 import GameMarathon from './scenes/GameMarathon'
+import GameEstimate from './scenes/GameEstimate'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -21,6 +23,7 @@ const SceneMap = {
   [Scene_GameClassic]: GameClassic,
   [Scene_GameMarathon]: GameMarathon,
   [Scene_GameResults]: GameResults,
+  [Scene_GameEstimate]: GameEstimate,
 }
 
 function MathAttack() {

@@ -70,7 +70,7 @@ function CalculatorButton(props) {
 
   return (
     <Pressable
-      disabled={isDisabled}
+      disabled={isDisabled || props.isDisabled}
       onPress={handlePress}
       style={[
         styles.container,
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
 CalculatorButton.propTypes = {
   value: PropTypes.number.isRequired,
   style: PropTypes.any,
+  isDisabled: PropTypes.bool,
 }
 
 export default CalculatorButton
