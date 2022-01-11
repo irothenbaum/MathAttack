@@ -5,7 +5,7 @@ import {
   selectCurrentQuestion,
   selectUserInput,
 } from '../redux/selectors'
-import {recordAnswer, generateNewQuestion} from '../redux/GameClassicSlice'
+import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {setAnswer} from '../redux/UISlice'
 import answerReactionResults from '../hooks/answerReactionResults'
@@ -21,7 +21,7 @@ import {
 import GameStartTimer from '../components/GameStartTimer'
 import GameBackground from '../components/FX/GameBackground'
 import EquationBox from '../components/EquationBox'
-import {getVibrateStylesForAnimation} from '../lib/utilities'
+import {formatNumber, getVibrateStylesForAnimation} from '../lib/utilities'
 import TitleText from '../components/TitleText'
 import {
   darkGrey,
@@ -30,16 +30,19 @@ import {
   nearWhite,
   neonGreen,
   neonRed,
+  shadow,
+  sunbeam,
 } from '../styles/colors'
 import Equation from '../models/Equation'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import {RoundBox} from '../styles/elements'
-import {spaceLarge} from '../styles/layout'
+import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
 import {faTimes} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import isDarkMode from '../hooks/isDarkMode'
 import {font4} from '../styles/typography'
 import animationStation from '../hooks/animationStation'
+import InGameMenu from '../components/InGameMenu'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 
@@ -94,17 +97,12 @@ function GameMarathon() {
   }
 
   const getColorForStrike = isActive => {
-    return isActive
-      ? isDark
-        ? dimmedRed
-        : neonRed
-      : isDark
-      ? darkGrey
-      : nearWhite
+    return isActive ? (isDark ? dimmedRed : neonRed) : isDark ? sunbeam : shadow
   }
 
   return (
     <View style={styles.window}>
+      <InGameMenu />
       {!currentQuestion && (
         <GameStartTimer onStart={() => dispatch(generateNewQuestion())} />
       )}
@@ -180,9 +178,11 @@ function GameMarathon() {
                     : neonRed,
                 },
               ]}>
-              {isAnimatingNextQuestion
-                ? Equation.getSolution(currentQuestion.equation)
-                : userInput || 0}
+              {formatNumber(
+                isAnimatingNextQuestion
+                  ? Equation.getSolution(currentQuestion.equation)
+                  : userInput || 0,
+              )}
             </TitleText>
           </Animated.View>
         </View>
@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
   },
 
   strikesContainer: {
+    paddingTop: spaceSmall,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

@@ -6,10 +6,9 @@ export const selectCurrentSceneParams = state =>
 export const selectUserAnswer = state => state.UI.answer
 export const selectUserInput = state => state.UI.answerInput
 export const selectEquationDuration = state => state.Settings.equationDuration
-export const selectCurrentQuestion = state => state.GameClassic.currentQuestion
+export const selectCurrentQuestion = state => state.Game.currentQuestion
 export const selectGameSettings = state => state.Settings
-export const selectClassicGameResults = state =>
-  state.GameClassic.questionResults
+export const selectClassicGameResults = state => state.Game.questionResults
 export const selectLastGameTypePlayed = state => state.Global.currentGame
 
 export const selectLastGameResults = state => {

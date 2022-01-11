@@ -1,28 +1,28 @@
 import React from 'react'
-import {Animated, StyleSheet, useColorScheme, View} from 'react-native'
+import {Animated, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import {RoundBox} from '../styles/elements'
 import {dimmedRed, neonRed} from '../styles/colors'
 import {font4} from '../styles/typography'
 import {spaceDefault, spaceLarge} from '../styles/layout'
-import {OPERATION_SUBTRACT} from '../models/Equation'
 import TitleText from './TitleText'
-import {getUIColor} from '../lib/utilities'
+import {formatNumber, getUIColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
+import Phrase from '../models/Phrase'
 
 function EquationBox(props) {
   const isDark = isDarkMode()
   const textComponent = props.equation ? (
     <View style={styles.longFormContainer}>
       <TitleText style={styles.operationText}>
-        {props.equation.operation}
+        {props.equation.phrase.operation}
       </TitleText>
       <View>
         <TitleText style={styles.equationText}>
-          {props.equation.term1}
+          {formatNumber(Phrase.defineTerm(props.equation.phrase.term1))}
         </TitleText>
         <TitleText style={styles.equationText}>
-          {props.equation.term2}
+          {formatNumber(Phrase.defineTerm(props.equation.phrase.term2))}
         </TitleText>
       </View>
     </View>

@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit'
 import {Scene_Menu} from '../constants/scenes'
 
 const globalSlice = createSlice({
-  name: 'Navigation',
+  name: 'Global',
   initialState: {
     currentGame: null,
   },

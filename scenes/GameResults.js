@@ -1,13 +1,15 @@
-import React, {useCallback, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {View, StyleSheet, Text, FlatList} from 'react-native'
 import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
-import {startNewGame as startNewClassicGame} from '../redux/GameClassicSlice'
-import {startNewGame as startNewMarathonGame} from '../redux/GameClassicSlice'
+import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
+import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
+import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
 import {
   Scene_GameClassic,
+  Scene_GameEstimate,
   Scene_GameMarathon,
   Scene_Menu,
 } from '../constants/scenes'
@@ -34,6 +36,7 @@ import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
 import isDarkMode from '../hooks/isDarkMode'
 import {formatNumber} from '../lib/utilities'
+import {setAnswer} from '../redux/UISlice'
 
 const resultStyles = StyleSheet.create({
   singleResultContainer: {
@@ -125,6 +128,11 @@ function GameResults() {
     return total + QuestionResult.scoreValue(r)
   }, 0)
 
+  useEffect(() => {
+    dispatch(setAnswer(''))
+    return () => {}
+  }, [])
+
   const handlePlayAgain = () => {
     switch (lastGameTypePlayed) {
       case Scene_GameClassic:
@@ -133,6 +141,10 @@ function GameResults() {
 
       case Scene_GameMarathon:
         dispatch(startNewMarathonGame(settings))
+        break
+
+      case Scene_GameEstimate:
+        dispatch(startNewEstimateGame(settings))
         break
 
       default:

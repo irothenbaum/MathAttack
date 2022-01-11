@@ -1,12 +1,17 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {View, StyleSheet} from 'react-native'
 import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
-import {startNewGame as startNewClassicGame} from '../redux/GameClassicSlice'
-import {startNewGame as startNewMarathonGame} from '../redux/GameClassicSlice'
-import {Scene_GameClassic, Scene_GameMarathon} from '../constants/scenes'
+import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
+import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
+import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
+import {
+  Scene_GameClassic,
+  Scene_GameEstimate,
+  Scene_GameMarathon,
+} from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
 import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
@@ -16,6 +21,7 @@ import {
   faHourglassHalf,
   faBullseye,
 } from '@fortawesome/free-solid-svg-icons'
+import {setAnswer} from '../redux/UISlice'
 
 const styles = StyleSheet.create({
   window: {
@@ -38,6 +44,12 @@ const styles = StyleSheet.create({
 function Menu() {
   const dispatch = useDispatch()
   const settings = useSelector(selectGameSettings)
+
+  useEffect(() => {
+    dispatch(setAnswer(''))
+    return () => {}
+  }, [])
+
   const handlePlayClassic = () => {
     dispatch(startNewClassicGame(settings))
     dispatch(setCurrentGame(Scene_GameClassic))
@@ -51,7 +63,9 @@ function Menu() {
   }
 
   const handlePlayEstimation = () => {
-    throw new Error('not yet')
+    dispatch(startNewEstimateGame(settings))
+    dispatch(setCurrentGame(Scene_GameEstimate))
+    dispatch(goToScene(Scene_GameEstimate))
   }
 
   return (

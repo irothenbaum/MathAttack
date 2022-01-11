@@ -4,14 +4,14 @@ import Global from './GlobalSlice'
 import Settings from './SettingsSlice'
 import Navigation from './NavigationSlice'
 import UI from './UISlice'
-import GameClassic from './GameClassicSlice'
+import Game from './GameSlice'
 
 const reducer = combineReducers({
   Settings,
   Navigation,
   UI,
   Global,
-  GameClassic,
+  Game,
 })
 
 const store = configureStore({

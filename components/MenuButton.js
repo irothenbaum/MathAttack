@@ -53,6 +53,7 @@ function MenuButton(props) {
         {
           backgroundColor: bgColor,
         },
+        props.style,
       ]}
       onPress={props.onPress}>
       {!!props.icon && (
@@ -87,6 +88,7 @@ MenuButton.propTypes = {
   variant: PropTypes.string,
   size: PropTypes.number,
   icon: PropTypes.any,
+  style: PropTypes.any,
 }
 
 MenuButton.SIZE_X_LARGE = font4

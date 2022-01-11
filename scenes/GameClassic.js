@@ -8,7 +8,7 @@ import {
   selectGameSettings,
   selectUserInput,
 } from '../redux/selectors'
-import {recordAnswer, generateNewQuestion} from '../redux/GameClassicSlice'
+import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import {ANSWER_TIMEOUT} from '../constants/game'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
@@ -17,7 +17,7 @@ import {setAnswer} from '../redux/UISlice'
 import answerReactionResults from '../hooks/answerReactionResults'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_GameResults} from '../constants/scenes'
-import {getVibrateStylesForAnimation} from '../lib/utilities'
+import {formatNumber, getVibrateStylesForAnimation} from '../lib/utilities'
 import animationStation from '../hooks/animationStation'
 import GameBackground from '../components/FX/GameBackground'
 import TitleText from '../components/TitleText'
@@ -28,14 +28,18 @@ import doOnceTimer from '../hooks/doOnceTimer'
 import Equation from '../models/Equation'
 import isDarkMode from '../hooks/isDarkMode'
 import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../styles/colors'
+import InGameMenu from '../components/InGameMenu'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const NEXT_QUESTION_TIMER = 'next-question-timer'
 
 function GameClassic() {
   const dispatch = useDispatch()
-  const {animation: equationTimer, animate: startEquationTimer} =
-    animationStation()
+  const {
+    animation: equationTimer,
+    animate: startEquationTimer,
+    cancel: cancelEquationTimer,
+  } = animationStation()
   const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} =
     answerReactionResults()
   const userAnswer = useSelector(selectUserAnswer)
@@ -56,6 +60,7 @@ function GameClassic() {
       let amountRemaining = 1 - msRemaining / gameSettings.equationDuration
       startEquationTimer(msRemaining, handleTimeout, amountRemaining)
     } else {
+      cancelEquationTimer()
     }
   }, [currentQuestion])
 
@@ -63,8 +68,9 @@ function GameClassic() {
     // always reset the input
     lastGuess.current = null
     dispatch(setAnswer(''))
-    if (questionsRemaining > 0) {
-      setQuestionsRemaining(questionsRemaining - 1)
+    let nextQuestionsRemaining = questionsRemaining - 1
+    if (nextQuestionsRemaining > 0) {
+      setQuestionsRemaining(nextQuestionsRemaining)
       setTimer(
         NEXT_QUESTION_TIMER,
         () => dispatch(generateNewQuestion()),
@@ -108,6 +114,7 @@ function GameClassic() {
 
   return (
     <View style={styles.window}>
+      <InGameMenu />
       {!currentQuestion && (
         <GameStartTimer onStart={() => dispatch(generateNewQuestion())} />
       )}
@@ -144,9 +151,11 @@ function GameClassic() {
                     : neonRed,
                 },
               ]}>
-              {isShowingAnswer
-                ? Equation.getSolution(currentQuestion.equation)
-                : userInput || 0}
+              {formatNumber(
+                isShowingAnswer
+                  ? Equation.getSolution(currentQuestion.equation)
+                  : userInput || 0,
+              )}
             </TitleText>
           </View>
         </View>

@@ -1,21 +1,16 @@
+import Phrase, {OPERATION_SUBTRACT, OPERATION_ADD} from './Phrase'
+
 function roundIfNeeded(value, decimalPlaces) {
   let decimalBase = Math.round(Math.pow(10, decimalPlaces))
   return Math.round(value * decimalBase) / decimalBase
 }
 
-export const OPERATION_ADD = '+'
-export const OPERATION_SUBTRACT = '-'
-
 class Equation {
   /**
-   * @param {number} term1
-   * @param {string} operation
-   * @param {number} term2
+   * @param {Phrase} phrase
    */
-  constructor(term1, operation, term2) {
-    this.term1 = term1
-    this.operation = operation
-    this.term2 = term2
+  constructor(phrase) {
+    this.phrase = phrase
   }
 
   /**
@@ -62,7 +57,7 @@ class Equation {
       term2 = Math.abs(term2)
     }
 
-    return new Equation(term1, operation, term2)
+    return new Equation(new Phrase(term1, operation, term2))
   }
 
   /**
@@ -70,23 +65,14 @@ class Equation {
    * @returns {string}
    */
   static getLeftSide(obj) {
-    return `${obj.term1} ${obj.operation.toString()} ${obj.term2}`
+    return Phrase.toString(obj.phrase)
   }
 
   /**
    * @param {Equation} obj
    */
   static getSolution(obj) {
-    switch (obj.operation) {
-      case OPERATION_ADD:
-        return obj.term1 + obj.term2
-
-      case OPERATION_SUBTRACT:
-        return obj.term1 - obj.term2
-
-      default:
-        throw new Error('Unrecognized operation ' + obj.operation)
-    }
+    return Phrase.getSolution(obj.phrase)
   }
 }
 

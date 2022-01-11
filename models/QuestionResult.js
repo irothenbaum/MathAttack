@@ -1,14 +1,17 @@
 import {ANSWER_TIMEOUT} from '../constants/game'
 import Equation from './Equation'
+import Phrase from './Phrase'
 
 class QuestionResult {
   /**
    * @param {GameQuestion} question
    * @param {number} answer
+   * @param {number} timeToAnswerMS
    */
-  constructor(question, answer) {
+  constructor(question, answer, timeToAnswerMS) {
     this.question = question
     this.answer = answer
+    this.timeToAnswerMS = timeToAnswerMS
     this.createdAt = Date.now()
   }
 
@@ -39,9 +42,12 @@ class QuestionResult {
     }
 
     return (
-      Math.abs(obj.question.equation.term1) +
-      Math.abs(obj.question.equation.term2) +
-      Math.abs(obj.answer)
+      Phrase.getDiscreteTerms(obj.question.equation.phrase)
+        .concat(obj.answer)
+        .reduce((sum, t) => {
+          return sum + Math.abs(t)
+        }, 0) /
+      (obj.timeToAnswerMS / 1000) // boosted by the inverse number of seconds
     )
   }
 }

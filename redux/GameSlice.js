@@ -9,8 +9,8 @@ const INITIAL_STATE = {
   currentQuestion: undefined,
 }
 
-const gameClassicSlice = createSlice({
-  name: 'GameClassic',
+const gameSlice = createSlice({
+  name: 'Game',
   initialState: INITIAL_STATE,
   reducers: {
     recordAnswer: (state, {payload}) => {
@@ -41,15 +41,15 @@ const gameClassicSlice = createSlice({
 })
 
 export const recordAnswer = answer => dispatch =>
-  dispatch(gameClassicSlice.actions.recordAnswer(answer))
+  dispatch(gameSlice.actions.recordAnswer(answer))
 // When you start a new game, we freeze the settings object so it must be passed into this function
 export const startNewGame = classicGameSettings => dispatch => {
-  dispatch(gameClassicSlice.actions.startNewGame(classicGameSettings))
+  dispatch(gameSlice.actions.startNewGame(classicGameSettings))
 }
 export const generateNewQuestion = term1 => dispatch =>
-  dispatch(gameClassicSlice.actions.generateNewQuestion(term1))
+  dispatch(gameSlice.actions.generateNewQuestion(term1))
 
 export const deductTimeRemaining = amount => dispatch =>
-  dispatch(gameClassicSlice.actions.deductTimeRemaining(amount))
+  dispatch(gameSlice.actions.deductTimeRemaining(amount))
 
-export default gameClassicSlice.reducer
+export default gameSlice.reducer
