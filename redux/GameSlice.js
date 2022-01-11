@@ -14,7 +14,11 @@ const gameSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     recordAnswer: (state, {payload}) => {
-      let result = new QuestionResult(state.currentQuestion, payload)
+      let result = new QuestionResult(
+        state.currentQuestion,
+        payload,
+        Date.now() - state.currentQuestion.createdAt,
+      )
       state.questionResults = [
         ...state.questionResults,
         serializeObject(result),

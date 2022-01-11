@@ -23,6 +23,6 @@ export const setMinMaxValues = (min, max) => dispatch =>
 export const setDecimalPlaces = places => dispatch =>
   dispatch(settingsSlice.actions.setDecimalPlaces(places))
 export const setEquationDuration = durationMS => dispatch =>
-  dispatch(settingsSlice.action.setEquationDuration(durationMS))
+  dispatch(settingsSlice.actions.setEquationDuration(durationMS))
 
 export default settingsSlice.reducer

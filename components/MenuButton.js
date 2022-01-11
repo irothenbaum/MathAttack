@@ -1,7 +1,7 @@
 import React from 'react'
 import {Pressable, StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
-import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
+import {spaceDefault, spaceSmall} from '../styles/layout'
 import {
   neonBlue,
   dimmedBlue,
@@ -61,7 +61,7 @@ function MenuButton(props) {
           color={textColor}
           icon={props.icon}
           style={styles.icon}
-          size={font3}
+          size={size}
         />
       )}
       <UIText style={{color: textColor, fontSize: size}}>{props.title}</UIText>

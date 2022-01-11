@@ -31,12 +31,13 @@ import {
   neonGreen,
   neonRed,
 } from '../styles/colors'
-import {font4} from '../styles/typography'
+import {font2, font4} from '../styles/typography'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
 import isDarkMode from '../hooks/isDarkMode'
 import {formatNumber} from '../lib/utilities'
 import {setAnswer} from '../redux/UISlice'
+import Phrase from '../models/Phrase'
 
 const resultStyles = StyleSheet.create({
   singleResultContainer: {
@@ -65,6 +66,7 @@ const resultStyles = StyleSheet.create({
   singleResultCanon: {
     width: '15%',
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
 
   wrongAnswer: {
@@ -105,6 +107,7 @@ function SingleGameResult({result, count}) {
           <FontAwesomeIcon
             icon={faCheck}
             style={resultStyles.correctAnswerCheck}
+            size={font2}
             color={isDarkMode() ? dimmedGreen : neonGreen}
           />
         ) : (

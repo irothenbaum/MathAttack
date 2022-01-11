@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {View, StyleSheet} from 'react-native'
+import {View, StyleSheet, Pressable} from 'react-native'
 import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
@@ -11,39 +11,35 @@ import {
   Scene_GameClassic,
   Scene_GameEstimate,
   Scene_GameMarathon,
+  Scene_Settings,
 } from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
 import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
-
 import {
   faRunning,
   faHourglassHalf,
   faBullseye,
 } from '@fortawesome/free-solid-svg-icons'
 import {setAnswer} from '../redux/UISlice'
+import NormalText from '../components/NormalText'
+import {font1, font3, font4} from '../styles/typography'
+import {faCog} from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {shadow, sunbeam} from '../styles/colors'
+import isDarkMode from '../hooks/isDarkMode'
+import {
+  GAME_LABEL_CLASSIC,
+  GAME_LABEL_ESTIMATE,
+  GAME_LABEL_MARATHON,
+} from '../constants/game'
 
-const styles = StyleSheet.create({
-  window: {
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  title: {
-    marginBottom: spaceExtraLarge,
-  },
-
-  gameButtonContainer: {
-    width: '100%',
-    padding: spaceDefault,
-  },
-})
+const pjson = require('../package.json')
 
 function Menu() {
   const dispatch = useDispatch()
   const settings = useSelector(selectGameSettings)
+  const isDark = isDarkMode()
 
   useEffect(() => {
     dispatch(setAnswer(''))
@@ -74,7 +70,7 @@ function Menu() {
       <View style={styles.gameButtonContainer}>
         <MenuButton
           size={MenuButton.SIZE_LARGE}
-          title={'Classic'}
+          title={GAME_LABEL_CLASSIC}
           onPress={handlePlayClassic}
           icon={faHourglassHalf}
         />
@@ -82,7 +78,7 @@ function Menu() {
       <View style={styles.gameButtonContainer}>
         <MenuButton
           size={MenuButton.SIZE_LARGE}
-          title={'Marathon'}
+          title={GAME_LABEL_MARATHON}
           onPress={handlePlayMarathon}
           icon={faRunning}
         />
@@ -90,14 +86,59 @@ function Menu() {
       <View style={styles.gameButtonContainer}>
         <MenuButton
           size={MenuButton.SIZE_LARGE}
-          title={'Estimation'}
+          title={GAME_LABEL_ESTIMATE}
           onPress={handlePlayEstimation}
           icon={faBullseye}
         />
       </View>
       <View style={{marginTop: 200}} />
+
+      <View style={styles.footnoteContainer}>
+        <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
+        <Pressable onPress={() => dispatch(goToScene(Scene_Settings))}>
+          <FontAwesomeIcon
+            size={font3}
+            icon={faCog}
+            color={isDark ? sunbeam : shadow}
+          />
+        </Pressable>
+      </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  window: {
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  title: {
+    marginBottom: spaceExtraLarge,
+  },
+
+  gameButtonContainer: {
+    width: '100%',
+    padding: spaceDefault,
+  },
+
+  footnoteContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: spaceDefault,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  footnote: {
+    opacity: 0.5,
+    fontSize: font1,
+  },
+})
 
 export default Menu

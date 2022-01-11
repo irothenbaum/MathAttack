@@ -41,13 +41,13 @@ class QuestionResult {
       return 0
     }
 
-    return (
+    return Math.floor(
       Phrase.getDiscreteTerms(obj.question.equation.phrase)
         .concat(obj.answer)
         .reduce((sum, t) => {
           return sum + Math.abs(t)
         }, 0) /
-      (obj.timeToAnswerMS / 1000) // boosted by the inverse number of seconds
+        (obj.timeToAnswerMS / 1000), // boosted by the inverse number of seconds
     )
   }
 }

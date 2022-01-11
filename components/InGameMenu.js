@@ -8,16 +8,21 @@ import {FullScreenOverlay} from '../styles/elements'
 import {spaceDefault} from '../styles/layout'
 import PropTypes from 'prop-types'
 import MenuButton from './MenuButton'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {Scene_GameResults} from '../constants/scenes'
 import {goToScene} from '../redux/NavigationSlice'
 import UIText from './UIText'
 import {font3} from '../styles/typography'
+import {getBackgroundColor} from '../lib/utilities'
+import {SCENE_TO_LABEL} from '../constants/game'
+import {selectCurrentScene} from '../redux/selectors'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
   const isDark = isDarkMode()
   const [isOpen, setIsOpen] = useState(false)
+
+  const currentGame = useSelector(selectCurrentScene)
 
   const backAction = useCallback(() => {
     setIsOpen(!isOpen)
@@ -50,9 +55,9 @@ function InGameMenu(props) {
           <View
             style={[
               styles.menuContainer,
-              {backgroundColor: isDark ? black : white},
+              {backgroundColor: getBackgroundColor(isDark)},
             ]}>
-            <UIText>Options</UIText>
+            <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
             <MenuButton
               style={styles.button}
               title={'Resume'}
