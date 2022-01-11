@@ -20,28 +20,35 @@ class Equation {
 
   /**
    * @param {GameSettings} GameSettings
+   * @param {number?} term1
    * @returns {Equation}
    */
-  static getRandomFromSettings(GameSettings) {
-    let answer = roundIfNeeded(
-      Math.random() *
-        (GameSettings.minValue +
-          (GameSettings.maxValue - GameSettings.minValue)),
-      GameSettings.decimalPlaces,
-    )
-
-    let term1
+  static getRandomFromSettings(GameSettings, term1) {
+    let term1IsSet = typeof term1 === 'number'
+    let answer
     do {
-      term1 = roundIfNeeded(
-        answer - Math.random() * 2 * answer,
+      answer = roundIfNeeded(
+        Math.random() *
+          (GameSettings.minValue +
+            (GameSettings.maxValue - GameSettings.minValue)),
         GameSettings.decimalPlaces,
       )
-    } while (term1 === 0 || term1 === answer)
+    } while (answer === term1)
+
+    if (!term1IsSet) {
+      do {
+        term1 = roundIfNeeded(
+          answer - Math.random() * 2 * answer,
+          GameSettings.decimalPlaces,
+        )
+      } while (term1 === 0 || term1 === answer)
+    }
 
     let term2 = roundIfNeeded(answer - term1, GameSettings.decimalPlaces)
 
     // might choose to swap the order so that term 2 has a chance to be negative
-    if (Math.round(Math.random()) === 1) {
+    // if term1 was not passed
+    if (!term1IsSet && Math.round(Math.random()) === 1) {
       let temp = term1
       term1 = term2
       term2 = temp

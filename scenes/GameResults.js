@@ -23,6 +23,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {faCheck} from '@fortawesome/free-solid-svg-icons'
 import {
   dimmedBlue,
+  dimmedGreen,
   dimmedRed,
   neonBlue,
   neonGreen,
@@ -69,7 +70,6 @@ const resultStyles = StyleSheet.create({
   },
 
   correctAnswerCheck: {
-    color: neonGreen,
     fontSize: font4,
   },
 })
@@ -102,6 +102,7 @@ function SingleGameResult({result, count}) {
           <FontAwesomeIcon
             icon={faCheck}
             style={resultStyles.correctAnswerCheck}
+            color={isDarkMode() ? dimmedGreen : neonGreen}
           />
         ) : (
           <NormalText style={{color: isDarkMode() ? dimmedRed : neonRed}}>

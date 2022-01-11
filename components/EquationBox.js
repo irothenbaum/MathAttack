@@ -15,9 +15,7 @@ function EquationBox(props) {
   const textComponent = props.equation ? (
     <View style={styles.longFormContainer}>
       <TitleText style={styles.operationText}>
-        {props.equation.operation === OPERATION_SUBTRACT
-          ? '—'
-          : props.equation.operation}
+        {props.equation.operation}
       </TitleText>
       <View>
         <TitleText style={styles.equationText}>

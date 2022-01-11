@@ -14,11 +14,11 @@ export const neonGreen = '#37ff00'
 export const neonBlue = '#00aeff'
 export const neonRed = '#ff0000'
 
-export const dimmedMagenta = '#740080'
-export const dimmedOrange = '#803b00'
-export const dimmedGreen = '#197900'
-export const dimmedBlue = '#005279'
-export const dimmedRed = '#800000'
+export const dimmedMagenta = '#880096'
+export const dimmedOrange = '#944700'
+export const dimmedGreen = '#1d8c00'
+export const dimmedBlue = '#006b9a'
+export const dimmedRed = '#940000'
 
 export const DimmedColors = [
   dimmedMagenta,

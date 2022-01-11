@@ -14,11 +14,12 @@ class GameQuestion {
 
   /**
    * @param {GameSettings} GameSettings
+   * @param {number?} term1
    * @returns {GameQuestion}
    */
-  static getRandomFromSettings(GameSettings) {
+  static getRandomFromSettings(GameSettings, term1) {
     return new GameQuestion(
-      Equation.getRandomFromSettings(GameSettings),
+      Equation.getRandomFromSettings(GameSettings, term1),
       Date.now(),
       Date.now() + GameSettings.equationDuration,
     )

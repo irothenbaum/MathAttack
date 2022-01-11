@@ -20,9 +20,9 @@ const gameClassicSlice = createSlice({
         serializeObject(result),
       ]
     },
-    generateNewQuestion: state => {
+    generateNewQuestion: (state, {payload}) => {
       state.currentQuestion = serializeObject(
-        GameQuestion.getRandomFromSettings(state.settings),
+        GameQuestion.getRandomFromSettings(state.settings, payload),
       )
     },
     startNewGame: (state, {payload}) => {
@@ -46,8 +46,8 @@ export const recordAnswer = answer => dispatch =>
 export const startNewGame = classicGameSettings => dispatch => {
   dispatch(gameClassicSlice.actions.startNewGame(classicGameSettings))
 }
-export const generateNewQuestion = () => dispatch =>
-  dispatch(gameClassicSlice.actions.generateNewQuestion())
+export const generateNewQuestion = term1 => dispatch =>
+  dispatch(gameClassicSlice.actions.generateNewQuestion(term1))
 
 export const deductTimeRemaining = amount => dispatch =>
   dispatch(gameClassicSlice.actions.deductTimeRemaining(amount))
