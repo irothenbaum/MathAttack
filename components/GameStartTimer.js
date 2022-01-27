@@ -1,12 +1,11 @@
 import React, {useEffect, useState, useRef} from 'react'
-import {Animated, View, StyleSheet} from 'react-native'
+import {Animated, View, StyleSheet, Easing} from 'react-native'
 import PropTypes from 'prop-types'
 import UIText from './UIText'
 import doOnceTimer from '../hooks/doOnceTimer'
 import {FullScreenOverlay, TextShadowSoft} from '../styles/elements'
-import {shadow, sunbeam, white} from '../styles/colors'
+import {shadow, sunbeam, neonRed, dimmedRed} from '../styles/colors'
 import {spaceExtraLarge} from '../styles/layout'
-import randomColor from '../hooks/randomColor'
 import {getBackgroundColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
 import animationStation from '../hooks/animationStation'
@@ -14,13 +13,13 @@ import animationStation from '../hooks/animationStation'
 function GameStartTimer(props) {
   const isDark = isDarkMode()
   const secondsRemaining = useRef(4)
-  const {color, randomizeColor} = randomColor()
+  const [color, setColor] = useState(isDark ? dimmedRed : neonRed)
   const {setTimer, cancelAllTimers} = doOnceTimer()
   const {animate, animation} = animationStation()
 
   const tickTimer = () => {
     if (secondsRemaining.current > 1) {
-      randomizeColor()
+      setColor(isDark ? dimmedRed : neonRed)
       animate(1000)
       setTimer('game-start-countdown', tickTimer, 1000)
     } else if (typeof props.onStart === 'function') {
@@ -42,14 +41,16 @@ function GameStartTimer(props) {
     return null
   }
 
+  const bGColor = getBackgroundColor(isDark)
+
   return (
     <Animated.View
       style={[
         styles.container,
         {
           backgroundColor: animation.interpolate({
-            inputRange: [0, 0.5, 1],
-            outputRange: [color, color, getBackgroundColor(isDark)],
+            inputRange: [0, 1],
+            outputRange: [color, bGColor],
           }),
         },
       ]}>
@@ -57,7 +58,7 @@ function GameStartTimer(props) {
         style={[
           styles.counterText,
           {
-            color: getBackgroundColor(isDark),
+            color: bGColor,
             textShadowColor: isDark ? sunbeam : shadow,
           },
         ]}>

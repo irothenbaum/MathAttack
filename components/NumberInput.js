@@ -14,12 +14,13 @@ function NumberInput(props) {
     let val = parseInt(valStr)
     if (isNaN(val)) {
       val = null
-    }
-    if (typeof props.max === 'number') {
-      val = Math.min(props.max, val)
-    }
-    if (typeof props.min === 'number') {
-      val = Math.max(props.min, val)
+    } else {
+      if (typeof props.max === 'number') {
+        val = Math.min(props.max, val)
+      }
+      if (typeof props.min === 'number') {
+        val = Math.max(props.min, val)
+      }
     }
 
     props.onChange(val)
@@ -31,9 +32,10 @@ function NumberInput(props) {
       <View style={[styles.inputFrame, {borderColor: getUIColor(isDark)}]}>
         <TextInput
           style={[styles.input, {color: getUIColor(isDark)}]}
-          value={'' + props.value}
+          value={typeof props.value === 'number' ? '' + props.value : ''}
           keyboardType={'numeric'}
           onChangeText={handleChange}
+          onBlur={() => handleChange(props.value || props.min)}
         />
       </View>
     </View>

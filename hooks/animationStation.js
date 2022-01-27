@@ -19,9 +19,10 @@ function animationStation(startAnimating) {
   /**
    * @param {number} duration
    * @param {function?} onComplete
+   * @param {func} easing
    * @param {number?} startValue -- between (0-1]
    */
-  const animate = (duration, onComplete, startValue = 0) => {
+  const animate = (duration, onComplete, easing, startValue = 0) => {
     if (typeof startValue === 'number' && startValue >= 1) {
       console.error('Start value must be less than 1, received: ' + startValue)
       if (typeof onComplete === 'function') {
@@ -35,7 +36,7 @@ function animationStation(startAnimating) {
     Animated.timing(animation, {
       toValue: 1,
       duration: duration,
-      easing: Easing.linear,
+      easing: easing || Easing.in(Easing.linear),
       useNativeDriver: false,
     }).start(({finished}) => {
       if (finished) {

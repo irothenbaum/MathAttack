@@ -49,14 +49,14 @@ function Settings() {
             <NumberInput
               label={'Minimum answer value'}
               value={settings.minValue}
-              min={-1 * MAX_VALUE}
+              min={0}
               max={MAX_VALUE}
               onChange={v => dispatch(setMinMaxValues(v, settings.maxValue))}
             />
             <NumberInput
               label={'Maximum answer value'}
               value={settings.maxValue}
-              min={-1 * MAX_VALUE}
+              min={0}
               max={MAX_VALUE}
               onChange={v => dispatch(setMinMaxValues(settings.minValue, v))}
             />

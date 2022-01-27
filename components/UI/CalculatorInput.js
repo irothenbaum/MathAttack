@@ -1,7 +1,6 @@
 import React from 'react'
 import {View, StyleSheet} from 'react-native'
 import CalculatorButton, {CLEAR, DECIMAL} from './CalculatorButton'
-import {spaceExtraSmall} from '../../styles/layout'
 import PropTypes from 'prop-types'
 
 function CalculatorInput(props) {
@@ -90,15 +89,12 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     width: '100%',
-    margin: spaceExtraSmall,
   },
   buttonsContainer: {
-    margin: spaceExtraSmall,
     width: '100%',
     flex: 1,
   },
   calculatorRow: {
-    margin: spaceExtraSmall,
     width: '100%',
     flex: 1,
     flexDirection: 'row',

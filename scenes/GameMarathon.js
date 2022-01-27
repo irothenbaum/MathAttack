@@ -17,6 +17,7 @@ import {
   TouchableWithoutFeedback,
   View,
   Animated,
+  Easing,
 } from 'react-native'
 import GameStartTimer from '../components/GameStartTimer'
 import GameBackground from '../components/FX/GameBackground'
@@ -45,6 +46,7 @@ import animationStation from '../hooks/animationStation'
 import InGameMenu from '../components/InGameMenu'
 
 const NEXT_QUESTION_TIMEOUT = 2000
+const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
 
 function GameMarathon() {
   const isDark = isDarkMode()
@@ -75,9 +77,13 @@ function GameMarathon() {
     if (QuestionResult.isCorrect(result)) {
       animateCorrect()
       dispatch(setAnswer(''))
-      animateNextQuestion(NEXT_QUESTION_TIMEOUT, () => {
-        dispatch(generateNewQuestion(correctAnswer))
-      })
+      animateNextQuestion(
+        NEXT_QUESTION_TIMEOUT,
+        () => {
+          dispatch(generateNewQuestion(correctAnswer))
+        },
+        ANIMATE_QUESTION_EASING,
+      )
     } else {
       let newStrikes = strikes - 1
       setStrikes(newStrikes)
@@ -86,14 +92,24 @@ function GameMarathon() {
 
       dispatch(setAnswer(''))
       animateIncorrect()
-      animateNextQuestion(NEXT_QUESTION_TIMEOUT, () => {
-        if (hasStrikesRemaining) {
-          dispatch(generateNewQuestion(correctAnswer))
-        } else {
-          dispatch(goToScene(Scene_GameResults))
-        }
-      })
+      animateNextQuestion(
+        NEXT_QUESTION_TIMEOUT,
+        () => {
+          if (hasStrikesRemaining) {
+            dispatch(setAnswer(''))
+            dispatch(generateNewQuestion(correctAnswer))
+          } else {
+            dispatch(goToScene(Scene_GameResults))
+          }
+        },
+        ANIMATE_QUESTION_EASING,
+      )
     }
+  }
+
+  const handleGameStart = () => {
+    dispatch(generateNewQuestion())
+    animateCorrect()
   }
 
   const getColorForStrike = isActive => {
@@ -103,9 +119,7 @@ function GameMarathon() {
   return (
     <View style={styles.window}>
       <InGameMenu />
-      {!currentQuestion && (
-        <GameStartTimer onStart={() => dispatch(generateNewQuestion())} />
-      )}
+      {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
       <GameBackground
         animation={answerReactionAnimation}
         isAnimatingForCorrect={isAnimatingForCorrect}
@@ -135,7 +149,7 @@ function GameMarathon() {
               style={
                 isAnimatingNextQuestion && {
                   opacity: nextQuestionAnimation.interpolate({
-                    inputRange: [0, 0.5, 0.6, 1],
+                    inputRange: [0, 0.05, 0.1, 1],
                     outputRange: [1, 1, 0, 0],
                   }),
                 }
@@ -158,8 +172,8 @@ function GameMarathon() {
                 transform: [
                   {
                     translateY: nextQuestionAnimation.interpolate({
-                      inputRange: [0, 0.5, 1],
-                      outputRange: [0, 0, -162],
+                      inputRange: [0, 1],
+                      outputRange: [0, -162],
                     }),
                   },
                 ],

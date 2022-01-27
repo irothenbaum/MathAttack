@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useSelector} from 'react-redux'
 import {View} from 'react-native'
 import {selectCurrentScene} from './redux/selectors'
@@ -16,6 +16,7 @@ import Settings from './scenes/Settings'
 import GameResults from './scenes/GameResults'
 import GameMarathon from './scenes/GameMarathon'
 import GameEstimate from './scenes/GameEstimate'
+import animationStation from './hooks/animationStation'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -28,6 +29,9 @@ const SceneMap = {
 
 function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
+  const {} = animationStation()
+
+  useEffect(() => {}, [currentScene])
 
   let SceneComponent = SceneMap[currentScene]
 

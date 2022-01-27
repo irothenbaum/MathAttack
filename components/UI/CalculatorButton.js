@@ -8,14 +8,13 @@ import {selectUserInput} from '../../redux/selectors'
 import {
   darkGrey,
   lightGrey,
+  neonGreen,
   OPACITY_AMOUNT,
   transparent,
 } from '../../styles/colors'
 import UIText from '../UIText'
-import {getUIColor} from '../../lib/utilities'
 import isDarkMode from '../../hooks/isDarkMode'
 import animationStation from '../../hooks/animationStation'
-import randomColor from '../../hooks/randomColor'
 
 export const TINT_DURATION = 300
 export const DECIMAL = -1
@@ -30,7 +29,6 @@ function CalculatorButton(props) {
   const dispatch = useDispatch()
   const userInput = useSelector(selectUserInput)
   const {animation, isAnimating, animate} = animationStation()
-  const {color: tintColor, randomizeColor} = randomColor()
 
   let valueStr =
     props.value === DECIMAL
@@ -40,7 +38,6 @@ function CalculatorButton(props) {
       : `${props.value}`
 
   const handlePress = useCallback(() => {
-    randomizeColor()
     animate(TINT_DURATION)
 
     if (props.value === CLEAR) {
@@ -62,39 +59,47 @@ function CalculatorButton(props) {
 
       dispatch(setAnswer(newAnswer))
     }
-  }, [props.value, dispatch, userInput, animate, randomizeColor])
+  }, [props.value, dispatch, userInput, animate])
 
   const isDisabled = props.value === DECIMAL && userInput.includes('.')
 
-  const textColor = getUIColor(isDark)
+  const bgColor = getBackgroundColor(isDark, isDisabled)
+
+  console.log(isAnimating)
 
   return (
     <Pressable
+      style={[styles.pressable]}
       disabled={isDisabled || props.isDisabled}
-      onPress={handlePress}
-      style={[
-        styles.container,
-        props.style,
-        {backgroundColor: getBackgroundColor(isDark, isDisabled)},
-      ]}>
-      <UIText
-        style={{
-          color: isAnimating
-            ? animation.interpolate({
-                inputRange: [0, 0.5, 1],
-                outputRange: [tintColor, tintColor, textColor],
-              })
-            : textColor,
-        }}>
-        {valueStr}
-      </UIText>
+      onPress={handlePress}>
+      <Animated.View
+        style={[
+          styles.container,
+          props.style,
+          {
+            backgroundColor: isAnimating
+              ? animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [neonGreen, bgColor],
+                })
+              : bgColor,
+          },
+        ]}>
+        <UIText>{valueStr}</UIText>
+      </Animated.View>
     </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
+  pressable: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
   container: {
     ...RoundBox,
+    borderRadius: 0,
   },
   buttonTint: {
     position: 'absolute',

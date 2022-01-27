@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect, useCallback} from 'react'
-import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native'
+import {View, StyleSheet, TouchableWithoutFeedback, Easing} from 'react-native'
 import EquationBox from '../components/EquationBox'
 import {useDispatch, useSelector} from 'react-redux'
 import {
@@ -58,7 +58,12 @@ function GameClassic() {
     if (currentQuestion) {
       let msRemaining = GameQuestion.getMSRemaining(currentQuestion)
       let amountRemaining = 1 - msRemaining / gameSettings.equationDuration
-      startEquationTimer(msRemaining, handleTimeout, amountRemaining)
+      startEquationTimer(
+        msRemaining,
+        handleTimeout,
+        Easing.linear,
+        amountRemaining,
+      )
     } else {
       cancelEquationTimer()
     }
@@ -110,14 +115,17 @@ function GameClassic() {
     handleNextQuestion()
   }
 
+  const handleGameStart = () => {
+    dispatch(generateNewQuestion())
+    animateCorrect()
+  }
+
   const isShowingAnswer = !!currentQuestion && isTimerSet(NEXT_QUESTION_TIMER)
 
   return (
     <View style={styles.window}>
       <InGameMenu />
-      {!currentQuestion && (
-        <GameStartTimer onStart={() => dispatch(generateNewQuestion())} />
-      )}
+      {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
       <GameBackground
         animation={animation}
         isAnimatingForCorrect={isAnimatingForCorrect}
