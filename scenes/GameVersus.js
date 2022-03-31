@@ -37,6 +37,12 @@ function GameVersus() {
     setStep(STEP_waiting)
   }
 
+  const handleGameStart = (me, them) => {
+    setMyName(me)
+    setOpponentName(them)
+    setStep(STEP_versusRound)
+  }
+
   const handleWon = () => {
     setMyScore(myScore + 1)
     setWonFlag(1)
@@ -66,7 +72,9 @@ function GameVersus() {
       break
 
     case STEP_waiting:
-      screen = <WaitingForOpponent socket={socket.current} />
+      screen = (
+        <WaitingForOpponent socket={socket.current} onStart={handleGameStart} />
+      )
       break
 
     case STEP_versusRound:

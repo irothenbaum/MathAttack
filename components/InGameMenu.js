@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     width: '80%',
     padding: spaceDefault,
+    borderRadius: 4,
   },
 })
 

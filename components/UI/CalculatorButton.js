@@ -65,8 +65,6 @@ function CalculatorButton(props) {
 
   const bgColor = getBackgroundColor(isDark, isDisabled)
 
-  console.log(isAnimating)
-
   return (
     <Pressable
       style={[styles.pressable]}

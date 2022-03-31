@@ -58,6 +58,7 @@ function MenuButton(props) {
         styles.primary,
         {
           backgroundColor: bgColor,
+          justifyContent: props.icon ? 'flex-start' : 'center',
         },
         props.style,
       ]}

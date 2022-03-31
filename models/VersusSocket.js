@@ -2,6 +2,15 @@
 
 class VersusSocket {
   /**
+   * @param {string} joinCode
+   */
+  constructor(joinCode) {}
+
+  on() {}
+
+  off() {}
+
+  /**
    * @param {GameQuestion} q
    * @param {number} whenToShowTimestamp
    */

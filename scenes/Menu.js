@@ -16,12 +16,13 @@ import {
   Scene_Settings,
 } from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
-import {spaceDefault, spaceExtraLarge} from '../styles/layout'
+import {spaceDefault, spaceExtraLarge, spaceLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
 import {
   faRunning,
   faHourglassHalf,
   faBullseye,
+  faFistRaised,
 } from '@fortawesome/free-solid-svg-icons'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
@@ -106,10 +107,9 @@ function Menu() {
           size={MenuButton.SIZE_LARGE}
           title={GAME_LABEL_VERSUS}
           onPress={handlePlayVersus}
-          icon={faBullseye}
+          icon={faFistRaised}
         />
       </View>
-      <View style={{marginTop: 200}} />
 
       <View style={styles.footnoteContainer}>
         <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
@@ -126,10 +126,13 @@ function Menu() {
 }
 
 const styles = StyleSheet.create({
-  window: {...ScreenContainer},
+  window: {
+    ...ScreenContainer,
+    paddingBottom: 100,
+  },
 
   title: {
-    marginBottom: spaceExtraLarge,
+    marginBottom: spaceLarge,
   },
 
   gameButtonContainer: {
