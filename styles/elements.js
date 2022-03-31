@@ -1,5 +1,13 @@
 import {transparent} from './colors'
 import {spaceDefault, spaceSmall} from './layout'
+import {font3} from './typography'
+
+export const ScreenContainer = {
+  height: '100%',
+  width: '100%',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
 
 export const RoundBox = {
   backgroundColor: transparent,
@@ -22,4 +30,20 @@ export const FullScreenOverlay = {
 export const TextShadowSoft = {
   textShadowOffset: {width: -1, height: 3},
   textShadowRadius: 10,
+}
+
+export const InputStyles = {
+  container: {
+    marginBottom: spaceDefault,
+  },
+  input: {
+    fontSize: font3,
+  },
+  label: {
+    opacity: 0.5,
+  },
+  inputFrame: {
+    borderWidth: 1,
+    borderRadius: 4,
+  },
 }

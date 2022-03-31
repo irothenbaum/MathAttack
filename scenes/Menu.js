@@ -7,10 +7,12 @@ import {goToScene} from '../redux/NavigationSlice'
 import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
 import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
 import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
+import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
 import {
   Scene_GameClassic,
   Scene_GameEstimate,
   Scene_GameMarathon,
+  Scene_GameVersus,
   Scene_Settings,
 } from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
@@ -32,7 +34,9 @@ import {
   GAME_LABEL_CLASSIC,
   GAME_LABEL_ESTIMATE,
   GAME_LABEL_MARATHON,
+  GAME_LABEL_VERSUS,
 } from '../constants/game'
+import {ScreenContainer} from '../styles/elements'
 
 const pjson = require('../package.json')
 
@@ -64,6 +68,12 @@ function Menu() {
     dispatch(goToScene(Scene_GameEstimate))
   }
 
+  const handlePlayVersus = () => {
+    dispatch(startNewVersusGame(settings))
+    dispatch(setCurrentGame(Scene_GameVersus))
+    dispatch(goToScene(Scene_GameVersus))
+  }
+
   return (
     <View style={styles.window}>
       <TitleText style={styles.title}>Math, ATTACK!</TitleText>
@@ -91,6 +101,14 @@ function Menu() {
           icon={faBullseye}
         />
       </View>
+      <View style={styles.gameButtonContainer}>
+        <MenuButton
+          size={MenuButton.SIZE_LARGE}
+          title={GAME_LABEL_VERSUS}
+          onPress={handlePlayVersus}
+          icon={faBullseye}
+        />
+      </View>
       <View style={{marginTop: 200}} />
 
       <View style={styles.footnoteContainer}>
@@ -108,12 +126,7 @@ function Menu() {
 }
 
 const styles = StyleSheet.create({
-  window: {
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  window: {...ScreenContainer},
 
   title: {
     marginBottom: spaceExtraLarge,

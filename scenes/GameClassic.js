@@ -21,7 +21,7 @@ import {formatNumber, getVibrateStylesForAnimation} from '../lib/utilities'
 import animationStation from '../hooks/animationStation'
 import GameBackground from '../components/FX/GameBackground'
 import TitleText from '../components/TitleText'
-import {RoundBox} from '../styles/elements'
+import {RoundBox, ScreenContainer} from '../styles/elements'
 import {spaceLarge} from '../styles/layout'
 import GameStartTimer from '../components/GameStartTimer'
 import doOnceTimer from '../hooks/doOnceTimer'
@@ -29,6 +29,7 @@ import Equation from '../models/Equation'
 import isDarkMode from '../hooks/isDarkMode'
 import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../styles/colors'
 import InGameMenu from '../components/InGameMenu'
+import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const NEXT_QUESTION_TIMER = 'next-question-timer'
@@ -130,44 +131,15 @@ function GameClassic() {
         animation={animation}
         isAnimatingForCorrect={isAnimatingForCorrect}
       />
-      <TouchableWithoutFeedback
-        onPress={isShowingAnswer ? () => {} : handleGuess}>
-        <View style={styles.equationContainer}>
-          {!!currentQuestion && (
-            <EquationBox
-              style={
-                !!animation && !isAnimatingForCorrect
-                  ? getVibrateStylesForAnimation(animation)
-                  : null
-              }
-              equation={currentQuestion.equation}
-              timerAnimation={isShowingAnswer ? null : equationTimer}
-            />
-          )}
 
-          <View style={styles.answerBar}>
-            <TitleText
-              style={[
-                styles.answerText,
-                isShowingAnswer && {
-                  color: isAnimatingForCorrect
-                    ? isDark
-                      ? dimmedGreen
-                      : neonGreen
-                    : isDark
-                    ? dimmedRed
-                    : neonRed,
-                },
-              ]}>
-              {formatNumber(
-                isShowingAnswer
-                  ? Equation.getSolution(currentQuestion.equation)
-                  : userInput || 0,
-              )}
-            </TitleText>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
+      <EquationAndAnswerInterface
+        onGuess={handleGuess}
+        equationTimer={equationTimer}
+        isAnimatingNextQuestion={isShowingAnswer}
+        isAnimatingForCorrect={isAnimatingForCorrect}
+        answerReactionAnimation={animation}
+      />
+
       <View style={styles.calculatorContainer}>
         <CalculatorInput isDisabled={isShowingAnswer} />
       </View>
@@ -176,21 +148,7 @@ function GameClassic() {
 }
 
 const styles = StyleSheet.create({
-  window: {
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-  },
-
-  answerBar: {
-    ...RoundBox,
-    paddingRight: spaceLarge,
-  },
-
-  answerText: {
-    width: '100%',
-    textAlign: 'right',
-  },
+  window: {...ScreenContainer},
 
   equationContainer: {
     flex: 1,

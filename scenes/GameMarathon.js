@@ -36,7 +36,7 @@ import {
 } from '../styles/colors'
 import Equation from '../models/Equation'
 import CalculatorInput from '../components/UI/CalculatorInput'
-import {RoundBox} from '../styles/elements'
+import {RoundBox, ScreenContainer} from '../styles/elements'
 import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
 import {faTimes} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
@@ -44,6 +44,7 @@ import isDarkMode from '../hooks/isDarkMode'
 import {font4} from '../styles/typography'
 import animationStation from '../hooks/animationStation'
 import InGameMenu from '../components/InGameMenu'
+import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
@@ -141,66 +142,13 @@ function GameMarathon() {
           color={getColorForStrike(strikes < 1)}
         />
       </View>
-      <TouchableWithoutFeedback
-        onPress={isAnimatingNextQuestion ? () => {} : handleGuess}>
-        <View style={styles.equationContainer}>
-          {!!currentQuestion && (
-            <Animated.View
-              style={
-                isAnimatingNextQuestion && {
-                  opacity: nextQuestionAnimation.interpolate({
-                    inputRange: [0, 0.05, 0.1, 1],
-                    outputRange: [1, 1, 0, 0],
-                  }),
-                }
-              }>
-              <EquationBox
-                style={
-                  !!answerReactionAnimation && !isAnimatingForCorrect
-                    ? getVibrateStylesForAnimation(answerReactionAnimation)
-                    : null
-                }
-                equation={currentQuestion.equation}
-              />
-            </Animated.View>
-          )}
-
-          <Animated.View
-            style={[
-              styles.answerBar,
-              isAnimatingNextQuestion && {
-                transform: [
-                  {
-                    translateY: nextQuestionAnimation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, -162],
-                    }),
-                  },
-                ],
-              },
-            ]}>
-            <TitleText
-              style={[
-                styles.answerText,
-                isAnimatingNextQuestion && {
-                  color: isAnimatingForCorrect
-                    ? isDark
-                      ? dimmedGreen
-                      : neonGreen
-                    : isDark
-                    ? dimmedRed
-                    : neonRed,
-                },
-              ]}>
-              {formatNumber(
-                isAnimatingNextQuestion
-                  ? Equation.getSolution(currentQuestion.equation)
-                  : userInput || 0,
-              )}
-            </TitleText>
-          </Animated.View>
-        </View>
-      </TouchableWithoutFeedback>
+      <EquationAndAnswerInterface
+        onGuess={handleGuess}
+        isAnimatingForCorrect={isAnimatingForCorrect}
+        isAnimatingNextQuestion={isAnimatingNextQuestion}
+        nextQuestionAnimation={nextQuestionAnimation}
+        answerReactionAnimation={answerReactionAnimation}
+      />
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
       </View>
@@ -209,11 +157,7 @@ function GameMarathon() {
 }
 
 const styles = StyleSheet.create({
-  window: {
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-  },
+  window: {...ScreenContainer},
 
   answerBar: {
     ...RoundBox,
