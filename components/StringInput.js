@@ -6,7 +6,7 @@ import isDarkMode from '../hooks/isDarkMode'
 import {getUIColor} from '../lib/utilities'
 import {InputStyles} from '../styles/elements'
 
-function NumberInput(props) {
+function StringInput(props) {
   const isDark = isDarkMode()
 
   return (
@@ -25,10 +25,10 @@ function NumberInput(props) {
 
 const styles = StyleSheet.create(InputStyles)
 
-NumberInput.propTypes = {
-  value: PropTypes.number,
+StringInput.propTypes = {
+  value: PropTypes.string,
   onChange: PropTypes.func,
   label: PropTypes.string,
 }
 
-export default NumberInput
+export default StringInput

@@ -11,6 +11,8 @@ import {
   neonGreen,
   dimmedMagenta,
   neonMagenta,
+  darkGrey,
+  grey,
 } from '../styles/colors'
 import {getBackgroundColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
@@ -25,23 +27,27 @@ function MenuButton(props) {
   const variant = props.variant || MenuButton.VARIANT_DEFAULT
 
   let bgColor
-  switch (variant) {
-    case MenuButton.VARIANT_DESTRUCTIVE:
-      bgColor = isDark ? dimmedRed : neonRed
-      break
+  if (props.isDisabled) {
+    bgColor = isDark ? darkGrey : grey
+  } else {
+    switch (variant) {
+      case MenuButton.VARIANT_DESTRUCTIVE:
+        bgColor = isDark ? dimmedRed : neonRed
+        break
 
-    case MenuButton.VARIANT_SECONDARY:
-      bgColor = isDark ? dimmedMagenta : neonMagenta
-      break
+      case MenuButton.VARIANT_SECONDARY:
+        bgColor = isDark ? dimmedMagenta : neonMagenta
+        break
 
-    case MenuButton.VARIANT_AFFIRMATIVE:
-      bgColor = isDark ? dimmedGreen : neonGreen
-      break
+      case MenuButton.VARIANT_AFFIRMATIVE:
+        bgColor = isDark ? dimmedGreen : neonGreen
+        break
 
-    case MenuButton.VARIANT_DEFAULT:
-    default:
-      bgColor = isDark ? dimmedBlue : neonBlue
-      break
+      case MenuButton.VARIANT_DEFAULT:
+      default:
+        bgColor = isDark ? dimmedBlue : neonBlue
+        break
+    }
   }
 
   const textColor = getBackgroundColor(isDark)
@@ -85,6 +91,7 @@ const styles = StyleSheet.create({
 MenuButton.propTypes = {
   title: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
+  isDisabled: PropTypes.bool,
   variant: PropTypes.string,
   size: PropTypes.number,
   icon: PropTypes.any,

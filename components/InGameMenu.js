@@ -9,13 +9,13 @@ import {spaceDefault} from '../styles/layout'
 import PropTypes from 'prop-types'
 import MenuButton from './MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
-import {Scene_GameResults} from '../constants/scenes'
+import {Scene_GameResults, Scene_Menu} from '../constants/scenes'
 import {goToScene} from '../redux/NavigationSlice'
 import UIText from './UIText'
 import {font3} from '../styles/typography'
 import {getBackgroundColor} from '../lib/utilities'
 import {SCENE_TO_LABEL} from '../constants/game'
-import {selectCurrentScene} from '../redux/selectors'
+import {selectCurrentScene, selectLastGameResults} from '../redux/selectors'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
@@ -23,6 +23,7 @@ function InGameMenu(props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const currentGame = useSelector(selectCurrentScene)
+  const results = useSelector(selectLastGameResults)
 
   const backAction = useCallback(() => {
     setIsOpen(!isOpen)
@@ -36,6 +37,14 @@ function InGameMenu(props) {
       BackHandler.removeEventListener('hardwareBackPress', backAction)
     }
   }, [backAction])
+
+  const handleEndGame = () => {
+    if (results.length === 0) {
+      dispatch(goToScene(Scene_Menu))
+    } else {
+      dispatch(goToScene(Scene_GameResults))
+    }
+  }
 
   return (
     <React.Fragment>
@@ -73,7 +82,7 @@ function InGameMenu(props) {
               style={styles.button}
               title={'End Game'}
               variant={MenuButton.VARIANT_DESTRUCTIVE}
-              onPress={() => dispatch(goToScene(Scene_GameResults))}
+              onPress={handleEndGame}
               size={MenuButton.SIZE_SMALL}
             />
           </View>

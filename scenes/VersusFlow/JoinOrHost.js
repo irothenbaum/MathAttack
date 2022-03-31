@@ -6,6 +6,8 @@ import MenuButton from '../../components/MenuButton'
 import StringInput from '../../components/StringInput'
 import PropTypes from 'prop-types'
 import DividerLine from '../../components/DividerLine'
+import NormalText from '../../components/NormalText'
+import {spaceDefault, spaceExtraLarge} from '../../styles/layout'
 
 function JoinOrHost(props) {
   const [joinCode, setJoinCode] = useState(null)
@@ -24,16 +26,20 @@ function JoinOrHost(props) {
   return (
     <View style={styles.window}>
       <InGameMenu />
-      <TitleText>Versus</TitleText>
-      <StringInput label={'Enter your name'} value={name} onChange={setName} />
-      <View>
-        <MenuButton title={'New Game'} onPress={handleNewGame} />
-        <DividerLine />
-        <View>
-          <StringInput value={joinCode} onChange={setJoinCode} />
-          <MenuButton title={'Join Game'} onPress={handleJoinGame} />
-        </View>
-      </View>
+      <TitleText style={styles.titleText}>Versus</TitleText>
+      <NormalText style={styles.prompt}>Host a new game:</NormalText>
+      <MenuButton title={'New Game'} onPress={handleNewGame} />
+      <DividerLine />
+      <StringInput
+        label={'Enter game code'}
+        value={joinCode}
+        onChange={setJoinCode}
+      />
+      <MenuButton
+        isDisabled={!joinCode}
+        title={'Join Game'}
+        onPress={handleJoinGame}
+      />
     </View>
   )
 }
@@ -44,6 +50,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  titleText: {
+    marginBottom: spaceExtraLarge,
+  },
+  prompt: {
+    marginBottom: spaceDefault,
   },
 })
 

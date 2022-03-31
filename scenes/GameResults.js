@@ -7,10 +7,12 @@ import {goToScene} from '../redux/NavigationSlice'
 import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
 import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
 import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
+import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
 import {
   Scene_GameClassic,
   Scene_GameEstimate,
   Scene_GameMarathon,
+  Scene_GameVersus,
   Scene_Menu,
 } from '../constants/scenes'
 import {
@@ -148,6 +150,10 @@ function GameResults() {
 
       case Scene_GameEstimate:
         dispatch(startNewEstimateGame(settings))
+        break
+
+      case Scene_GameVersus:
+        dispatch(startNewVersusGame(settings))
         break
 
       default:

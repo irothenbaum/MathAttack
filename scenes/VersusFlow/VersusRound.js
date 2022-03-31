@@ -8,6 +8,7 @@ import GameQuestion from '../../models/GameQuestion'
 import VersusSocket from '../../models/VersusSocket'
 import PropTypes from 'prop-types'
 import {neonBlue} from '../../styles/colors'
+import EquationAndAnswerInterface from '../../components/UI/EquationAndAnswerInterface'
 
 function VersusRound(props) {
   const [isWaiting, setIsWaiting] = useState(true)
@@ -25,6 +26,10 @@ function VersusRound(props) {
     }, timeout)
   }
 
+  const handleGuess = () => {
+    props.socket.broadcastAnswer(userAnswer)
+  }
+
   useEffect(() => {
     chooseQuestion()
     // TODO: We need to listen for our opponent finishing first
@@ -37,6 +42,8 @@ function VersusRound(props) {
   return (
     <View style={styles.window}>
       {isWaiting && <View style={styles.waitingVeil} />}
+
+      <EquationAndAnswerInterface onGuess={handleGuess} />
 
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
@@ -51,6 +58,9 @@ const styles = StyleSheet.create({
     ...FullScreenOverlay,
     zIndex: 10,
     backgroundColor: neonBlue,
+  },
+  calculatorContainer: {
+    flex: 1,
   },
 })
 

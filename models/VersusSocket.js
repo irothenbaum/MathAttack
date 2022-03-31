@@ -8,6 +8,17 @@ class VersusSocket {
   broadcastNewQuestion(q, whenToShowTimestamp) {
     // TODO
   }
+
+  /**
+   * @param {number} a
+   */
+  broadcastAnswer(a) {
+    // TODO:
+  }
+
+  markReady() {
+    // TODO:
+  }
 }
 
 export default VersusSocket

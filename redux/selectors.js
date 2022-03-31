@@ -2,6 +2,7 @@ import {
   Scene_GameClassic,
   Scene_GameEstimate,
   Scene_GameMarathon,
+  Scene_GameVersus,
 } from '../constants/scenes'
 
 export const selectCurrentScene = state => state.Navigation.currentScene
@@ -25,6 +26,9 @@ export const selectLastGameResults = state => {
       return selectClassicGameResults(state)
 
     case Scene_GameEstimate:
+      return selectClassicGameResults(state)
+
+    case Scene_GameVersus:
       return selectClassicGameResults(state)
 
     default:
