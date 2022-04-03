@@ -19,6 +19,7 @@ import isDarkMode from '../hooks/isDarkMode'
 import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {faSpinner} from '@fortawesome/free-solid-svg-icons'
 
 function MenuButton(props) {
   const isDark = isDarkMode()
@@ -50,6 +51,7 @@ function MenuButton(props) {
     }
   }
 
+  const canPress = typeof props.onPress === 'function' && !props.isDisabled && !props.isLoading
   const textColor = getBackgroundColor(isDark)
 
   return (
@@ -62,16 +64,24 @@ function MenuButton(props) {
         },
         props.style,
       ]}
-      onPress={props.onPress}>
-      {!!props.icon && (
-        <FontAwesomeIcon
-          color={textColor}
-          icon={props.icon}
-          style={styles.icon}
-          size={size}
-        />
+      onPress={canPress ? props.onPress : () => {}}>
+      {props.isLoading ? (
+        <FontAwesomeIcon icon={faSpinner} transform={{rotate: 90}} {/*TODO: Rotate*/} />
+      ) : (
+        <React.Fragment>
+          {props.icon && (
+            <FontAwesomeIcon
+              color={textColor}
+              icon={props.icon}
+              style={styles.icon}
+              size={size}
+            />
+          )}
+          <UIText style={{color: textColor, fontSize: size}}>
+            {props.title}
+          </UIText>
+        </React.Fragment>
       )}
-      <UIText style={{color: textColor, fontSize: size}}>{props.title}</UIText>
     </Pressable>
   )
 }
@@ -97,6 +107,7 @@ MenuButton.propTypes = {
   size: PropTypes.number,
   icon: PropTypes.any,
   style: PropTypes.any,
+  isLoading: PropTypes.bool,
 }
 
 MenuButton.SIZE_X_LARGE = font4

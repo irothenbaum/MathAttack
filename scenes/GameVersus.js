@@ -9,6 +9,7 @@ import JoinOrHost from './VersusFlow/JoinOrHost'
 import WaitingForOpponent from './VersusFlow/WaitingForOpponent'
 import VersusRound from './VersusFlow/VersusRound'
 import ResultsAndPlayAgain from './VersusFlow/ResultsAndPlayAgain'
+import {WON_FLAG_LOST, WON_FLAG_WON} from '../constants/versus'
 
 const STEP_joinOrHost = 'joinOrHost'
 const STEP_waiting = 'waiting'
@@ -20,6 +21,7 @@ const STEPS = [STEP_joinOrHost, STEP_waiting, STEP_versusRound, STEP_results]
 function GameVersus() {
   const socket = useRef(null)
   const [step, setStep] = useState(STEPS[0])
+  const [connectCode, setConnectCode] = useState('')
   const [myName, setMyName] = useState('')
   const [opponentName, setOpponentName] = useState('')
   const [myScore, setMyScore] = useState(0)
@@ -30,10 +32,10 @@ function GameVersus() {
   // -----------------------------------------------------------------------------------------
   // HANDLERS
 
-  const handleSocket = (s, name, host) => {
+  const handleSocket = (s, host, code) => {
     socket.current = s
     setIsHost(host)
-    setMyName(name)
+    setConnectCode(code)
     setStep(STEP_waiting)
   }
 
@@ -45,16 +47,16 @@ function GameVersus() {
 
   const handleWon = () => {
     setMyScore(myScore + 1)
-    setWonFlag(1)
+    setWonFlag(WON_FLAG_WON)
   }
 
   const handleLost = () => {
     setOpponentScore(opponentScore + 1)
-    setWonFlag(-1)
+    setWonFlag(WON_FLAG_LOST)
   }
 
   const handlePlayAgain = () => {
-    setWonFlag(null)
+    setWonFlag(0)
     setStep(STEP_versusRound)
   }
 
@@ -73,13 +75,19 @@ function GameVersus() {
 
     case STEP_waiting:
       screen = (
-        <WaitingForOpponent socket={socket.current} onStart={handleGameStart} />
+        <WaitingForOpponent
+          isHost={isHost}
+          code={connectCode}
+          socket={socket.current}
+          onStart={handleGameStart}
+        />
       )
       break
 
     case STEP_versusRound:
       screen = (
         <VersusRound
+          isHost={isHost}
           socket={socket.current}
           onWon={handleWon}
           onLost={handleLost}
@@ -93,6 +101,8 @@ function GameVersus() {
           socket={socket.current}
           myScore={myScore}
           opponentScore={opponentScore}
+          myName={myName}
+          opponentName={opponentName}
           wonFlag={wonFlag}
           onPlayAgain={handlePlayAgain}
         />
@@ -116,3 +126,30 @@ const styles = StyleSheet.create({
 })
 
 export default GameVersus
+
+/*
+Event flow:
+
+- host creates game
+- opp joins game
+  - broadcasts opponent joined event
+- host/opponent readies
+  - broadcasts ready event
+- game starts
+  - broadcast question w/ start timestamp
+USER GUESSES:
+  - broadcast guess
+  if correct:
+    - mark correct in games reducer
+  if incorrect:
+    - mark incorrect in gmae reducer
+  Go to Results
+OPP GUESSES:
+  - receive guess
+  if correct:
+    - mark N/A in games reducer
+  if incorrect:
+    - mark correct with N/A in games reducer (HOW?)
+  Go to results
+
+ */

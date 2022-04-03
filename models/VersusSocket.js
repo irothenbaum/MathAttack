@@ -1,4 +1,5 @@
 // TODO: Add websocket-client and extend DefaultClient object
+import {} from '../constants/versus'
 
 class VersusSocket {
   /**
@@ -6,9 +7,13 @@ class VersusSocket {
    */
   constructor(joinCode) {}
 
-  on() {}
+  on(eventName, handler) {
+    // TODO:
+  }
 
-  off() {}
+  off(handler) {
+    // TODO:
+  }
 
   /**
    * @param {GameQuestion} q

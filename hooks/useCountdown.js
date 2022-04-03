@@ -8,18 +8,15 @@ import {useEffect, useState, useRef} from 'react'
  */
 function useCountdown(seconds, onComplete) {
   const [hasStarted, setHasStarted] = useState(false)
-  const [reRender, setReRender] = useState(false)
   const secondsRemaining = useRef(seconds + 1)
   const {setTimer, cancelTimer} = doOnceTimer()
   const timerKey = useRef(Math.random().toString(36).substr(2))
 
   const tickTimer = () => {
     secondsRemaining.current = secondsRemaining.current - 1
-    console.log('tick ' + secondsRemaining.current)
 
     if (secondsRemaining.current > 0) {
       setTimer(timerKey.current, tickTimer, 1000)
-      setReRender(!reRender)
     } else if (typeof onComplete === 'function') {
       onComplete()
       cancelTimer(timerKey.current)
@@ -27,7 +24,6 @@ function useCountdown(seconds, onComplete) {
   }
 
   const startCountdown = () => {
-    console.log('STARTING')
     if (hasStarted) {
       return
     }
