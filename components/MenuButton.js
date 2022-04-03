@@ -51,7 +51,8 @@ function MenuButton(props) {
     }
   }
 
-  const canPress = typeof props.onPress === 'function' && !props.isDisabled && !props.isLoading
+  const canPress =
+    typeof props.onPress === 'function' && !props.isDisabled && !props.isLoading
   const textColor = getBackgroundColor(isDark)
 
   return (
@@ -66,7 +67,7 @@ function MenuButton(props) {
       ]}
       onPress={canPress ? props.onPress : () => {}}>
       {props.isLoading ? (
-        <FontAwesomeIcon icon={faSpinner} transform={{rotate: 90}} {/*TODO: Rotate*/} />
+        <FontAwesomeIcon icon={faSpinner} transform={{rotate: 90}} />
       ) : (
         <React.Fragment>
           {props.icon && (

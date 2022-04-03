@@ -60,6 +60,12 @@ function GameVersus() {
     setStep(STEP_versusRound)
   }
 
+  const handleEndGame = () => {
+    if (socket.current) {
+      socket.current.broadcastEndGame()
+    }
+  }
+
   // -----------------------------------------------------------------------------------------
   // EFFECTS:
   useEffect(() => {}, [])
@@ -115,7 +121,7 @@ function GameVersus() {
 
   return (
     <View style={styles.window}>
-      <InGameMenu />
+      <InGameMenu onEnd={handleEndGame} />
       {screen}
     </View>
   )

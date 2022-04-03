@@ -2,13 +2,21 @@ import React from 'react'
 import {
   Animated,
   StyleSheet,
-  TouchableWithoutFeedback,
+  Pressable,
   View,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import EquationBox from '../EquationBox'
 import {formatNumber, getVibrateStylesForAnimation} from '../../lib/utilities'
 import TitleText from '../TitleText'
-import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../../styles/colors'
+import {
+  dimmedGreen,
+  dimmedRed,
+  neonGreen,
+  neonRed,
+  sunbeam,
+  shadow,
+} from '../../styles/colors'
 import Equation from '../../models/Equation'
 import PropTypes from 'prop-types'
 import {useSelector} from 'react-redux'
@@ -22,9 +30,17 @@ function EquationAndAnswerInterface(props) {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const userInput = useSelector(selectUserInput)
 
+  const onPress = () => {
+    // cannot press while animating or if they haven't entered a guess
+    if (props.isAnimatingNextQuestion || userInput.length === 0) {
+      return
+    }
+
+    props.onGuess(userInput)
+  }
+
   return (
-    <TouchableWithoutFeedback
-      onPress={props.isAnimatingNextQuestion ? () => {} : props.onGuess}>
+    <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.equationContainer}>
         {!!currentQuestion && (
           <Animated.View
@@ -69,6 +85,9 @@ function EquationAndAnswerInterface(props) {
           <TitleText
             style={[
               styles.answerText,
+              userInput.length === 0 && {
+                color: isDark ? sunbeam : shadow,
+              },
               props.isAnimatingNextQuestion && {
                 color: props.isAnimatingForCorrect
                   ? isDark

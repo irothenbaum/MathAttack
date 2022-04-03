@@ -42,7 +42,7 @@ function CalculatorButton(props) {
 
     if (props.value === CLEAR) {
       dispatch(setAnswer(''))
-    } else if (props.value === 0 && !userInput) {
+    } else if (props.value === 0 && userInput === '0') {
       // no leading 0s
       return
     } else {
@@ -61,7 +61,9 @@ function CalculatorButton(props) {
     }
   }, [props.value, dispatch, userInput, animate])
 
-  const isDisabled = props.value === DECIMAL && userInput.includes('.')
+  const isDisabled =
+    (props.value === DECIMAL && userInput.includes('.')) ||
+    (typeof props.value === 'number' && props.value >= 0 && userInput === '0')
 
   const bgColor = getBackgroundColor(isDark, isDisabled)
 

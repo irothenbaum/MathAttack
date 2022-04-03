@@ -38,7 +38,12 @@ function InGameMenu(props) {
     }
   }, [backAction])
 
-  const handleEndGame = () => {
+  const handleEndGame = async () => {
+    // give the screen a chance to cleanup
+    if (typeof props.onEnd === 'function') {
+      await props.onEnd()
+    }
+
     if (results.length === 0) {
       dispatch(goToScene(Scene_Menu))
     } else {
@@ -119,6 +124,7 @@ const styles = StyleSheet.create({
 InGameMenu.propTypes = {
   onPause: PropTypes.func,
   onResume: PropTypes.func,
+  onEnd: PropTypes.func,
 }
 
 export default InGameMenu

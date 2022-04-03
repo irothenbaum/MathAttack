@@ -7,7 +7,7 @@ import {selectUserAnswer} from '../../redux/selectors'
 import GameQuestion from '../../models/GameQuestion'
 import VersusSocket from '../../models/VersusSocket'
 import PropTypes from 'prop-types'
-import {neonBlue} from '../../styles/colors'
+import {neonBlue, dimmedBlue} from '../../styles/colors'
 import EquationAndAnswerInterface from '../../components/UI/EquationAndAnswerInterface'
 import {
   EVENT_BroadcastNewQuestion,
@@ -17,12 +17,14 @@ import QuestionResult from '../../models/QuestionResult'
 import {recordAnswer} from '../../redux/GameSlice'
 import {setAnswer} from '../../redux/UISlice'
 import {ANSWER_TIMEOUT, OPPONENT_WRONG_ANSWER} from '../../constants/game'
+import isDarkMode from '../../hooks/isDarkMode'
 
 function VersusRound(props) {
   const [isWaiting, setIsWaiting] = useState(true)
   const userAnswer = useSelector(selectUserAnswer)
   const settings = useSelector(state => state.Game.settings)
   const [question, setQuestion] = useState(null)
+  const isDark = isDarkMode()
   const dispatch = useDispatch()
 
   const handleQuestion = (q, timeout) => {
@@ -94,7 +96,14 @@ function VersusRound(props) {
 
   return (
     <View style={styles.window}>
-      {isWaiting && <View style={styles.waitingVeil} />}
+      {isWaiting && (
+        <View
+          style={{
+            ...styles.waitingVeil,
+            backgroundColor: isDark ? dimmedBlue : neonBlue,
+          }}
+        />
+      )}
 
       <EquationAndAnswerInterface onGuess={handleGuess} />
 

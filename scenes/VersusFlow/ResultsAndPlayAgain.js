@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {FullScreenOverlay, ScreenContainer} from '../../styles/elements'
 import TitleText from '../../components/TitleText'
-import {white} from '../../styles/colors'
+import {black, neonGreen, dimmedGreen, white} from '../../styles/colors'
 import VersusSocket from '../../models/VersusSocket'
 import PropTypes from 'prop-types'
 import {EVENT_MarkReady, WON_FLAG_WON} from '../../constants/versus'
@@ -13,11 +13,16 @@ import QuestionResult from '../../models/QuestionResult'
 import Equation from '../../models/Equation'
 import MenuButton from '../../components/MenuButton'
 import DividerLine from '../../components/DividerLine'
+import {font3} from '../../styles/typography'
+import {faCheck} from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import isDarkMode from '../../hooks/isDarkMode'
 
 function ResultsAndPlayAgain(props) {
   const [isFadingOut, setIsFadingOut] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
   const [amIReady, setAmIReady] = useState(false)
+  const isDark = isDarkMode()
 
   const results = useSelector(selectLastGameResults)
   const lastResult = results[results.length - 1]
@@ -69,7 +74,14 @@ function ResultsAndPlayAgain(props) {
 
   return (
     <View style={styles.window}>
-      {isFadingOut && <View style={styles.waitingVeil} />}
+      {isFadingOut && (
+        <View
+          style={{
+            ...styles.waitingVeil,
+            backgroundColor: isDark ? black : white,
+          }}
+        />
+      )}
       <TitleText>
         You {props.wonFlag === WON_FLAG_WON ? 'Won' : 'Lost'}
       </TitleText>
@@ -80,11 +92,30 @@ function ResultsAndPlayAgain(props) {
           <NormalText>{props.myName}</NormalText>
           <DividerLine />
           <TitleText>{myScore}</TitleText>
+          {amIReady ? (
+            <FontAwesomeIcon
+              size={font3}
+              icon={faCheck}
+              color={isDark ? dimmedGreen : neonGreen}
+            />
+          ) : (
+            <MenuButton
+              title={'Play again'}
+              onPress={() => setAmIReady(true)}
+            />
+          )}
         </View>
         <View style={styles.singleScoreContainer}>
           <NormalText>{props.opponentName}</NormalText>
           <DividerLine />
           <TitleText>{opponentScore}</TitleText>
+          {isOpponentReady && (
+            <FontAwesomeIcon
+              size={font3}
+              icon={faCheck}
+              color={isDark ? dimmedGreen : neonGreen}
+            />
+          )}
         </View>
       </View>
 

@@ -33,6 +33,10 @@ class VersusSocket {
   markReady() {
     // TODO:
   }
+
+  broadcastEndGame() {
+    // TODO: also how & where are we going to handle this?
+  }
 }
 
 export default VersusSocket
