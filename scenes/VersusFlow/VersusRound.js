@@ -11,7 +11,7 @@ import {neonBlue, dimmedBlue} from '../../styles/colors'
 import EquationAndAnswerInterface from '../../components/UI/EquationAndAnswerInterface'
 import {
   EVENT_BroadcastNewQuestion,
-  EVENT_SubmitGuess,
+  EVENT_SubmitAnswer,
 } from '../../constants/versus'
 import QuestionResult from '../../models/QuestionResult'
 import {recordAnswer} from '../../redux/GameSlice'
@@ -79,7 +79,7 @@ function VersusRound(props) {
         handleQuestion(e.question, e.triggerTime - Date.now())
       })
     }
-    const answerListener = props.socket.on(EVENT_SubmitGuess, e => {
+    const answerListener = props.socket.on(EVENT_SubmitAnswer, e => {
       handleOpponentGuess(e.answer)
     })
 

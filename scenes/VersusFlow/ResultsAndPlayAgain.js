@@ -28,7 +28,7 @@ function ResultsAndPlayAgain(props) {
   const lastResult = results[results.length - 1]
 
   const handlePlayAgain = () => {
-    props.socket.markReady()
+    props.socket.broadcastReady()
   }
 
   useEffect(() => {

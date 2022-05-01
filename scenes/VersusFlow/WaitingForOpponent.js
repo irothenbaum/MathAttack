@@ -10,7 +10,8 @@ import VersusSocket from '../../models/VersusSocket'
 import PropTypes from 'prop-types'
 import useCountdown from '../../hooks/useCountdown'
 import TitleText from '../../components/TitleText'
-import {EVENT_MarkReady, EVENT_OpponentJoined} from '../../constants/versus'
+import {EVENT_MarkReady} from '../../constants/versus'
+import {Types} from '../../lib/websocket-client'
 
 // 5 seconds
 const STARTING_TIMEOUT = 5
@@ -30,7 +31,7 @@ function WaitingForOpponent(props) {
   )
 
   const handleReady = () => {
-    props.socket.markReady()
+    props.socket.broadcastReady()
     setHasReadied(true)
   }
 
@@ -44,7 +45,7 @@ function WaitingForOpponent(props) {
     let joinListener
     // if we're the host, we need to listen for the other play to join
     if (props.isHost) {
-      joinListener = props.socket.on(EVENT_OpponentJoined, () => {
+      joinListener = props.socket.on(Types.CONNECTION.READY, () => {
         setHasOpponentJoined(true)
       })
     } else {

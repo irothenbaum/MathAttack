@@ -1,18 +1,18 @@
-// TODO: Add websocket-client and extend DefaultClient object
-import {} from '../constants/versus'
+import {
+  VersusSubmitAnswerEvent,
+  VersusNewQuestionEvent,
+  VersusReadyEvent,
+  VersusEndGameEvent,
+} from './versusEvents'
+import {DefaultClient} from '../lib/websocket-client'
 
-class VersusSocket {
-  /**
-   * @param {string} joinCode
-   */
-  constructor(joinCode) {}
+const ROOT_DOMAIN = 'https://404jkfoundit.com'
 
-  on(eventName, handler) {
-    // TODO:
-  }
-
-  off(handler) {
-    // TODO:
+class VersusSocket extends DefaultClient {
+  /** @override */
+  _getConnectURL(code: string): string {
+    const endpoint = code ? `/versus/${code}/join` : '/versus/create'
+    return ROOT_DOMAIN.replace('http', 'ws') + endpoint
   }
 
   /**
@@ -20,22 +20,26 @@ class VersusSocket {
    * @param {number} whenToShowTimestamp
    */
   broadcastNewQuestion(q, whenToShowTimestamp) {
-    // TODO
+    let eventInstance = new VersusNewQuestionEvent(q, whenToShowTimestamp)
+    this.getConnection().send(eventInstance.type, eventInstance)
   }
 
   /**
    * @param {number} a
    */
   broadcastAnswer(a) {
-    // TODO:
+    let eventInstance = new VersusSubmitAnswerEvent(a)
+    this.getConnection().send(eventInstance.type, eventInstance)
   }
 
-  markReady() {
-    // TODO:
+  broadcastReady() {
+    let eventInstance = new VersusReadyEvent()
+    this.getConnection().send(eventInstance.type, eventInstance)
   }
 
   broadcastEndGame() {
-    // TODO: also how & where are we going to handle this?
+    let eventInstance = new VersusEndGameEvent()
+    this.getConnection().send(eventInstance.type, eventInstance)
   }
 }
 

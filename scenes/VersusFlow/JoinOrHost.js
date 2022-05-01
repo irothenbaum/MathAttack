@@ -1,7 +1,6 @@
-import React, {useState, useRef, useEffect, useCallback} from 'react'
-import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native'
+import React, {useState} from 'react'
+import {View, StyleSheet} from 'react-native'
 import TitleText from '../../components/TitleText'
-import InGameMenu from '../../components/InGameMenu'
 import MenuButton from '../../components/MenuButton'
 import StringInput from '../../components/StringInput'
 import PropTypes from 'prop-types'
@@ -9,7 +8,7 @@ import DividerLine from '../../components/DividerLine'
 import NormalText from '../../components/NormalText'
 import {spaceDefault, spaceExtraLarge} from '../../styles/layout'
 import VersusSocket from '../../models/VersusSocket'
-import {EVENT_Init} from '../../constants/versus'
+import {Types} from '../../lib/websocket-client'
 
 function JoinOrHost(props) {
   const [isConnecting, setIsConnecting] = useState(false)
@@ -18,17 +17,21 @@ function JoinOrHost(props) {
   const handleNewGame = () => {
     setIsConnecting(true)
     const socket = new VersusSocket()
-    // TODO: init
-    socket.on(EVENT_Init, e => {
+    const handler = socket.on(Types.CONNECTION.WAITING, e => {
       props.onConnect(socket, true, e.connectCode)
+      socket.off(handler)
     })
+    socket.init().then()
   }
 
   const handleJoinGame = () => {
     setIsConnecting(true)
     const socket = new VersusSocket(joinCode)
-    // TODO: init
-    props.onConnect(socket, false, joinCode)
+    const handler = socket.on(Types.CONNECTION.READY, e => {
+      props.onConnect(socket, false, joinCode)
+      socket.off(handler)
+    })
+    socket.init(joinCode).then()
   }
 
   return (
