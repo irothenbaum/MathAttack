@@ -1,12 +1,10 @@
-import React, {useState, useRef, useEffect, useCallback} from 'react'
-import {View, StyleSheet, TouchableWithoutFeedback, Easing} from 'react-native'
-import EquationBox from '../components/EquationBox'
+import React, {useState, useRef, useEffect} from 'react'
+import {View, StyleSheet, Easing} from 'react-native'
 import {useDispatch, useSelector} from 'react-redux'
 import {
   selectUserAnswer,
   selectCurrentQuestion,
   selectGameSettings,
-  selectUserInput,
 } from '../redux/selectors'
 import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import {ANSWER_TIMEOUT} from '../constants/game'
@@ -14,20 +12,14 @@ import CalculatorInput from '../components/UI/CalculatorInput'
 import QuestionResult from '../models/QuestionResult'
 import GameQuestion from '../models/GameQuestion'
 import {setAnswer} from '../redux/UISlice'
-import answerReactionResults from '../hooks/answerReactionResults'
+import useAnswerReactionResults from '../hooks/useAnswerReactionResults'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_GameResults} from '../constants/scenes'
-import {formatNumber, getVibrateStylesForAnimation} from '../lib/utilities'
-import animationStation from '../hooks/animationStation'
+import useAnimationStation from '../hooks/useAnimationStation'
 import GameBackground from '../components/FX/GameBackground'
-import TitleText from '../components/TitleText'
-import {RoundBox, ScreenContainer} from '../styles/elements'
-import {spaceLarge} from '../styles/layout'
+import {ScreenContainer} from '../styles/elements'
 import GameStartTimer from '../components/GameStartTimer'
-import doOnceTimer from '../hooks/doOnceTimer'
-import Equation from '../models/Equation'
-import isDarkMode from '../hooks/isDarkMode'
-import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../styles/colors'
+import useDoOnceTimer from '../hooks/useDoOnceTimer'
 import InGameMenu from '../components/InGameMenu'
 import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
 
@@ -40,15 +32,13 @@ function GameClassic() {
     animation: equationTimer,
     animate: startEquationTimer,
     cancel: cancelEquationTimer,
-  } = animationStation()
+  } = useAnimationStation()
   const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} =
-    answerReactionResults()
+    useAnswerReactionResults()
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectGameSettings)
-  const userInput = useSelector(selectUserInput)
-  const {setTimer, isTimerSet} = doOnceTimer()
-  const isDark = isDarkMode()
+  const {setTimer, isTimerSet} = useDoOnceTimer()
 
   const lastGuess = useRef(null)
   const [questionsRemaining, setQuestionsRemaining] = useState(

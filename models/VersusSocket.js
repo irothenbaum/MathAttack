@@ -41,6 +41,11 @@ class VersusSocket extends DefaultClient {
     let eventInstance = new VersusEndGameEvent()
     this.getConnection().send(eventInstance.type, eventInstance)
   }
+  //
+  // __handleDataMessage(dataMessage) {
+  //   console.log(dataMessage)
+  //   return super.__handleDataMessage(dataMessage)
+  // }
 }
 
 export default VersusSocket

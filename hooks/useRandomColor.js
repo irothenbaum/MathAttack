@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import isDarkMode from './isDarkMode'
 import {getRandomTintColor} from '../lib/utilities'
 
-function randomColor() {
+function useRandomColor() {
   const isDark = isDarkMode()
   const [color, setColor] = useState(getRandomTintColor(isDark))
 
@@ -16,4 +16,4 @@ function randomColor() {
   }
 }
 
-export default randomColor
+export default useRandomColor

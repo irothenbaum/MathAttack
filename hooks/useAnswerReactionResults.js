@@ -1,10 +1,10 @@
-import animationStation from './animationStation'
+import useAnimationStation from './useAnimationStation'
 import {useState} from 'react'
 
 const ANIMATION_DURATION = 1000
 
-function answerReactionResults() {
-  const {animate, animation, isAnimating} = animationStation()
+function useAnswerReactionResults() {
+  const {animate, animation, isAnimating} = useAnimationStation()
   const [isAnimatingForCorrect, setIsAnimatingForCorrect] = useState(false)
 
   const animateCorrect = onComplete => {
@@ -25,4 +25,4 @@ function answerReactionResults() {
   }
 }
 
-export default answerReactionResults
+export default useAnswerReactionResults

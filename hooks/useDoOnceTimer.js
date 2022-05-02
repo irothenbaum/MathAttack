@@ -1,6 +1,6 @@
 import {useState, useRef, useEffect} from 'react'
 
-function doOnceTimer() {
+function useDoOnceTimer() {
   const [timers, setTimers] = useState({})
   const [activeTimers, setTimerKeys] = useState([])
 
@@ -49,4 +49,4 @@ function doOnceTimer() {
   }
 }
 
-export default doOnceTimer
+export default useDoOnceTimer

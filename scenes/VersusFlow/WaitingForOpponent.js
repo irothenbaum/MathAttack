@@ -43,9 +43,11 @@ function WaitingForOpponent(props) {
 
   useEffect(() => {
     let joinListener
+    console.log('MOUNTED', props.isHost)
     // if we're the host, we need to listen for the other play to join
     if (props.isHost) {
       joinListener = props.socket.on(Types.CONNECTION.READY, () => {
+        console.log('OPPONENT JOINED')
         setHasOpponentJoined(true)
       })
     } else {

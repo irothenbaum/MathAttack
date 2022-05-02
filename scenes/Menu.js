@@ -1,6 +1,5 @@
-import React, {useEffect} from 'react'
-import {View, StyleSheet, Pressable} from 'react-native'
-import TitleText from '../components/TitleText'
+import React, {useEffect, useState, useRef} from 'react'
+import {Animated, View, StyleSheet, Pressable} from 'react-native'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
@@ -16,7 +15,7 @@ import {
   Scene_Settings,
 } from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
-import {spaceDefault, spaceExtraLarge, spaceLarge} from '../styles/layout'
+import {screenHeight, spaceDefault, spaceLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
 import {
   faRunning,
@@ -26,7 +25,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
-import {font1, font3, font4} from '../styles/typography'
+import {font1, font3} from '../styles/typography'
 import {faCog} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {shadow, sunbeam} from '../styles/colors'
@@ -38,16 +37,62 @@ import {
   GAME_LABEL_VERSUS,
 } from '../constants/game'
 import {ScreenContainer} from '../styles/elements'
+import TitleTypeform from '../components/TitleTypeform'
+import useAnimationStation from '../hooks/useAnimationStation'
 
 const pjson = require('../package.json')
+
+const initialWaitTime = 1000
+const animationTime = 1200
+const afterSlamWaitTime = 800
+const positionAnimationTime = 500
+
+const startingPosition = screenHeight * 0.3
 
 function Menu() {
   const dispatch = useDispatch()
   const settings = useSelector(selectGameSettings)
+  const [isWaiting, setIsWaiting] = useState(true)
+  const [isReady, setIsReady] = useState(false)
+  const [topPosition, setTopPosition] = useState(0)
+  const logoRef = useRef()
   const isDark = isDarkMode()
+  const {animate: animateLogo, animation: logoAnimation} = useAnimationStation()
+  const {
+    animate: animatePosition,
+    animation: positionAnimation,
+    isAnimating: isAnimatingPosition,
+  } = useAnimationStation()
 
   useEffect(() => {
     dispatch(setAnswer(''))
+
+    // this is a little hacky, but whatever
+    if (global.hasAnimated) {
+      setIsReady(true)
+      return
+    }
+
+    setTimeout(() => {
+      setIsWaiting(false)
+      animateLogo(animationTime)
+      setTimeout(() => {
+        if (logoRef.current) {
+          logoRef.current.measure((fx, fy, width, height, px, py) => {
+            setTopPosition(py)
+          })
+        }
+
+        setTimeout(() => {
+          animatePosition(positionAnimationTime)
+          setTimeout(() => {
+            setIsReady(true)
+            global.hasAnimated = true
+          }, positionAnimationTime)
+        }, afterSlamWaitTime)
+      }, animationTime)
+    }, initialWaitTime)
+
     return () => {}
   }, [])
 
@@ -77,56 +122,86 @@ function Menu() {
 
   return (
     <View style={styles.window}>
-      <TitleText style={styles.title}>Math, ATTACK!</TitleText>
-      <View style={styles.gameButtonContainer}>
-        <MenuButton
-          size={MenuButton.SIZE_LARGE}
-          title={GAME_LABEL_CLASSIC}
-          onPress={handlePlayClassic}
-          icon={faHourglassHalf}
+      <View style={[styles.innerContainer, {opacity: isReady ? 1 : 0}]}>
+        <TitleTypeform
+          style={{alignSelf: 'center', zIndex: 10}}
+          ref={logoRef}
         />
-      </View>
-      <View style={styles.gameButtonContainer}>
-        <MenuButton
-          size={MenuButton.SIZE_LARGE}
-          title={GAME_LABEL_MARATHON}
-          onPress={handlePlayMarathon}
-          icon={faRunning}
-        />
-      </View>
-      <View style={styles.gameButtonContainer}>
-        <MenuButton
-          size={MenuButton.SIZE_LARGE}
-          title={GAME_LABEL_ESTIMATE}
-          onPress={handlePlayEstimation}
-          icon={faBullseye}
-        />
-      </View>
-      <View style={styles.gameButtonContainer}>
-        <MenuButton
-          size={MenuButton.SIZE_LARGE}
-          title={GAME_LABEL_VERSUS}
-          onPress={handlePlayVersus}
-          icon={faFistRaised}
-        />
-      </View>
-
-      <View style={styles.footnoteContainer}>
-        <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
-        <Pressable onPress={() => dispatch(goToScene(Scene_Settings))}>
-          <FontAwesomeIcon
-            size={font3}
-            icon={faCog}
-            color={isDark ? sunbeam : shadow}
+        <View style={styles.gameButtonContainer}>
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_CLASSIC}
+            onPress={handlePlayClassic}
+            icon={faHourglassHalf}
           />
-        </Pressable>
+        </View>
+        <View style={styles.gameButtonContainer}>
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_MARATHON}
+            onPress={handlePlayMarathon}
+            icon={faRunning}
+          />
+        </View>
+        <View style={styles.gameButtonContainer}>
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_ESTIMATE}
+            onPress={handlePlayEstimation}
+            icon={faBullseye}
+          />
+        </View>
+        <View style={styles.gameButtonContainer}>
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_VERSUS}
+            onPress={handlePlayVersus}
+            icon={faFistRaised}
+          />
+        </View>
+
+        <View style={styles.footnoteContainer}>
+          <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
+          <Pressable onPress={() => dispatch(goToScene(Scene_Settings))}>
+            <FontAwesomeIcon
+              size={font3}
+              icon={faCog}
+              color={isDark ? sunbeam : shadow}
+            />
+          </Pressable>
+        </View>
       </View>
+      {!isReady && (
+        <View style={styles.animatedLogoStyles}>
+          <Animated.View
+            style={[
+              {
+                top: startingPosition,
+                alignSelf: 'center',
+              },
+              isAnimatingPosition
+                ? {
+                    top: positionAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [startingPosition, topPosition],
+                    }),
+                  }
+                : undefined,
+            ]}>
+            {!isWaiting && <TitleTypeform animation={logoAnimation} />}
+          </Animated.View>
+        </View>
+      )}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   window: {
+    ...ScreenContainer,
+  },
+
+  innerContainer: {
     ...ScreenContainer,
     paddingBottom: 100,
   },
@@ -154,6 +229,15 @@ const styles = StyleSheet.create({
   footnote: {
     opacity: 0.5,
     fontSize: font1,
+  },
+
+  animatedLogoStyles: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    position: 'absolute',
+    zIndex: 2,
   },
 })
 

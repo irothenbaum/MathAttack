@@ -1,4 +1,4 @@
-import doOnceTimer from './doOnceTimer'
+import useDoOnceTimer from './useDoOnceTimer'
 import {useEffect, useState, useRef} from 'react'
 
 /**
@@ -9,7 +9,7 @@ import {useEffect, useState, useRef} from 'react'
 function useCountdown(seconds, onComplete) {
   const [hasStarted, setHasStarted] = useState(false)
   const secondsRemaining = useRef(seconds + 1)
-  const {setTimer, cancelTimer} = doOnceTimer()
+  const {setTimer, cancelTimer} = useDoOnceTimer()
   const timerKey = useRef(Math.random().toString(36).substr(2))
 
   const tickTimer = () => {

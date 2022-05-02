@@ -1,5 +1,5 @@
 import React from 'react'
-import {SafeAreaView, StatusBar, useColorScheme} from 'react-native'
+import {SafeAreaView, View, StatusBar, useColorScheme} from 'react-native'
 import {Provider} from 'react-redux'
 import store from './redux/store'
 import MathAttack from './MathAttack'

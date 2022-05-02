@@ -7,13 +7,13 @@ import {shadow, sunbeam, neonRed, dimmedRed} from '../styles/colors'
 import {spaceExtraLarge} from '../styles/layout'
 import {getBackgroundColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
-import animationStation from '../hooks/animationStation'
+import useAnimationStation from '../hooks/useAnimationStation'
 import useCountdown from '../hooks/useCountdown'
 
 function GameStartTimer(props) {
   const isDark = isDarkMode()
   const [color, setColor] = useState(isDark ? dimmedRed : neonRed)
-  const {animate, animation} = animationStation()
+  const {animate, animation} = useAnimationStation()
   const {secondsRemaining, startCountdown} = useCountdown(3, props.onStart)
 
   useEffect(() => {

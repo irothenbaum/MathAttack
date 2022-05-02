@@ -56,7 +56,11 @@ function EquationAndAnswerInterface(props) {
             <EquationBox
               style={
                 !!props.answerReactionAnimation && !props.isAnimatingForCorrect
-                  ? getVibrateStylesForAnimation(props.answerReactionAnimation)
+                  ? getVibrateStylesForAnimation(
+                      props.answerReactionAnimation,
+                      null,
+                      0.25,
+                    )
                   : null
               }
               equation={currentQuestion.equation}

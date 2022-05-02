@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react'
 import {useSelector} from 'react-redux'
-import {View} from 'react-native'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
@@ -17,7 +16,7 @@ import Settings from './scenes/Settings'
 import GameResults from './scenes/GameResults'
 import GameMarathon from './scenes/GameMarathon'
 import GameEstimate from './scenes/GameEstimate'
-import animationStation from './hooks/animationStation'
+import useAnimationStation from './hooks/useAnimationStation'
 import GameVersus from './scenes/GameVersus'
 
 const SceneMap = {
@@ -32,7 +31,7 @@ const SceneMap = {
 
 function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
-  const {} = animationStation()
+  const {} = useAnimationStation()
 
   useEffect(() => {}, [currentScene])
 
@@ -42,11 +41,7 @@ function MathAttack() {
     throw new Error(`Scene missing "${currentScene}"`)
   }
 
-  return (
-    <View>
-      <SceneComponent />
-    </View>
-  )
+  return <SceneComponent />
 }
 
 export default MathAttack

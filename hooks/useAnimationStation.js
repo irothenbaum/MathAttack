@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Animated, Easing} from 'react-native'
 
-function animationStation(startAnimating) {
+function useAnimationStation(startAnimating) {
   const [isAnimating, setIsAnimating] = useState(false)
   const animation = useRef(new Animated.Value(0)).current
 
@@ -61,4 +61,4 @@ function animationStation(startAnimating) {
   }
 }
 
-export default animationStation
+export default useAnimationStation

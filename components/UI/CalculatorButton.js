@@ -14,7 +14,7 @@ import {
 } from '../../styles/colors'
 import UIText from '../UIText'
 import isDarkMode from '../../hooks/isDarkMode'
-import animationStation from '../../hooks/animationStation'
+import useAnimationStation from '../../hooks/useAnimationStation'
 
 export const TINT_DURATION = 300
 export const DECIMAL = -1
@@ -28,7 +28,7 @@ function CalculatorButton(props) {
   const isDark = isDarkMode()
   const dispatch = useDispatch()
   const userInput = useSelector(selectUserInput)
-  const {animation, isAnimating, animate} = animationStation()
+  const {animation, isAnimating, animate} = useAnimationStation()
 
   let valueStr =
     props.value === DECIMAL

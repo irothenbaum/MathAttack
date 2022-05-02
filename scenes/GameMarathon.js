@@ -8,41 +8,22 @@ import {
 import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {setAnswer} from '../redux/UISlice'
-import answerReactionResults from '../hooks/answerReactionResults'
+import useAnswerReactionResults from '../hooks/useAnswerReactionResults'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_GameResults} from '../constants/scenes'
-import {
-  Pressable,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  Animated,
-  Easing,
-} from 'react-native'
+import {StyleSheet, View, Easing} from 'react-native'
 import GameStartTimer from '../components/GameStartTimer'
 import GameBackground from '../components/FX/GameBackground'
-import EquationBox from '../components/EquationBox'
-import {formatNumber, getVibrateStylesForAnimation} from '../lib/utilities'
-import TitleText from '../components/TitleText'
-import {
-  darkGrey,
-  dimmedGreen,
-  dimmedRed,
-  nearWhite,
-  neonGreen,
-  neonRed,
-  shadow,
-  sunbeam,
-} from '../styles/colors'
+import {dimmedRed, neonRed, shadow, sunbeam} from '../styles/colors'
 import Equation from '../models/Equation'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import {RoundBox, ScreenContainer} from '../styles/elements'
-import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
+import {spaceLarge, spaceSmall} from '../styles/layout'
 import {faTimes} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import isDarkMode from '../hooks/isDarkMode'
 import {font4} from '../styles/typography'
-import animationStation from '../hooks/animationStation'
+import useAnimationStation from '../hooks/useAnimationStation'
 import InGameMenu from '../components/InGameMenu'
 import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
 
@@ -57,16 +38,15 @@ function GameMarathon() {
     animation: answerReactionAnimation,
     animateCorrect,
     animateIncorrect,
-  } = answerReactionResults()
+  } = useAnswerReactionResults()
 
   const {
     animation: nextQuestionAnimation,
     animate: animateNextQuestion,
     isAnimating: isAnimatingNextQuestion,
-  } = animationStation()
+  } = useAnimationStation()
 
   const [strikes, setStrikes] = useState(3)
-  const userInput = useSelector(selectUserInput)
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
 
