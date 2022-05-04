@@ -1,26 +1,23 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {Animated, Easing} from 'react-native'
 
-function useAnimationStation(startAnimating) {
+function useAnimationStation() {
   const [isAnimating, setIsAnimating] = useState(false)
-  const animation = useRef(new Animated.Value(0)).current
+  const animation = useRef(new Animated.Value(0))
 
   // stop animating on unmount
   useEffect(() => {
-    if (startAnimating) {
-      animate()
-    }
-
     return () => {
-      Animated.timing(animation).stop()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      Animated.timing(animation.current, undefined).stop()
     }
   }, [])
 
   /**
    * @param {number} duration
    * @param {function?} onComplete
-   * @param {func} easing
-   * @param {number?} startValue -- between (0-1]
+   * @param {func?} easing
+   * @param {number?} startValue -- between [0-1)
    */
   const animate = (duration, onComplete, easing, startValue = 0) => {
     if (typeof startValue === 'number' && startValue >= 1) {
@@ -32,8 +29,8 @@ function useAnimationStation(startAnimating) {
     }
 
     setIsAnimating(true)
-    animation.setValue(startValue)
-    Animated.timing(animation, {
+    animation.current.setValue(startValue)
+    Animated.timing(animation.current, {
       toValue: 1,
       duration: duration,
       easing: easing || Easing.in(Easing.linear),
@@ -50,14 +47,14 @@ function useAnimationStation(startAnimating) {
 
   const cancel = () => {
     setIsAnimating(false)
-    Animated.timing(animation).stop()
+    Animated.timing(animation.current, undefined).stop()
   }
 
   return {
     animate,
     cancel,
     isAnimating,
-    animation,
+    animation: animation.current,
   }
 }
 

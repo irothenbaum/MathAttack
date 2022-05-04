@@ -7,6 +7,7 @@ import {screenWidth} from '../styles/layout'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
 
 const typeformWidth = screenWidth * 0.65
+const SLAM_STEP = 0.9
 const rotationDeg = '-10deg'
 
 const finalTitle = 'math,'
@@ -36,7 +37,7 @@ const TitleTypeform = React.forwardRef((props, ref) => {
         styles.container,
         props.style,
         props.animation
-          ? getVibrateStylesForAnimation(props.animation, 0.9)
+          ? getVibrateStylesForAnimation(props.animation, SLAM_STEP)
           : undefined,
       ]}
       ref={ref}>
@@ -51,20 +52,20 @@ const TitleTypeform = React.forwardRef((props, ref) => {
             ? {
                 opacity: props.animation
                   ? props.animation.interpolate({
-                      inputRange: [0, 0.7, 0.9, 1],
+                      inputRange: [0, 0.7, SLAM_STEP, 1],
                       outputRange: [0, 0, 1, 1],
                     })
                   : 1,
                 transform: [
                   {
                     rotateZ: props.animation.interpolate({
-                      inputRange: [0.5, 0.9, 1],
+                      inputRange: [0.5, SLAM_STEP, 1],
                       outputRange: ['40deg', rotationDeg, rotationDeg],
                     }),
                   },
                   {
                     scale: props.animation.interpolate({
-                      inputRange: [0.5, 0.9, 1],
+                      inputRange: [0.5, SLAM_STEP, 1],
                       outputRange: [8, 1, 1],
                     }),
                   },

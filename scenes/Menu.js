@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react'
-import {Animated, View, StyleSheet, Pressable} from 'react-native'
+import {Animated, View, StyleSheet, Pressable, Easing} from 'react-native'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
@@ -43,9 +43,9 @@ import useAnimationStation from '../hooks/useAnimationStation'
 const pjson = require('../package.json')
 
 const initialWaitTime = 1000
-const animationTime = 1200
+const animationTime = 1500
 const afterSlamWaitTime = 800
-const positionAnimationTime = 500
+const positionAnimationTime = 700
 
 const startingPosition = screenHeight * 0.3
 
@@ -73,24 +73,31 @@ function Menu() {
       return
     }
 
+    // this schedules the animated steps for the intro graphic
     setTimeout(() => {
       setIsWaiting(false)
-      animateLogo(animationTime)
-      setTimeout(() => {
-        if (logoRef.current) {
-          logoRef.current.measure((fx, fy, width, height, px, py) => {
-            setTopPosition(py)
-          })
-        }
+      animateLogo(
+        animationTime,
+        () => {
+          if (logoRef.current) {
+            logoRef.current.measure((fx, fy, width, height, px, py) => {
+              setTopPosition(py)
+            })
+          }
 
-        setTimeout(() => {
-          animatePosition(positionAnimationTime)
           setTimeout(() => {
-            setIsReady(true)
-            global.hasAnimated = true
-          }, positionAnimationTime)
-        }, afterSlamWaitTime)
-      }, animationTime)
+            animatePosition(
+              positionAnimationTime,
+              () => {
+                setIsReady(true)
+                global.hasAnimated = true
+              },
+              Easing.inOut(Easing.back(2)),
+            )
+          }, afterSlamWaitTime)
+        },
+        Easing.sin,
+      )
     }, initialWaitTime)
 
     return () => {}
