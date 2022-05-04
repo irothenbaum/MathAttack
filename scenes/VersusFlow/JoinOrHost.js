@@ -6,7 +6,7 @@ import StringInput from '../../components/StringInput'
 import PropTypes from 'prop-types'
 import DividerLine from '../../components/DividerLine'
 import NormalText from '../../components/NormalText'
-import {spaceDefault, spaceExtraLarge} from '../../styles/layout'
+import {spaceDefault, spaceExtraLarge, spaceLarge} from '../../styles/layout'
 import VersusSocket from '../../models/VersusSocket'
 import {Types} from '../../lib/websocket-client'
 
@@ -63,9 +63,10 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     padding: spaceDefault,
+    marginBottom: spaceExtraLarge,
   },
   titleText: {
-    marginBottom: spaceExtraLarge,
+    marginBottom: spaceLarge,
     textAlign: 'center',
   },
   prompt: {

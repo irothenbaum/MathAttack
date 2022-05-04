@@ -7,6 +7,7 @@ import {screenWidth} from '../styles/layout'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
 
 const typeformWidth = screenWidth * 0.65
+const typeformHeight = typeformWidth * 0.3
 const SLAM_STEP = 0.9
 const rotationDeg = '-10deg'
 
@@ -44,7 +45,7 @@ const TitleTypeform = React.forwardRef((props, ref) => {
       <TitleText>{titleText.current}</TitleText>
       <Animated.View
         style={[
-          styles.typeFormContainer,
+          styles.typeformContainer,
           {
             transform: [{rotateZ: rotationDeg}],
           },
@@ -73,7 +74,7 @@ const TitleTypeform = React.forwardRef((props, ref) => {
               }
             : undefined,
         ]}>
-        <Component width={typeformWidth} height={typeformWidth * 0.3} />
+        <Component width={typeformWidth} height={typeformHeight} />
       </Animated.View>
     </Animated.View>
   )
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     width: typeformWidth * 1.1,
     height: typeformWidth / 1.6,
   },
-  typeFormContainer: {
+  typeformContainer: {
     position: 'absolute',
     top: 40,
     right: 0,

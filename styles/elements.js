@@ -1,4 +1,4 @@
-import {transparent} from './colors'
+import {transparent, black} from './colors'
 import {spaceDefault, spaceSmall} from './layout'
 import {font3} from './typography'
 
@@ -30,6 +30,17 @@ export const FullScreenOverlay = {
 export const TextShadowSoft = {
   textShadowOffset: {width: -1, height: 3},
   textShadowRadius: 10,
+}
+
+export const BoxShadow = {
+  shadowColor: black,
+  shadowOffset: {
+    width: 5,
+    height: 0.35,
+  },
+  shadowOpacity: 0.5,
+  shadowRadius: 4,
+  elevation: 5,
 }
 
 export const InputStyles = {

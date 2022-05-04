@@ -1,10 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import {BackHandler, Pressable, StyleSheet, View} from 'react-native'
-import {faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons'
+import {BackHandler, Pressable, StyleSheet} from 'react-native'
+import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {black, shadow, sunbeam, white} from '../styles/colors'
+import {shadow, sunbeam} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
-import {FullScreenOverlay} from '../styles/elements'
 import {spaceDefault} from '../styles/layout'
 import PropTypes from 'prop-types'
 import MenuButton from './MenuButton'
@@ -13,9 +12,9 @@ import {Scene_GameResults, Scene_Menu} from '../constants/scenes'
 import {goToScene} from '../redux/NavigationSlice'
 import UIText from './UIText'
 import {font3} from '../styles/typography'
-import {getBackgroundColor} from '../lib/utilities'
 import {SCENE_TO_LABEL} from '../constants/game'
 import {selectCurrentScene, selectLastGameResults} from '../redux/selectors'
+import Modal from './Modal'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
@@ -51,6 +50,13 @@ function InGameMenu(props) {
     }
   }
 
+  const handleResume = async () => {
+    if (typeof props.onResume === 'function') {
+      await props.onResume()
+    }
+    setIsOpen(false)
+  }
+
   return (
     <React.Fragment>
       <Pressable style={styles.openIcon} onPress={() => setIsOpen(true)}>
@@ -60,39 +66,27 @@ function InGameMenu(props) {
           size={font3}
         />
       </Pressable>
-      {isOpen && (
-        <View
-          style={[
-            styles.overlay,
-            {backgroundColor: isDark ? sunbeam : shadow},
-          ]}>
-          <View
-            style={[
-              styles.menuContainer,
-              {backgroundColor: getBackgroundColor(isDark)},
-            ]}>
-            <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
-            <MenuButton
-              style={styles.button}
-              title={'Resume'}
-              onPress={() => {
-                setIsOpen(false)
-                if (typeof props.onResume === 'function') {
-                  props.onResume()
-                }
-              }}
-              size={MenuButton.SIZE_SMALL}
-            />
-            <MenuButton
-              style={styles.button}
-              title={'End Game'}
-              variant={MenuButton.VARIANT_DESTRUCTIVE}
-              onPress={handleEndGame}
-              size={MenuButton.SIZE_SMALL}
-            />
-          </View>
-        </View>
-      )}
+      <Modal onClose={handleResume} isOpen={isOpen}>
+        <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
+        <MenuButton
+          style={styles.button}
+          title={'Resume'}
+          onPress={() => {
+            setIsOpen(false)
+            if (typeof props.onResume === 'function') {
+              props.onResume()
+            }
+          }}
+          size={MenuButton.SIZE_SMALL}
+        />
+        <MenuButton
+          style={styles.button}
+          title={'End Game'}
+          variant={MenuButton.VARIANT_DESTRUCTIVE}
+          onPress={handleEndGame}
+          size={MenuButton.SIZE_SMALL}
+        />
+      </Modal>
     </React.Fragment>
   )
 }
@@ -107,17 +101,6 @@ const styles = StyleSheet.create({
 
   button: {
     marginTop: spaceDefault,
-  },
-
-  overlay: {
-    ...FullScreenOverlay,
-    zIndex: 20,
-  },
-
-  menuContainer: {
-    width: '80%',
-    padding: spaceDefault,
-    borderRadius: 4,
   },
 })
 

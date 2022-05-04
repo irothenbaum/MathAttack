@@ -92,7 +92,7 @@ function Menu() {
                 setIsReady(true)
                 global.hasAnimated = true
               },
-              Easing.inOut(Easing.back(2)),
+              Easing.inOut(Easing.back(1.8)),
             )
           }, afterSlamWaitTime)
         },
