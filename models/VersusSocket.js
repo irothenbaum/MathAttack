@@ -4,7 +4,7 @@ import {
   VersusReadyEvent,
   VersusEndGameEvent,
 } from './versusEvents'
-import {DefaultClient} from '../lib/websocket-client'
+import {DefaultClient} from 'websocket-client'
 
 const ROOT_DOMAIN = 'https://404jkfoundit.com'
 

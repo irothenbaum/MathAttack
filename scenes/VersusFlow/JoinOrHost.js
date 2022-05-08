@@ -8,7 +8,7 @@ import DividerLine from '../../components/DividerLine'
 import NormalText from '../../components/NormalText'
 import {spaceDefault, spaceExtraLarge, spaceLarge} from '../../styles/layout'
 import VersusSocket from '../../models/VersusSocket'
-import {Types} from '../../lib/websocket-client'
+import {Types} from 'websocket-client'
 
 function JoinOrHost(props) {
   const [isConnecting, setIsConnecting] = useState(false)

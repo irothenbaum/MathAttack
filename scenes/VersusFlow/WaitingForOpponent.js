@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 import useCountdown from '../../hooks/useCountdown'
 import TitleText from '../../components/TitleText'
 import {EVENT_MarkReady} from '../../constants/versus'
-import {Types} from '../../lib/websocket-client'
+import {Types} from 'websocket-client'
 
 // 5 seconds
 const STARTING_TIMEOUT = 5

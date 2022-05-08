@@ -1,4 +1,4 @@
-import {Event, Types} from '../lib/websocket-client'
+import {Event, Types} from 'websocket-client'
 import {
   EVENT_MarkReady,
   EVENT_BroadcastNewQuestion,

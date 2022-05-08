@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "reconnect": "adb reverse tcp:8081 tcp:8081",
     "logcat": "adb logcat -v time -s ReactNativeJS",
-    "webpack": "npx webpack --config webpack.config.js"
+    "webpack": "npx webpack --config webpack.config.js",
+    "nodees6": "node --experimental-modules --es-module-specifier-resolution=node"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -27,7 +28,8 @@
     "react-native-webview": "^11.15.0",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "websocket-client": "github:irothenbaum/websocket-client"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
