@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import DividerLine from '../../components/DividerLine'
 import NormalText from '../../components/NormalText'
 import {spaceDefault, spaceExtraLarge, spaceLarge} from '../../styles/layout'
-import VersusSocket from '../../models/VersusSocket'
+import VersusSocket from '../../lib/VersusSocket'
 import {Types} from 'websocket-client'
 
 function JoinOrHost(props) {
