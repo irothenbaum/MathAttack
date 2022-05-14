@@ -29,6 +29,10 @@ const gameSlice = createSlice({
         GameQuestion.getRandomFromSettings(state.settings, payload),
       )
     },
+    setCurrentQuestion: (state, {payload}) => {
+      console.log('SETTING STATE QUESTION', payload)
+      state.currentQuestion = serializeObject(payload)
+    },
     startNewGame: (state, {payload}) => {
       Object.assign(state, INITIAL_STATE, {settings: payload})
     },
@@ -44,15 +48,24 @@ const gameSlice = createSlice({
   },
 })
 
+/** @param {number} answer */
 export const recordAnswer = answer => dispatch =>
   dispatch(gameSlice.actions.recordAnswer(answer))
+
 // When you start a new game, we freeze the settings object so it must be passed into this function
+/** @param {GameSettings} classicGameSettings */
 export const startNewGame = classicGameSettings => dispatch => {
   dispatch(gameSlice.actions.startNewGame(classicGameSettings))
 }
+
+/** @param {number?} term1 */
 export const generateNewQuestion = term1 => dispatch =>
   dispatch(gameSlice.actions.generateNewQuestion(term1))
 
+/** @param {GameQuestion} q */
+export const setCurrentQuestion = q => dispatch => dispatch(gameSlice.actions.setCurrentQuestion(serializeObject(q)))
+
+/** @param {number} amount */
 export const deductTimeRemaining = amount => dispatch =>
   dispatch(gameSlice.actions.deductTimeRemaining(amount))
 

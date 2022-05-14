@@ -2,13 +2,12 @@ import useDoOnceTimer from './useDoOnceTimer'
 import {useEffect, useState, useRef} from 'react'
 
 /**
- * @param {number} seconds
- * @param {function} onComplete
  * @return {{secondsRemaining: number, startCountdown: function}}
  */
-function useCountdown(seconds, onComplete) {
+function useCountdown() {
   const [hasStarted, setHasStarted] = useState(false)
-  const secondsRemaining = useRef(seconds + 1)
+  const secondsRemaining = useRef(0)
+  const callback = useRef()
   const {setTimer, cancelTimer} = useDoOnceTimer()
   const timerKey = useRef(Math.random().toString(36).substr(2))
 
@@ -17,16 +16,22 @@ function useCountdown(seconds, onComplete) {
 
     if (secondsRemaining.current > 0) {
       setTimer(timerKey.current, tickTimer, 1000)
-    } else if (typeof onComplete === 'function') {
-      onComplete()
+    } else if (typeof callback.current === 'function') {
+      callback.current()
       cancelTimer(timerKey.current)
     }
   }
 
-  const startCountdown = () => {
+  /**
+   * @param {number} seconds
+   * @param {function?} onComplete
+   */
+  const startCountdown = (seconds, onComplete) => {
     if (hasStarted) {
       return
     }
+    secondsRemaining.current = seconds + 1
+    callback.cuurrent = onComplete
     setHasStarted(true)
     tickTimer()
   }
@@ -39,7 +44,7 @@ function useCountdown(seconds, onComplete) {
   }, [])
 
   return {
-    secondsRemaining: Math.min(secondsRemaining.current, seconds),
+    secondsRemaining: secondsRemaining.current,
     startCountdown: startCountdown,
   }
 }

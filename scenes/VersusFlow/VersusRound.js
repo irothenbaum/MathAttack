@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react'
+import React, {useRef, useState, useEffect} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {FullScreenOverlay, ScreenContainer} from '../../styles/elements'
 import CalculatorInput from '../../components/UI/CalculatorInput'
 import {useDispatch, useSelector} from 'react-redux'
-import {selectUserAnswer} from '../../redux/selectors'
+import {selectCurrentQuestion, selectUserAnswer} from '../../redux/selectors'
 import GameQuestion from '../../models/GameQuestion'
 import VersusSocket from '../../lib/VersusSocket'
 import PropTypes from 'prop-types'
@@ -14,30 +14,47 @@ import {
   EVENT_SubmitAnswer,
 } from '../../constants/versus'
 import QuestionResult from '../../models/QuestionResult'
-import {recordAnswer} from '../../redux/GameSlice'
+import {recordAnswer, setCurrentQuestion} from '../../redux/GameSlice'
 import {setAnswer} from '../../redux/UISlice'
-import {ANSWER_TIMEOUT, OPPONENT_WRONG_ANSWER} from '../../constants/game'
+import {ANSWER_TIMEOUT} from '../../constants/game'
+import {OPPONENT_WRONG_ANSWER} from '../../constants/versus'
 import isDarkMode from '../../hooks/isDarkMode'
 
 function VersusRound(props) {
+  const questionListener = useRef()
+  const answerListener = useRef()
   const [isWaiting, setIsWaiting] = useState(true)
   const userAnswer = useSelector(selectUserAnswer)
   const settings = useSelector(state => state.Game.settings)
-  const [question, setQuestion] = useState(null)
+  const question = useSelector(selectCurrentQuestion)
+
   const isDark = isDarkMode()
   const dispatch = useDispatch()
 
   const handleQuestion = (q, timeout) => {
-    setQuestion(q)
+    console.log(`${props.isHost ? 'host' : 'opp'} handling question with timeout ${timeout}`, q)
+    dispatch(setCurrentQuestion(q))
     setTimeout(() => {
       setIsWaiting(false)
     }, timeout)
+
+    // start listening for opponent answers
+    answerListener.current = props.socket.on(EVENT_SubmitAnswer, e => {
+      let result = new QuestionResult(q, e.answer)
+      if (QuestionResult.isCorrect(result)) {
+        dispatch(recordAnswer(ANSWER_TIMEOUT))
+        props.onLost(ANSWER_TIMEOUT)
+      } else {
+        dispatch(recordAnswer(OPPONENT_WRONG_ANSWER))
+        props.onWon(OPPONENT_WRONG_ANSWER)
+      }
+    })
   }
 
   const hostChooseQuestion = () => {
     const q = GameQuestion.getRandomFromSettings(settings)
     // wait up to 5 seconds to start
-    const timeout = Math.ceil(Math.random() * 5000)
+    const timeout = Math.ceil(Math.random() * 5000) + 1000 // sometime between 1 second and 6 seconds
     const triggerTime = Date.now() + timeout
 
     // we call local function first so the timeout can be set as close to accurate
@@ -46,6 +63,7 @@ function VersusRound(props) {
   }
 
   const handleGuess = () => {
+    console.log('GUESSED ' + userAnswer)
     props.socket.broadcastAnswer(userAnswer)
     let result = new QuestionResult(question, userAnswer)
     dispatch(recordAnswer(userAnswer))
@@ -56,41 +74,27 @@ function VersusRound(props) {
     }
   }
 
-  const handleOpponentGuess = oppAnswer => {
-    let result = new QuestionResult(question, userAnswer)
-    if (QuestionResult.isCorrect(result)) {
-      dispatch(recordAnswer(ANSWER_TIMEOUT))
-      props.onLost(ANSWER_TIMEOUT)
-    } else {
-      dispatch(recordAnswer(OPPONENT_WRONG_ANSWER))
-      props.onWon(OPPONENT_WRONG_ANSWER)
-    }
-  }
-
   useEffect(() => {
-    let questionListener
     if (props.isHost) {
-      // TODO: possible race condition where the host moves to Versus and broadcasts the question before opponent
-      //  can mount and listen for the question broadcast. May want to wrap that ChooseQuestion function in a timeout of its own?
-      hostChooseQuestion()
+      // Possible race condition where the host moves to Versus and broadcasts the question before opponent
+      //  can mount and listen for the question broadcast. So we add an extra 1 second wait to be safe
+      setTimeout(() => {
+        hostChooseQuestion()
+      }, 1000)
     } else {
-      questionListener = props.socket.on(EVENT_BroadcastNewQuestion, e => {
-        // TODO: Event payloads
-        handleQuestion(e.question, e.triggerTime - Date.now())
+      questionListener.current = props.socket.on(EVENT_BroadcastNewQuestion, e => {
+        handleQuestion(e.question, e.startTimestamp - Date.now())
       })
     }
-    const answerListener = props.socket.on(EVENT_SubmitAnswer, e => {
-      handleOpponentGuess(e.answer)
-    })
 
     // make sure the answer input is reset
     dispatch(setAnswer(''))
 
     return () => {
-      if (questionListener) {
-        props.socket.off(questionListener)
+      if (questionListener.current) {
+        props.socket.off(questionListener.current)
       }
-      props.socket.off(answerListener)
+      props.socket.off(answerListener.current)
     }
   }, [])
 

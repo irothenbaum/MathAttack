@@ -6,7 +6,6 @@ import {
 } from './scenes'
 
 export const ANSWER_TIMEOUT = -99999.1
-export const OPPONENT_WRONG_ANSWER = -99999.2
 
 export const GAME_LABEL_CLASSIC = 'Classic'
 export const GAME_LABEL_MARATHON = 'Marathon'

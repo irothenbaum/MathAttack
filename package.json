@@ -2,17 +2,15 @@
   "name": "mathattack",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "reconnect": "adb reverse tcp:8081 tcp:8081",
+    "start-device": "adb -s %DEVICE% reverse tcp:8082 tcp:8082 && react-native start --port 8082",
     "test": "jest",
     "lint": "eslint .",
-    "reconnect": "adb reverse tcp:8081 tcp:8081",
-    "logcat": "adb logcat -v time -s ReactNativeJS",
-    "webpack": "npx webpack --config webpack.config.js",
-    "nodees6": "node --experimental-modules --es-module-specifier-resolution=node"
+    "logcat": "adb logcat -v time -s ReactNativeJS"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -40,6 +38,7 @@
     "babel-jest": "^26.6.3",
     "eslint": "7.14.0",
     "jest": "^26.6.3",
+    "metro-config": "^0.70.3",
     "metro-react-native-babel-preset": "^0.66.2",
     "react-native-svg-transformer": "^1.0.0",
     "react-test-renderer": "17.0.2",

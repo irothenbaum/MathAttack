@@ -11,13 +11,17 @@ import useAnimationStation from '../hooks/useAnimationStation'
 import useCountdown from '../hooks/useCountdown'
 
 function GameStartTimer(props) {
+  const [timerFinished, setTimerFinished] = useState(false)
   const isDark = isDarkMode()
   const [color, setColor] = useState(isDark ? dimmedRed : neonRed)
   const {animate, animation} = useAnimationStation()
-  const {secondsRemaining, startCountdown} = useCountdown(3, props.onStart)
+  const {secondsRemaining, startCountdown} = useCountdown()
 
   useEffect(() => {
-    startCountdown()
+    startCountdown(3, () => {
+      setTimerFinished(true)
+      props.onStart()
+    })
   }, [])
 
   useEffect(() => {
@@ -25,7 +29,7 @@ function GameStartTimer(props) {
     animate(1000)
   }, [secondsRemaining])
 
-  if (secondsRemaining <= 0) {
+  if (timerFinished) {
     return null
   }
 

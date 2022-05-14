@@ -19,16 +19,10 @@ const STARTING_TIMEOUT = 5
 function WaitingForOpponent(props) {
   const [hasReadied, setHasReadied] = useState(false)
   const [hasOpponentJoined, setHasOpponentJoined] = useState(false)
-  const [hasOpponentReadied, setHasOpponentReadied] = useState(true)
+  const [hasOpponentReadied, setHasOpponentReadied] = useState(false)
   const [name, setName] = useState('')
   const [opponentName, setOpponentName] = useState('')
-  const {secondsRemaining, startCountdown} = useCountdown(
-    STARTING_TIMEOUT,
-    () => {
-      // when the countdown ends, we report both names
-      props.onStart(name, opponentName)
-    },
-  )
+  const {secondsRemaining, startCountdown} = useCountdown()
 
   const handleReady = () => {
     props.socket.broadcastReady()
@@ -37,17 +31,18 @@ function WaitingForOpponent(props) {
 
   useEffect(() => {
     if (hasReadied && hasOpponentReadied) {
-      startCountdown()
+      startCountdown(STARTING_TIMEOUT, () => {
+        // when the countdown ends, we report both names
+        props.onStart(name, opponentName)
+      })
     }
   }, [hasReadied, hasOpponentReadied])
 
   useEffect(() => {
     let joinListener
-    console.log('MOUNTED', props.isHost)
     // if we're the host, we need to listen for the other play to join
     if (props.isHost) {
       joinListener = props.socket.on(Types.CONNECTION.READY, () => {
-        console.log('OPPONENT JOINED')
         setHasOpponentJoined(true)
       })
     } else {
@@ -56,8 +51,8 @@ function WaitingForOpponent(props) {
     }
     // listen for when the other player marks ready and store their name
     const readyListener = props.socket.on(EVENT_MarkReady, e => {
-      setHasOpponentReadied(true)
       setOpponentName(e.name)
+      setHasOpponentReadied(true)
     })
     return () => {
       if (joinListener) {

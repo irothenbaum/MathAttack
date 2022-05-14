@@ -48,11 +48,13 @@ function GameVersus() {
   const handleWon = () => {
     setMyScore(myScore + 1)
     setWonFlag(WON_FLAG_WON)
+    setStep(STEP_results)
   }
 
   const handleLost = () => {
     setOpponentScore(opponentScore + 1)
     setWonFlag(WON_FLAG_LOST)
+    setStep(STEP_results)
   }
 
   const handlePlayAgain = () => {
