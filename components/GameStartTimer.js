@@ -10,15 +10,17 @@ import isDarkMode from '../hooks/isDarkMode'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useCountdown from '../hooks/useCountdown'
 
+const START_TIME = 3
+
 function GameStartTimer(props) {
   const [timerFinished, setTimerFinished] = useState(false)
   const isDark = isDarkMode()
   const [color, setColor] = useState(isDark ? dimmedRed : neonRed)
   const {animate, animation} = useAnimationStation()
-  const {secondsRemaining, startCountdown} = useCountdown()
+  const {hasStarted, secondsRemaining, startCountdown} = useCountdown()
 
   useEffect(() => {
-    startCountdown(3, () => {
+    startCountdown(START_TIME, () => {
       setTimerFinished(true)
       props.onStart()
     })
@@ -54,7 +56,7 @@ function GameStartTimer(props) {
             textShadowColor: isDark ? sunbeam : shadow,
           },
         ]}>
-        {secondsRemaining}
+        {hasStarted ? secondsRemaining : START_TIME}
       </UIText>
     </Animated.View>
   )

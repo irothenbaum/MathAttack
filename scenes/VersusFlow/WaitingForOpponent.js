@@ -25,7 +25,7 @@ function WaitingForOpponent(props) {
   const {secondsRemaining, startCountdown} = useCountdown()
 
   const handleReady = () => {
-    props.socket.broadcastReady()
+    props.socket.broadcastReady(name)
     setHasReadied(true)
   }
 

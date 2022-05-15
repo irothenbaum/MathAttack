@@ -1,15 +1,17 @@
 import useDoOnceTimer from './useDoOnceTimer'
 import {useEffect, useState, useRef} from 'react'
+import {getRandomString} from '../lib/utilities'
 
 /**
+ * @param {number} startTime -- kinda hacky way to get it default a return for secondsRemaining before it's started
  * @return {{secondsRemaining: number, startCountdown: function}}
  */
-function useCountdown() {
+function useCountdown(startTime) {
   const [hasStarted, setHasStarted] = useState(false)
-  const secondsRemaining = useRef(0)
+  const secondsRemaining = useRef(startTime || 0)
   const callback = useRef()
   const {setTimer, cancelTimer} = useDoOnceTimer()
-  const timerKey = useRef(Math.random().toString(36).substr(2))
+  const timerKey = useRef(getRandomString())
 
   const tickTimer = () => {
     secondsRemaining.current = secondsRemaining.current - 1
@@ -30,10 +32,10 @@ function useCountdown() {
     if (hasStarted) {
       return
     }
-    secondsRemaining.current = seconds + 1
-    callback.cuurrent = onComplete
+    secondsRemaining.current = seconds
+    callback.current = onComplete
     setHasStarted(true)
-    tickTimer()
+    setTimer(timerKey.current, tickTimer, 1000)
   }
 
   useEffect(() => {
@@ -44,6 +46,7 @@ function useCountdown() {
   }, [])
 
   return {
+    hasStarted: hasStarted,
     secondsRemaining: secondsRemaining.current,
     startCountdown: startCountdown,
   }

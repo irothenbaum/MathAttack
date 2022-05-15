@@ -88,25 +88,11 @@ function GameVersus() {
       break
 
     case STEP_waiting:
-      screen = (
-        <WaitingForOpponent
-          isHost={isHost}
-          code={connectCode}
-          socket={socket.current}
-          onStart={handleGameStart}
-        />
-      )
+      screen = <WaitingForOpponent isHost={isHost} code={connectCode} socket={socket.current} onStart={handleGameStart} />
       break
 
     case STEP_versusRound:
-      screen = (
-        <VersusRound
-          isHost={isHost}
-          socket={socket.current}
-          onWon={handleWon}
-          onLost={handleLost}
-        />
-      )
+      screen = <VersusRound isHost={isHost} socket={socket.current} onWon={handleWon} onLost={handleLost} />
       break
 
     case STEP_results:
