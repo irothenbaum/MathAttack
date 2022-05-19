@@ -7,22 +7,11 @@ import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
 import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
 import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
 import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
-import {
-  Scene_GameClassic,
-  Scene_GameEstimate,
-  Scene_GameMarathon,
-  Scene_GameVersus,
-  Scene_Settings,
-} from '../constants/scenes'
+import {Scene_GameClassic, Scene_GameEstimate, Scene_GameMarathon, Scene_GameVersus, Scene_Settings} from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
 import {screenHeight, spaceDefault, spaceLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
-import {
-  faRunning,
-  faHourglassHalf,
-  faBullseye,
-  faFistRaised,
-} from '@fortawesome/free-solid-svg-icons'
+import {faRunning, faHourglassHalf, faBullseye, faFistRaised} from '@fortawesome/free-solid-svg-icons'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
 import {font1, font3} from '../styles/typography'
@@ -30,12 +19,7 @@ import {faCog} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {shadow, sunbeam} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
-import {
-  GAME_LABEL_CLASSIC,
-  GAME_LABEL_ESTIMATE,
-  GAME_LABEL_MARATHON,
-  GAME_LABEL_VERSUS,
-} from '../constants/game'
+import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON, GAME_LABEL_VERSUS} from '../constants/game'
 import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -58,11 +42,7 @@ function Menu() {
   const logoRef = useRef()
   const isDark = isDarkMode()
   const {animate: animateLogo, animation: logoAnimation} = useAnimationStation()
-  const {
-    animate: animatePosition,
-    animation: positionAnimation,
-    isAnimating: isAnimatingPosition,
-  } = useAnimationStation()
+  const {animate: animatePosition, animation: positionAnimation, isAnimating: isAnimatingPosition} = useAnimationStation()
 
   useEffect(() => {
     dispatch(setAnswer(''))
@@ -130,16 +110,14 @@ function Menu() {
   return (
     <View style={styles.window}>
       <View style={[styles.innerContainer, {opacity: isReady ? 1 : 0}]}>
-        <TitleTypeform
-          style={{alignSelf: 'center', zIndex: 10}}
-          ref={logoRef}
-        />
+        <TitleTypeform style={{alignSelf: 'center', zIndex: 10}} ref={logoRef} />
         <View style={styles.gameButtonContainer}>
           <MenuButton
             size={MenuButton.SIZE_LARGE}
             title={GAME_LABEL_CLASSIC}
             onPress={handlePlayClassic}
             icon={faHourglassHalf}
+            blurCount={3}
           />
         </View>
         <View style={styles.gameButtonContainer}>
@@ -148,6 +126,7 @@ function Menu() {
             title={GAME_LABEL_MARATHON}
             onPress={handlePlayMarathon}
             icon={faRunning}
+            blurCount={3}
           />
         </View>
         <View style={styles.gameButtonContainer}>
@@ -156,25 +135,17 @@ function Menu() {
             title={GAME_LABEL_ESTIMATE}
             onPress={handlePlayEstimation}
             icon={faBullseye}
+            blurCount={3}
           />
         </View>
         <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_VERSUS}
-            onPress={handlePlayVersus}
-            icon={faFistRaised}
-          />
+          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_VERSUS} onPress={handlePlayVersus} icon={faFistRaised} blurCount={3} />
         </View>
 
         <View style={styles.footnoteContainer}>
           <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
           <Pressable onPress={() => dispatch(goToScene(Scene_Settings))}>
-            <FontAwesomeIcon
-              size={font3}
-              icon={faCog}
-              color={isDark ? sunbeam : shadow}
-            />
+            <FontAwesomeIcon size={font3} icon={faCog} color={isDark ? sunbeam : shadow} />
           </Pressable>
         </View>
       </View>
@@ -194,7 +165,8 @@ function Menu() {
                     }),
                   }
                 : undefined,
-            ]}>
+            ]}
+          >
             {!isWaiting && <TitleTypeform animation={logoAnimation} />}
           </Animated.View>
         </View>

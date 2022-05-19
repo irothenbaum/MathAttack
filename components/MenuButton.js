@@ -16,7 +16,7 @@ import {
   black,
   white,
 } from '../styles/colors'
-import {getBackgroundColor, getOutOfFocusStylesForAnimation, getRandomString} from '../lib/utilities'
+import {getBackgroundColor, getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
 import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
@@ -57,8 +57,10 @@ function MenuButton(props) {
   const variant = props.variant || MenuButton.VARIANT_DEFAULT
 
   let bgColor
+  let textColor
   if (props.isDisabled) {
     bgColor = isDark ? darkGrey : grey
+    textColor = isDark ? grey : darkGrey
   } else {
     switch (variant) {
       case MenuButton.VARIANT_DESTRUCTIVE:
@@ -68,15 +70,15 @@ function MenuButton(props) {
       case MenuButton.VARIANT_DEFAULT:
       default:
         bgColor = isDark ? black : white
+        textColor = isDark ? dimmedRed : neonRed
         break
     }
   }
 
   const canPress = typeof props.onPress === 'function' && !props.isDisabled && !props.isLoading
-  const textColor = getBackgroundColor(isDark)
 
   const doBlur = () => {
-    animate(BLUR_DURATION, () => setTimer(blurKey, doBlur, BLUR_DELAY))
+    animate(BLUR_DURATION + Math.random() * BLUR_DURATION, () => setTimer(blurKey, doBlur, parseInt(Math.random() * BLUR_DELAY)))
   }
   useEffect(() => {
     doBlur()
@@ -84,11 +86,19 @@ function MenuButton(props) {
 
   return (
     <View>
-      {!props.isDisabled && !!contentRef.current && (
+      {!props.isDisabled && !!contentRef.current && props.blurCount > 0 && (
         <View
           style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: contentRef.current.width, height: contentRef.current.height}}
         >
-          <ButtonShadow animationStyle={getOutOfFocusStylesForAnimation(animation)} />
+          {[...new Array(props.blurCount)].map((e, i) => {
+            return (
+              <ButtonShadow
+                key={i}
+                color={textColor}
+                animationStyle={{...getOutOfFocusStylesForAnimation(animation), opacity: (i + 1) / (props.blurCount + 1)}}
+              />
+            )
+          })}
         </View>
       )}
       <Pressable
@@ -99,8 +109,9 @@ function MenuButton(props) {
           styles.primary,
           {
             backgroundColor: bgColor,
-            color: black,
+            borderColor: textColor,
             justifyContent: props.icon ? 'flex-start' : 'center',
+            zIndex: 10,
           },
           props.style,
         ]}
@@ -111,7 +122,7 @@ function MenuButton(props) {
         ) : (
           <React.Fragment>
             {props.icon && <FontAwesomeIcon color={textColor} icon={props.icon} style={styles.icon} size={size} />}
-            <UIText style={{color: textColor, fontSize: size}}>{props.title}</UIText>
+            <UIText style={{color: getUIColor(isDark), fontSize: size}}>{props.title}</UIText>
           </React.Fragment>
         )}
       </Pressable>
@@ -126,6 +137,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 3,
+    borderColor: neonRed,
+    borderStyle: 'solid',
   },
   icon: {
     marginRight: spaceDefault,
@@ -141,6 +155,7 @@ MenuButton.propTypes = {
   icon: PropTypes.any,
   style: PropTypes.any,
   isLoading: PropTypes.bool,
+  blurCount: PropTypes.number,
 }
 
 MenuButton.SIZE_X_LARGE = font4
