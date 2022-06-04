@@ -17,13 +17,20 @@ class Phrase {
    * @param {Phrase|number} obj
    */
   static toString(obj) {
+    const infixNotation = Phrase.toInfixNotation(obj)
+    return infixNotation.join(' ')
+  }
+
+  /**
+   * @param {Phrase|number} obj
+   * @return {Array<number|string>}
+   */
+  static toInfixNotation(obj) {
     if (typeof obj === 'number') {
-      return obj
+      return [obj]
     }
 
-    return `${Phrase.toString(obj.term1)} ${obj.operation} ${Phrase.toString(
-      obj.term2,
-    )}`
+    return [...Phrase.toInfixNotation(obj.term1), obj.operation, ...Phrase.toInfixNotation(obj.term2)]
   }
 
   /**
@@ -62,9 +69,7 @@ class Phrase {
       return [obj]
     }
 
-    return Phrase.getDiscreteTerms(obj.term1).concat(
-      Phrase.getDiscreteTerms(obj.term2),
-    )
+    return Phrase.getDiscreteTerms(obj.term1).concat(Phrase.getDiscreteTerms(obj.term2))
   }
 }
 

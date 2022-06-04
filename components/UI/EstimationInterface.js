@@ -1,14 +1,13 @@
-import React, {useCallback, useEffect, useState} from 'react'
-import {PanResponder, Animated, View, StyleSheet, Slider as RNSlider} from 'react-native'
+import React, {useCallback, useState} from 'react'
+import {PanResponder, View, StyleSheet} from 'react-native'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings, selectUserAnswer} from '../../redux/selectors'
 import UIText from '../UIText'
-import {font1, font2, font3} from '../../styles/typography'
-import {spaceDefault, spaceSmall} from '../../styles/layout'
+import {font2} from '../../styles/typography'
+import {spaceDefault} from '../../styles/layout'
 import isDarkMode from '../../hooks/isDarkMode'
 import {getUIColor} from '../../lib/utilities'
-import {useSharedValue, useAnimatedStyle, withSpring} from 'react-native-reanimated'
-import {GestureDetector, Gesture} from 'react-native-gesture-handler'
+
 import {setAnswer} from '../../redux/UISlice'
 
 const numberOfSteps = 10
@@ -36,6 +35,10 @@ function RulerNotch(props) {
 // ----------------------------------------------------------------------------------------
 /*
 Slider not working, some crash bullshit using Draggable Circle for now
+
+import {useSharedValue, useAnimatedStyle, withSpring} from 'react-native-reanimated'
+import {GestureDetector, Gesture} from 'react-native-gesture-handler'
+
 function Slider(props) {
   const isPressed = useSharedValue(false)
   const offset = useSharedValue({x: 0, y: 0})
@@ -86,8 +89,7 @@ function EstimationInterface(props) {
     bottom: containerBottomPosition - fontSizeAdjust - bottomNotchTopPosition,
   }
 
-  console.log('Interface Screen Bottom Position:', containerBottomPosition)
-  console.log(sliderStyles)
+  console.log(answer)
 
   const range = settings.maxValue - settings.minValue
   const stepSize = range / numberOfSteps
@@ -114,10 +116,8 @@ function EstimationInterface(props) {
                     ? (ev) => {
                         const {x, y, height, width} = ev.nativeEvent.layout
                         if (i === 0) {
-                          console.log('top notch top Position: ', y)
                           setTopNotchTopPosition(y)
                         } else if (i === numberOfSteps) {
-                          console.log('bottom notch top position: ', y)
                           setBottomNotchTopPosition(y)
                         }
                       }
@@ -132,6 +132,7 @@ function EstimationInterface(props) {
 }
 
 const sliderSize = 60
+const halfSlider = sliderSize / 2
 const rulerFontSize = font2
 
 const styles = StyleSheet.create({
@@ -171,6 +172,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 4,
   },
+
   rulerText: {
     flex: 1,
     textAlign: 'right',
@@ -184,16 +186,24 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     borderWidth: 4,
-    borderRadius: sliderSize / 2,
+    borderRadius: halfSlider,
     height: sliderSize,
     width: sliderSize,
   },
 
+  sliderActive: {
+    backgroundColor: 'rgba(255,255,255,1)',
+  },
+
+  sliderInActive: {
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+
   sliderContainer: {
     position: 'absolute',
-    top: sliderSize / 2,
+    top: halfSlider,
     left: 0,
-    bottom: sliderSize / 2,
+    bottom: halfSlider,
     right: 0,
     zIndex: 10,
     backgroundColor: 'rgba(0,255,0, 0.3)',
@@ -214,20 +224,18 @@ function Slider(props) {
 
   const getAnswerFromTopValue = useCallback(
     (topValue) => {
-      return ((containerHeight - (topValue + sliderSize / 2)) / containerHeight) * range + settings.minValue
+      return ((containerHeight - (topValue + halfSlider)) / containerHeight) * range + settings.minValue
     },
     [containerHeight, range, settings],
   )
 
-  const handleSlide = ({top}) => {
+  const handleSlide = (top) => {
     setTempValue(getAnswerFromTopValue(top))
   }
 
-  const handleSubmitAnswer = ({top}) => {
+  const handleSubmitAnswer = (top) => {
     dispatch(setAnswer(getAnswerFromTopValue(top)))
   }
-
-  console.log('value: ', tempValue)
 
   return (
     <View
@@ -238,9 +246,8 @@ function Slider(props) {
       }}
     >
       <DraggableCircle
-        style={{
-          bottom: `${parseFloat((100 * answer) / range).toFixed(2)}%`,
-        }}
+        minTop={-halfSlider}
+        maxTop={containerHeight - halfSlider}
         onDrag={handleSlide}
         onDragComplete={handleSubmitAnswer}
       />
@@ -252,29 +259,19 @@ function Slider(props) {
  * @see https://necolas.github.io/react-native-web/docs/pan-responder/
  */
 class DraggableCircle extends React.PureComponent {
-  _panResponder = {}
-  _previousLeft = 0
-  _previousTop = 0
-  circle = null
-
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
-      onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-      onPanResponderGrant: this._handlePanResponderGrant,
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: this._handlePanResponderGrant.bind(this),
       onPanResponderMove: this._handlePanResponderMove,
       onPanResponderRelease: this._handlePanResponderEnd,
       onPanResponderTerminate: this._handlePanResponderEnd,
     })
-    this._previousLeft = 0
+    this._isPressed = false
     this._previousTop = 0
-    this._circleStyles = {
-      style: {
-        left: this._previousLeft,
-        top: this._previousTop,
-      },
-    }
+    this._circleTopStyle = this._previousTop
   }
 
   componentDidMount() {
@@ -282,56 +279,29 @@ class DraggableCircle extends React.PureComponent {
   }
 
   render() {
-    return <View ref={this._setCircleRef} style={styles.slider} {...this._panResponder.panHandlers} />
-  }
-
-  _setCircleRef = (circle) => {
-    this.circle = circle
-  }
-
-  _highlight() {
-    this._updateNativeStyles()
-  }
-
-  _unHighlight() {
-    this._updateNativeStyles()
+    return <View ref={(c) => (this.circle = c)} style={styles.slider} {...this._panResponder.panHandlers} />
   }
 
   _updateNativeStyles() {
-    this.circle && this.circle.setNativeProps(this._circleStyles)
+    this.circle &&
+      this.circle.setNativeProps({style: {top: this._circleTopStyle, ...(this._isPressed ? styles.sliderActive : styles.sliderInActive)}})
   }
 
-  _handleStartShouldSetPanResponder = (e: Object, gestureState: Object): boolean => {
-    // Should we become active when the user presses down on the circle?
-    return true
-  }
-
-  _handleMoveShouldSetPanResponder = (e: Object, gestureState: Object): boolean => {
-    // Should we become active when the user moves a touch over the circle?
-    return true
-  }
-
-  _handlePanResponderGrant = (e: Object, gestureState: Object) => {
-    this._highlight()
+  _handlePanResponderGrant() {
+    this._isPressed = true
+    this._updateNativeStyles()
   }
 
   _handlePanResponderMove = (e: Object, gestureState: Object) => {
-    // this._circleStyles.style.left = this._previousLeft + gestureState.dx
-    this._circleStyles.style.top = this._previousTop + gestureState.dy
-    this.props.onDrag({
-      left: this._previousLeft + gestureState.dx,
-      top: this._previousTop + gestureState.dy,
-    })
+    this._circleTopStyle = Math.min(Math.max(this._previousTop + gestureState.dy, this.props.minTop), this.props.maxTop)
+    this.props.onDrag(this._circleTopStyle)
     this._updateNativeStyles()
   }
 
   _handlePanResponderEnd = (e: Object, gestureState: Object) => {
-    this._unHighlight()
-    this._previousLeft += gestureState.dx
-    this._previousTop += gestureState.dy
-    this.props.onDragComplete({
-      left: this._previousLeft,
-      top: this._previousTop,
-    })
+    this._previousTop = this._circleTopStyle
+    this.props.onDragComplete(this._previousTop)
+    this._isPressed = false
+    this._updateNativeStyles()
   }
 }

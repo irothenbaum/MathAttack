@@ -67,6 +67,14 @@ class Equation {
 
   /**
    * @param {Equation} obj
+   * @returns {Array<string|number>}
+   */
+  static getLeftSideInfixNotation(obj) {
+    return Phrase.toInfixNotation(obj.phrase)
+  }
+
+  /**
+   * @param {Equation} obj
    */
   static getSolution(obj) {
     return Phrase.getSolution(obj.phrase)

@@ -9,6 +9,8 @@ import GameStartTimer from '../components/GameStartTimer'
 import {generateNewEstimationQuestion} from '../redux/GameSlice'
 import GameQuestion from '../models/GameQuestion'
 import EstimationInterface from '../components/UI/EstimationInterface'
+import ComplexEquationComponent from '../components/ComplexEquationComponent'
+import {spaceDefault} from '../styles/layout'
 
 function GameEstimate() {
   const settings = useSelector(selectGameSettings)
@@ -27,14 +29,23 @@ function GameEstimate() {
     <View style={styles.window}>
       <InGameMenu />
       {false && !currentQuestion && <GameStartTimer onStart={handleGameStart} />}
+      <View style={styles.questionContainer}>{currentQuestion && <ComplexEquationComponent equation={currentQuestion.equation} />}</View>
       <EstimationInterface />
-      <View />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  window: {...ScreenContainer},
+  window: {
+    ...ScreenContainer,
+    flexDirection: 'row',
+  },
+
+  questionContainer: {
+    flex: 1,
+    height: '100%',
+    padding: spaceDefault,
+  },
 })
 
 export default GameEstimate
