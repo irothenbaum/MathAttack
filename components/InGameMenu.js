@@ -60,11 +60,7 @@ function InGameMenu(props) {
   return (
     <React.Fragment>
       <Pressable style={styles.openIcon} onPress={() => setIsOpen(true)}>
-        <FontAwesomeIcon
-          icon={faChevronLeft}
-          color={isDark ? sunbeam : shadow}
-          size={font3}
-        />
+        <FontAwesomeIcon icon={faChevronLeft} color={isDark ? sunbeam : shadow} size={font3} />
       </Pressable>
       <Modal onClose={handleResume} isOpen={isOpen}>
         <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
@@ -78,6 +74,7 @@ function InGameMenu(props) {
             }
           }}
           size={MenuButton.SIZE_SMALL}
+          blurCount={2}
         />
         <MenuButton
           style={styles.button}

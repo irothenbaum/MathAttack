@@ -15,26 +15,24 @@ class Equation {
 
   /**
    * @param {GameSettings} GameSettings
-   * @param {number?} term1
+   * @param {number|Phrase?} firstTerm
    * @returns {Equation}
    */
-  static getRandomFromSettings(GameSettings, term1) {
-    let term1IsSet = typeof term1 === 'number'
+  static getRandomFromSettings(GameSettings, firstTerm) {
+    let term1 = typeof firstTerm === 'number' ? firstTerm : typeof firstTerm === 'object' ? Phrase.getSolution(firstTerm) : undefined
+    const term1IsSet = typeof term1 === 'number'
+
     let answer
     do {
       answer = roundIfNeeded(
-        GameSettings.minValue +
-          Math.random() * (GameSettings.maxValue - GameSettings.minValue),
+        GameSettings.minValue + Math.random() * (GameSettings.maxValue - GameSettings.minValue),
         GameSettings.decimalPlaces,
       )
     } while (answer === term1)
 
     if (!term1IsSet) {
       do {
-        term1 = roundIfNeeded(
-          answer - Math.random() * 2 * answer,
-          GameSettings.decimalPlaces,
-        )
+        term1 = roundIfNeeded(answer - Math.random() * 2 * answer, GameSettings.decimalPlaces)
       } while (term1 === 0 || term1 === answer)
     }
 
@@ -56,7 +54,7 @@ class Equation {
       term2 = Math.abs(term2)
     }
 
-    return new Equation(new Phrase(term1, operation, term2))
+    return new Equation(new Phrase(term1IsSet ? firstTerm : term1, operation, term2))
   }
 
   /**

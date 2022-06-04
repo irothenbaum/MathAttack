@@ -18,11 +18,21 @@ class GameQuestion {
    * @returns {GameQuestion}
    */
   static getRandomFromSettings(GameSettings, term1) {
-    return new GameQuestion(
-      Equation.getRandomFromSettings(GameSettings, term1),
-      Date.now(),
-      Date.now() + GameSettings.equationDuration,
-    )
+    return new GameQuestion(Equation.getRandomFromSettings(GameSettings, term1), Date.now(), Date.now() + GameSettings.equationDuration)
+  }
+
+  /**
+   * @param {GameSettings} GameSettings
+   */
+  static getRandomEstimateQuestionFromSettings(GameSettings) {
+    let equation
+    let count = GameSettings.estimateItems
+    do {
+      equation = Equation.getRandomFromSettings(GameSettings, equation?.phrase)
+      count--
+    } while (count > 0)
+
+    return new GameQuestion(equation, Date.now(), Date.now() + GameSettings.equationDuration)
   }
 
   /**

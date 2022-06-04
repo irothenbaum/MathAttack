@@ -158,7 +158,7 @@ function ResultsAndPlayAgain(props) {
           {amIReady ? (
             <FontAwesomeIcon size={font3} icon={faCheck} color={isDark ? dimmedGreen : neonGreen} />
           ) : (
-            <MenuButton title={'Play again'} onPress={handlePlayAgain} />
+            <MenuButton title={'Play again'} onPress={handlePlayAgain} blurCount={2} />
           )}
         </View>
         <View style={styles.singleScoreContainer}>

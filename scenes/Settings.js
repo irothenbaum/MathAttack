@@ -14,11 +14,7 @@ import {selectGameSettings} from '../redux/selectors'
 import {setDecimalPlaces, setMinMaxValues} from '../redux/SettingsSlice'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_Menu} from '../constants/scenes'
-import {
-  GAME_LABEL_CLASSIC,
-  GAME_LABEL_ESTIMATE,
-  GAME_LABEL_MARATHON,
-} from '../constants/game'
+import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON} from '../constants/game'
 
 const MAX_VALUE = 999999
 
@@ -35,12 +31,9 @@ function Settings() {
           <Pressable
             onPress={() => {
               dispatch(goToScene(Scene_Menu))
-            }}>
-            <FontAwesomeIcon
-              size={font3}
-              icon={faChevronLeft}
-              color={isDark ? sunbeam : shadow}
-            />
+            }}
+          >
+            <FontAwesomeIcon size={font3} icon={faChevronLeft} color={isDark ? sunbeam : shadow} />
           </Pressable>
           <TitleText>Settings</TitleText>
 
@@ -51,35 +44,35 @@ function Settings() {
               value={settings.minValue}
               min={0}
               max={MAX_VALUE}
-              onChange={v => dispatch(setMinMaxValues(v, settings.maxValue))}
+              onChange={(v) => dispatch(setMinMaxValues(v, settings.maxValue))}
             />
             <NumberInput
               label={'Maximum answer value'}
               value={settings.maxValue}
               min={0}
               max={MAX_VALUE}
-              onChange={v => dispatch(setMinMaxValues(settings.minValue, v))}
+              onChange={(v) => dispatch(setMinMaxValues(settings.minValue, v))}
             />
             <NumberInput
               label={'Decimal places'}
               max={3}
               min={0}
               value={settings.decimalPlaces}
-              onChange={v => dispatch(setDecimalPlaces(v))}
+              onChange={(v) => dispatch(setDecimalPlaces(v))}
             />
           </View>
 
-          <View style={styles.sectionContainer}>
-            <SubTitleText>{GAME_LABEL_CLASSIC}</SubTitleText>
-          </View>
+          {/*<View style={styles.sectionContainer}>*/}
+          {/*  <SubTitleText>{GAME_LABEL_CLASSIC}</SubTitleText>*/}
+          {/*</View>*/}
 
-          <View style={styles.sectionContainer}>
-            <SubTitleText>{GAME_LABEL_MARATHON}</SubTitleText>
-          </View>
+          {/*<View style={styles.sectionContainer}>*/}
+          {/*  <SubTitleText>{GAME_LABEL_MARATHON}</SubTitleText>*/}
+          {/*</View>*/}
 
-          <View style={styles.sectionContainer}>
-            <SubTitleText>{GAME_LABEL_ESTIMATE}</SubTitleText>
-          </View>
+          {/*<View style={styles.sectionContainer}>*/}
+          {/*  <SubTitleText>{GAME_LABEL_ESTIMATE}</SubTitleText>*/}
+          {/*</View>*/}
         </View>
       </ScrollView>
     </View>

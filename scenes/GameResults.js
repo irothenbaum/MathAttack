@@ -8,31 +8,14 @@ import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
 import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
 import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
 import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
-import {
-  Scene_GameClassic,
-  Scene_GameEstimate,
-  Scene_GameMarathon,
-  Scene_GameVersus,
-  Scene_Menu,
-} from '../constants/scenes'
-import {
-  selectGameSettings,
-  selectLastGameResults,
-  selectLastGameTypePlayed,
-} from '../redux/selectors'
+import {Scene_GameClassic, Scene_GameEstimate, Scene_GameMarathon, Scene_GameVersus, Scene_Menu} from '../constants/scenes'
+import {selectGameSettings, selectLastGameResults, selectLastGameTypePlayed} from '../redux/selectors'
 import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
 import QuestionResult from '../models/QuestionResult'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {faCheck} from '@fortawesome/free-solid-svg-icons'
-import {
-  dimmedBlue,
-  dimmedGreen,
-  dimmedRed,
-  neonBlue,
-  neonGreen,
-  neonRed,
-} from '../styles/colors'
+import {dimmedBlue, dimmedGreen, dimmedRed, neonBlue, neonGreen, neonRed} from '../styles/colors'
 import {font2, font4} from '../styles/typography'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
@@ -94,15 +77,11 @@ function SingleGameResult({result, count}) {
         <NormalText>{count}.</NormalText>
       </View>
       <View style={resultStyles.singleResultEquation}>
-        <NormalText>
-          {Equation.getLeftSide(result.question.equation)}
-        </NormalText>
+        <NormalText>{Equation.getLeftSide(result.question.equation)}</NormalText>
       </View>
       <NormalText style={resultStyles.singleResultEquals}>=</NormalText>
       <View style={resultStyles.singleResultAnswer}>
-        <NormalText style={isCorrect ? null : resultStyles.wrongAnswer}>
-          {isTimeout ? 'N/A' : userAnswer}
-        </NormalText>
+        <NormalText style={isCorrect ? null : resultStyles.wrongAnswer}>{isTimeout ? 'N/A' : userAnswer}</NormalText>
       </View>
       <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (
@@ -113,9 +92,7 @@ function SingleGameResult({result, count}) {
             color={isDarkMode() ? dimmedGreen : neonGreen}
           />
         ) : (
-          <NormalText style={{color: isDarkMode() ? dimmedRed : neonRed}}>
-            {correctAnswer}
-          </NormalText>
+          <NormalText style={{color: isDarkMode() ? dimmedRed : neonRed}}>{correctAnswer}</NormalText>
         )}
       </View>
     </View>
@@ -174,37 +151,24 @@ function GameResults() {
       <View style={styles.resultsContainer}>
         <View>
           <NormalText>Questions: {results.length}</NormalText>
-          <NormalText>
-            Correct: {results.filter(QuestionResult.isCorrect).length}
-          </NormalText>
+          <NormalText>Correct: {results.filter(QuestionResult.isCorrect).length}</NormalText>
 
           <UIText>Score: {formatNumber(score)}</UIText>
         </View>
 
         <View style={styles.detailsContainer}>
           {isShowingDetails && (
-            <FlatList
-              data={results}
-              renderItem={({item, index}) => (
-                <SingleGameResult count={index + 1} result={item} />
-              )}
-            />
+            <FlatList data={results} renderItem={({item, index}) => <SingleGameResult count={index + 1} result={item} />} />
           )}
-          <NormalText
-            style={{color: isDarkMode() ? dimmedBlue : neonBlue}}
-            onPress={() => setIsShowingDetails(!isShowingDetails)}>
+          <NormalText style={{color: isDarkMode() ? dimmedBlue : neonBlue}} onPress={() => setIsShowingDetails(!isShowingDetails)}>
             {isShowingDetails ? 'Hide details' : 'Show details'}
           </NormalText>
         </View>
       </View>
 
       <View style={styles.buttonContainer}>
-        <MenuButton title={'Play Again'} onPress={handlePlayAgain} />
-        <MenuButton
-          variant={MenuButton.VARIANT_DESTRUCTIVE}
-          title={'Menu'}
-          onPress={handleMenu}
-        />
+        <MenuButton variant={MenuButton.VARIANT_DESTRUCTIVE} title={'Menu'} onPress={handleMenu} />
+        <MenuButton title={'Play again'} onPress={handlePlayAgain} blurCount={2} />
       </View>
     </View>
   )

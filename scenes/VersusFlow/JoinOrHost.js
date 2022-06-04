@@ -17,7 +17,7 @@ function JoinOrHost(props) {
   const handleNewGame = () => {
     setIsConnecting(true)
     const socket = new VersusSocket()
-    const handler = socket.on(Types.CONNECTION.WAITING, e => {
+    const handler = socket.on(Types.CONNECTION.WAITING, (e) => {
       props.onConnect(socket, true, e.connectCode)
       socket.off(handler)
     })
@@ -27,7 +27,7 @@ function JoinOrHost(props) {
   const handleJoinGame = () => {
     setIsConnecting(true)
     const socket = new VersusSocket(joinCode)
-    const handler = socket.on(Types.CONNECTION.READY, e => {
+    const handler = socket.on(Types.CONNECTION.READY, (e) => {
       props.onConnect(socket, false, joinCode)
       socket.off(handler)
     })
@@ -38,23 +38,10 @@ function JoinOrHost(props) {
     <View style={styles.container}>
       <TitleText style={styles.titleText}>Versus</TitleText>
       <NormalText style={styles.prompt}>Host a new game:</NormalText>
-      <MenuButton
-        isLoading={isConnecting}
-        title={'New Game'}
-        onPress={handleNewGame}
-      />
+      <MenuButton blurCount={2} isLoading={isConnecting} title={'New Game'} onPress={handleNewGame} />
       <DividerLine />
-      <StringInput
-        label={'Enter game code'}
-        value={joinCode}
-        onChange={setJoinCode}
-      />
-      <MenuButton
-        isDisabled={!joinCode}
-        isLoading={isConnecting}
-        title={'Join Game'}
-        onPress={handleJoinGame}
-      />
+      <StringInput label={'Enter game code'} value={joinCode} onChange={setJoinCode} />
+      <MenuButton blurCount={2} isDisabled={!joinCode} isLoading={isConnecting} title={'Join Game'} onPress={handleJoinGame} />
     </View>
   )
 }

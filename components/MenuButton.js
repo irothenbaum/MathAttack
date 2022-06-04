@@ -47,7 +47,7 @@ const BLUR_DURATION = 1000
 const BLUR_DELAY = 1000
 
 function MenuButton(props) {
-  const {animate, isAnimating, animation} = useAnimationStation()
+  const {animate, isAnimating, animation, cancel} = useAnimationStation()
   const {setTimer} = useDoOnceTimer()
   const blurKey = useRef(getRandomString())
   const isDark = isDarkMode()
@@ -65,6 +65,7 @@ function MenuButton(props) {
     switch (variant) {
       case MenuButton.VARIANT_DESTRUCTIVE:
         bgColor = isDark ? dimmedRed : neonRed
+        textColor = isDark ? white : black
         break
 
       case MenuButton.VARIANT_DEFAULT:
@@ -82,10 +83,14 @@ function MenuButton(props) {
   }
   useEffect(() => {
     doBlur()
+
+    return () => {
+      cancel()
+    }
   }, [])
 
   return (
-    <View>
+    <View style={props.style}>
       {!props.isDisabled && !!contentRef.current && props.blurCount > 0 && (
         <View
           style={{position: 'absolute', top: 0, left: 0, zIndex: -1, width: contentRef.current.width, height: contentRef.current.height}}
@@ -95,7 +100,10 @@ function MenuButton(props) {
               <ButtonShadow
                 key={i}
                 color={textColor}
-                animationStyle={{...getOutOfFocusStylesForAnimation(animation), opacity: (i + 1) / (props.blurCount + 1)}}
+                animationStyle={{
+                  ...getOutOfFocusStylesForAnimation(animation, undefined, undefined, spaceSmall),
+                  opacity: (i + 1) / (props.blurCount + 1),
+                }}
               />
             )
           })}
@@ -113,7 +121,6 @@ function MenuButton(props) {
             justifyContent: props.icon ? 'flex-start' : 'center',
             zIndex: 10,
           },
-          props.style,
         ]}
         onPress={canPress ? props.onPress : () => {}}
       >
@@ -164,8 +171,6 @@ MenuButton.SIZE_DEFAULT = font2
 MenuButton.SIZE_SMALL = font1
 
 MenuButton.VARIANT_DEFAULT = 'default'
-MenuButton.VARIANT_AFFIRMATIVE = 'affirmative'
 MenuButton.VARIANT_DESTRUCTIVE = 'destructive'
-MenuButton.VARIANT_SECONDARY = 'secondary'
 
 export default MenuButton

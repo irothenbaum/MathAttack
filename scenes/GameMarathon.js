@@ -1,10 +1,6 @@
 import React, {useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {
-  selectUserAnswer,
-  selectCurrentQuestion,
-  selectUserInput,
-} from '../redux/selectors'
+import {selectUserAnswer, selectCurrentQuestion, selectUserInput, selectGameSettings} from '../redux/selectors'
 import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {setAnswer} from '../redux/UISlice'
@@ -33,22 +29,14 @@ const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
 function GameMarathon() {
   const isDark = isDarkMode()
   const dispatch = useDispatch()
-  const {
-    isAnimatingForCorrect,
-    animation: answerReactionAnimation,
-    animateCorrect,
-    animateIncorrect,
-  } = useAnswerReactionResults()
+  const {isAnimatingForCorrect, animation: answerReactionAnimation, animateCorrect, animateIncorrect} = useAnswerReactionResults()
 
-  const {
-    animation: nextQuestionAnimation,
-    animate: animateNextQuestion,
-    isAnimating: isAnimatingNextQuestion,
-  } = useAnimationStation()
+  const {animation: nextQuestionAnimation, animate: animateNextQuestion, isAnimating: isAnimatingNextQuestion} = useAnimationStation()
 
-  const [strikes, setStrikes] = useState(3)
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
+  const settings = useSelector(selectGameSettings)
+  const [strikes, setStrikes] = useState(settings.numberOfStrikes)
 
   const handleGuess = () => {
     dispatch(recordAnswer(userAnswer))
@@ -93,7 +81,7 @@ function GameMarathon() {
     animateCorrect()
   }
 
-  const getColorForStrike = isActive => {
+  const getColorForStrike = (isActive) => {
     return isActive ? (isDark ? dimmedRed : neonRed) : isDark ? sunbeam : shadow
   }
 
@@ -101,26 +89,11 @@ function GameMarathon() {
     <View style={styles.window}>
       <InGameMenu />
       {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
-      <GameBackground
-        animation={answerReactionAnimation}
-        isAnimatingForCorrect={isAnimatingForCorrect}
-      />
+      <GameBackground animation={answerReactionAnimation} isAnimatingForCorrect={isAnimatingForCorrect} />
       <View style={styles.strikesContainer}>
-        <FontAwesomeIcon
-          icon={faTimes}
-          size={font4}
-          color={getColorForStrike(strikes < 3)}
-        />
-        <FontAwesomeIcon
-          icon={faTimes}
-          size={font4}
-          color={getColorForStrike(strikes < 2)}
-        />
-        <FontAwesomeIcon
-          icon={faTimes}
-          size={font4}
-          color={getColorForStrike(strikes < 1)}
-        />
+        <FontAwesomeIcon icon={faTimes} size={font4} color={getColorForStrike(strikes < 3)} />
+        <FontAwesomeIcon icon={faTimes} size={font4} color={getColorForStrike(strikes < 2)} />
+        <FontAwesomeIcon icon={faTimes} size={font4} color={getColorForStrike(strikes < 1)} />
       </View>
       <EquationAndAnswerInterface
         onGuess={handleGuess}
