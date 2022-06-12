@@ -1,11 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
 import {View, StyleSheet, Easing} from 'react-native'
 import {useDispatch, useSelector} from 'react-redux'
-import {
-  selectUserAnswer,
-  selectCurrentQuestion,
-  selectGameSettings,
-} from '../redux/selectors'
+import {selectUserAnswer, selectCurrentQuestion, selectGameSettings} from '../redux/selectors'
 import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import {ANSWER_TIMEOUT} from '../constants/game'
 import CalculatorInput from '../components/UI/CalculatorInput'
@@ -22,39 +18,28 @@ import GameStartTimer from '../components/GameStartTimer'
 import useDoOnceTimer from '../hooks/useDoOnceTimer'
 import InGameMenu from '../components/InGameMenu'
 import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
+import useAutoSubmit from '../hooks/useAutoSubmit'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const NEXT_QUESTION_TIMER = 'next-question-timer'
 
 function GameClassic() {
   const dispatch = useDispatch()
-  const {
-    animation: equationTimer,
-    animate: startEquationTimer,
-    cancel: cancelEquationTimer,
-  } = useAnimationStation()
-  const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} =
-    useAnswerReactionResults()
+  const {animation: equationTimer, animate: startEquationTimer, cancel: cancelEquationTimer} = useAnimationStation()
+  const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} = useAnswerReactionResults()
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectGameSettings)
   const {setTimer, isTimerSet} = useDoOnceTimer()
 
   const lastGuess = useRef(null)
-  const [questionsRemaining, setQuestionsRemaining] = useState(
-    gameSettings.classicNumberOfRounds,
-  )
+  const [questionsRemaining, setQuestionsRemaining] = useState(gameSettings.classicNumberOfRounds)
 
   useEffect(() => {
     if (currentQuestion) {
       let msRemaining = GameQuestion.getMSRemaining(currentQuestion)
       let amountRemaining = 1 - msRemaining / gameSettings.equationDuration
-      startEquationTimer(
-        msRemaining,
-        handleTimeout,
-        Easing.linear,
-        amountRemaining,
-      )
+      startEquationTimer(msRemaining, handleTimeout, Easing.linear, amountRemaining)
     } else {
       cancelEquationTimer()
     }
@@ -67,41 +52,28 @@ function GameClassic() {
     let nextQuestionsRemaining = questionsRemaining - 1
     if (nextQuestionsRemaining > 0) {
       setQuestionsRemaining(nextQuestionsRemaining)
-      setTimer(
-        NEXT_QUESTION_TIMER,
-        () => dispatch(generateNewQuestion()),
-        NEXT_QUESTION_TIMEOUT,
-      )
+      setTimer(NEXT_QUESTION_TIMER, () => dispatch(generateNewQuestion()), NEXT_QUESTION_TIMEOUT)
     } else {
-      setTimer(
-        NEXT_QUESTION_TIMER,
-        () => dispatch(goToScene(Scene_GameResults)),
-        NEXT_QUESTION_TIMEOUT,
-      )
+      setTimer(NEXT_QUESTION_TIMER, () => dispatch(goToScene(Scene_GameResults)), NEXT_QUESTION_TIMEOUT)
     }
   }
 
-  const handleGuess = () => {
-    let result = new QuestionResult(currentQuestion, userAnswer)
+  const handleGuess = (q, a) => {
+    let result = new QuestionResult(q, a)
     if (QuestionResult.isCorrect(result)) {
-      dispatch(recordAnswer(userAnswer))
+      dispatch(recordAnswer(a))
       animateCorrect()
       handleNextQuestion()
     } else {
-      lastGuess.current = userAnswer
+      lastGuess.current = a
       dispatch(setAnswer(''))
       animateIncorrect()
     }
   }
+  useAutoSubmit(handleGuess)
 
   const handleTimeout = () => {
-    dispatch(
-      recordAnswer(
-        typeof lastGuess.current === 'number'
-          ? lastGuess.current
-          : ANSWER_TIMEOUT,
-      ),
-    )
+    dispatch(recordAnswer(typeof lastGuess.current === 'number' ? lastGuess.current : ANSWER_TIMEOUT))
     animateIncorrect()
     handleNextQuestion()
   }
@@ -117,13 +89,10 @@ function GameClassic() {
     <View style={styles.window}>
       <InGameMenu />
       {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
-      <GameBackground
-        animation={animation}
-        isAnimatingForCorrect={isAnimatingForCorrect}
-      />
+      <GameBackground animation={animation} isAnimatingForCorrect={isAnimatingForCorrect} />
 
       <EquationAndAnswerInterface
-        onGuess={handleGuess}
+        onGuess={() => handleGuess(currentQuestion, userAnswer)}
         equationTimer={equationTimer}
         isAnimatingNextQuestion={isShowingAnswer}
         isAnimatingForCorrect={isAnimatingForCorrect}

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
@@ -18,6 +18,8 @@ import GameMarathon from './scenes/GameMarathon'
 import GameEstimate from './scenes/GameEstimate'
 import useAnimationStation from './hooks/useAnimationStation'
 import GameVersus from './scenes/GameVersus'
+import {AsyncStorage} from 'react-native'
+import useReduxPersist from './hooks/useReduxPersist'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -33,7 +35,16 @@ function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
   const {} = useAnimationStation()
 
-  useEffect(() => {}, [currentScene])
+  const {flush, hydrate} = useReduxPersist()
+
+  useEffect(() => {
+    hydrate()
+  }, [])
+
+  // whenever the scene changes
+  useEffect(() => {
+    flush()
+  }, [currentScene])
 
   let SceneComponent = SceneMap[currentScene]
 

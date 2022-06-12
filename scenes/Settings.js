@@ -2,19 +2,22 @@ import React from 'react'
 import {View, Text, StyleSheet, Pressable, ScrollView} from 'react-native'
 import TitleText from '../components/TitleText'
 import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
-import {font3} from '../styles/typography'
+import {font2, font3} from '../styles/typography'
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
-import {grey, shadow, sunbeam} from '../styles/colors'
+import {dimmedBlue, grey, neonBlue, shadow, sunbeam} from '../styles/colors'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import isDarkMode from '../hooks/isDarkMode'
 import SubTitleText from '../components/SubTitleText'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
-import {setDecimalPlaces, setMinMaxValues} from '../redux/SettingsSlice'
+import {flushFromCache, setAutoSubmitCorrect, setDecimalPlaces, setMinMaxValues} from '../redux/SettingsSlice'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_Menu} from '../constants/scenes'
 import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON} from '../constants/game'
+import BooleanInput from '../components/BooleanInput'
+import DefaultSettings from '../models/GameSettings'
+import UIText from '../components/UIText'
 
 const MAX_VALUE = 999999
 
@@ -23,6 +26,12 @@ function Settings() {
   const dispatch = useDispatch()
 
   const settings = useSelector(selectGameSettings)
+
+  const haveSettingsChanged = JSON.stringify(settings) !== JSON.stringify(DefaultSettings)
+
+  const handleResetToDefault = () => {
+    dispatch(flushFromCache(DefaultSettings))
+  }
 
   return (
     <View style={styles.window}>
@@ -60,6 +69,12 @@ function Settings() {
               value={settings.decimalPlaces}
               onChange={(v) => dispatch(setDecimalPlaces(v))}
             />
+
+            <BooleanInput
+              value={settings.autoSubmitCorrect}
+              onChange={(v) => dispatch(setAutoSubmitCorrect(v))}
+              label={'Auto submit answer'}
+            />
           </View>
 
           {/*<View style={styles.sectionContainer}>*/}
@@ -73,6 +88,12 @@ function Settings() {
           {/*<View style={styles.sectionContainer}>*/}
           {/*  <SubTitleText>{GAME_LABEL_ESTIMATE}</SubTitleText>*/}
           {/*</View>*/}
+
+          {haveSettingsChanged && (
+            <Pressable onPress={handleResetToDefault}>
+              <UIText style={{fontSize: font2, color: isDark ? dimmedBlue : neonBlue}}>Reset to default</UIText>
+            </Pressable>
+          )}
         </View>
       </ScrollView>
     </View>

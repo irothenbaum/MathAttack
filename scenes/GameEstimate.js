@@ -10,7 +10,7 @@ import {generateNewEstimationQuestion} from '../redux/GameSlice'
 import GameQuestion from '../models/GameQuestion'
 import EstimationInterface from '../components/UI/EstimationInterface'
 import ComplexEquationComponent from '../components/ComplexEquationComponent'
-import {spaceDefault} from '../styles/layout'
+import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 
 function GameEstimate() {
   const settings = useSelector(selectGameSettings)
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     padding: spaceDefault,
+    paddingBottom: spaceExtraLarge,
   },
 })
 

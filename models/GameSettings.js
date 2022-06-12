@@ -3,6 +3,7 @@ const GameSettings = {
   minValue: 0,
   maxValue: 100,
   decimalPlaces: 0,
+  autoSubmitCorrect: false,
 
   // classic:
   equationDuration: 5000,
