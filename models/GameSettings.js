@@ -4,6 +4,7 @@ const GameSettings = {
   maxValue: 100,
   decimalPlaces: 0,
   autoSubmitCorrect: false,
+  allowNegative: true,
 
   // classic:
   equationDuration: 5000,
