@@ -3,12 +3,12 @@ const GameSettings = {
   minValue: 0,
   maxValue: 100,
   decimalPlaces: 0,
-  autoSubmitCorrect: false,
+  autoSubmit: true,
   allowNegative: true,
 
   // classic:
   equationDuration: 5000,
-  classicNumberOfRounds: 5,
+  classicNumberOfRounds: 6,
 
   // marathon:
   numberOfStrikes: 3,

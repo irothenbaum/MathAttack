@@ -16,7 +16,7 @@ const settingsSlice = createSlice({
       state.equationDuration = payload
     },
     setAutoSubmitCorrect: (state, {payload}) => {
-      state.autoSubmitCorrect = payload
+      state.autoSubmit = payload
     },
 
     flushFromCache: (state, {payload}) => {

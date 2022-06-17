@@ -1,14 +1,18 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import {PanResponder, View, StyleSheet} from 'react-native'
+import {Animated, PanResponder, View, StyleSheet} from 'react-native'
 import {useDispatch, useSelector} from 'react-redux'
-import {selectGameSettings, selectUserAnswer} from '../../redux/selectors'
+import {selectCurrentQuestion, selectGameSettings, selectUserAnswer} from '../../redux/selectors'
 import UIText from '../UIText'
-import {font2} from '../../styles/typography'
-import {spaceDefault} from '../../styles/layout'
+import {font2, font3, font1} from '../../styles/typography'
+import {spaceDefault, spaceSmall} from '../../styles/layout'
 import isDarkMode from '../../hooks/isDarkMode'
 import {getUIColor} from '../../lib/utilities'
-
+import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
+import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import PropTypes from 'prop-types'
+import {dimmedRed, neonGreen, neonRed} from '../../styles/colors'
 
 const numberOfSteps = 10
 
@@ -77,11 +81,18 @@ function Slider(props) {
 // ----------------------------------------------------------------------------------------
 
 function EstimationInterface(props) {
+  const isDark = isDarkMode()
   const [containerBottomPosition, setContainerBottomPosition] = useState(0)
   const [topNotchTopPosition, setTopNotchTopPosition] = useState(1)
   const [bottomNotchTopPosition, setBottomNotchTopPosition] = useState(1)
   const answer = useSelector(selectUserAnswer)
   const settings = useSelector(selectGameSettings)
+
+  useEffect(() => {
+    if (settings.autoSubmit && answer) {
+      props.onSubmitAnswer(answer)
+    }
+  }, [answer])
 
   const fontSizeAdjust = rulerFontSize / 2
   const range = settings.maxValue - settings.minValue
@@ -96,12 +107,38 @@ function EstimationInterface(props) {
       }}
     >
       <Slider
+        onSlide={(v, t) => props.onChangeTempAnswer(v)}
         style={{
           top: topNotchTopPosition + fontSizeAdjust,
           bottom: containerBottomPosition - fontSizeAdjust - bottomNotchTopPosition,
         }}
+        showCorrectAnswer={props.isAnimatingNextQuestion}
       />
       <View style={styles.ruler}>
+        <View
+          style={[
+            styles.timerBar,
+            {
+              backgroundColor: getUIColor(isDark),
+              left: -8,
+            },
+          ]}
+        >
+          {props.equationTimer && (
+            <Animated.View
+              style={[
+                styles.timerBar,
+                {
+                  backgroundColor: isDark ? dimmedRed : neonRed,
+                  height: props.equationTimer.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0%', '100%'],
+                  }),
+                },
+              ]}
+            />
+          )}
+        </View>
         {containerBottomPosition > 0 &&
           [...new Array(numberOfSteps + 1)].map((e, i) => {
             const value = parseInt(stepSize * (numberOfSteps - i))
@@ -129,17 +166,34 @@ function EstimationInterface(props) {
   )
 }
 
-const sliderSize = 60
+const sliderSize = 70
 const halfSlider = sliderSize / 2
 const rulerFontSize = font2
+const correctAnswerMarkerHeight = 6
 
 const styles = StyleSheet.create({
+  correctAnswerMarker: {
+    position: 'absolute',
+    left: -20,
+    width: 40,
+    height: correctAnswerMarkerHeight,
+    backgroundColor: neonGreen,
+  },
+
+  timerBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: 8,
+  },
+
   container: {
     marginRight: spaceDefault,
   },
 
   ruler: {
-    paddingVertical: spaceDefault,
+    paddingVertical: halfSlider,
     height: '100%',
     width: 100,
     flexDirection: 'column',
@@ -179,6 +233,9 @@ const styles = StyleSheet.create({
   },
 
   slider: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     position: 'absolute',
     backgroundColor: 'rgba(255,255,255,0.5)',
     bottom: 0,
@@ -192,11 +249,11 @@ const styles = StyleSheet.create({
   },
 
   sliderActive: {
-    backgroundColor: 'rgba(255,255,255,1)',
+    backgroundColor: 'rgba(255,255,255, 0.3)',
   },
 
   sliderInActive: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: 'rgba(255,255,255, 1)',
   },
 
   sliderContainer: {
@@ -209,13 +266,24 @@ const styles = StyleSheet.create({
   },
 })
 
+EstimationInterface.propTypes = {
+  onSubmitAnswer: PropTypes.func.isRequired,
+  onChangeTempAnswer: PropTypes.func.isRequired,
+  equationTimer: PropTypes.any,
+  isAnimatingNextQuestion: PropTypes.bool,
+  nextQuestionAnimation: PropTypes.any,
+  answerReactionAnimation: PropTypes.any,
+  isAnimatingForCorrect: PropTypes.bool,
+}
+
 export default EstimationInterface
 
 function Slider(props) {
-  const [containerHeight, setContainerHeight] = useState()
+  const [containerHeight, setContainerHeight] = useState(undefined)
   const [tempValue, setTempValue] = useState(0)
   const settings = useSelector(selectGameSettings)
-  const [startingPosition, setStartingPosition] = useState()
+  const [startingPosition, setStartingPosition] = useState(undefined)
+  const currentQuestion = useSelector(selectCurrentQuestion)
 
   const range = settings.maxValue - settings.minValue
 
@@ -223,8 +291,14 @@ function Slider(props) {
 
   const getAnswerFromTopValue = useCallback(
     (topValue) => {
-      return ((containerHeight - (topValue + halfSlider)) / containerHeight) * range + settings.minValue
+      const rawAnswer = ((containerHeight - (topValue + halfSlider)) / containerHeight) * range + settings.minValue
+      return settings.decimalPlaces > 0 ? rawAnswer.toFixed(1) : Math.round(rawAnswer)
     },
+    [containerHeight, range, settings],
+  )
+
+  const getTopFromAnswerValue = useCallback(
+    (answerValue) => -1 * ((containerHeight * (answerValue - settings.minValue)) / range - containerHeight),
     [containerHeight, range, settings],
   )
 
@@ -233,19 +307,13 @@ function Slider(props) {
     if (typeof containerHeight !== 'number') {
       return
     }
-    const initialTop = -1 * ((containerHeight * (tempValue - settings.minValue)) / range - halfSlider - containerHeight)
-    setStartingPosition(initialTop)
-  }, [containerHeight])
-
-  // answerValue = ((containerHeight - (topValue + halfSlider)) / containerHeight) * range + settings.minValue
-  // answerValue - settings.minValue = ((containerHeight - (topValue + halfSlider)) / containerHeight) * range
-  // (answerValue - settings.minValue) / range = (containerHeight - (topValue + halfSlider)) / containerHeight
-  // containerHeight * (answerValue - settings.minValue) / range = containerHeight - topValue + halfSlider
-  // (containerHeight * (answerValue - settings.minValue) / range) - containerHeight - halfSlider = 0 - topValue
-  // -1 * (containerHeight * (answerValue - settings.minValue) / range - halfSlider - containerHeight) = topValue
+    setStartingPosition(getTopFromAnswerValue(tempValue) - halfSlider)
+  }, [getTopFromAnswerValue])
 
   const handleSlide = (top) => {
-    setTempValue(getAnswerFromTopValue(top))
+    const temp = getAnswerFromTopValue(top)
+    setTempValue(temp)
+    props.onSlide(temp, top)
   }
 
   const handleSubmitAnswer = (top) => {
@@ -263,8 +331,18 @@ function Slider(props) {
         setContainerHeight(height)
       }}
     >
+      {props.showCorrectAnswer && (
+        <View
+          style={[
+            styles.correctAnswerMarker,
+            {top: getTopFromAnswerValue(Equation.getSolution(currentQuestion.equation)) - correctAnswerMarkerHeight / 2},
+          ]}
+        />
+      )}
       {typeof startingPosition === 'number' && (
         <DraggableCircle
+          showDecimals={settings.decimalPlaces > 0}
+          value={tempValue}
           startingPosition={startingPosition}
           minTop={-halfSlider}
           maxTop={containerHeight - halfSlider}
@@ -305,7 +383,7 @@ class DraggableCircle extends React.Component {
       this._previousTop = this._circleTopStyle = this._normalizeTopValue(nextProps.startingPosition)
       this._updateNativeStyles()
     }
-    return false
+    return nextProps.value !== this.props.value
   }
 
   componentDidMount() {
@@ -313,7 +391,17 @@ class DraggableCircle extends React.Component {
   }
 
   render() {
-    return <View ref={(c) => (this.circle = c)} style={styles.slider} {...this._panResponder.panHandlers} />
+    const isDark = isDarkMode()
+    const mainValue = this.props.showDecimals ? parseInt(this.props.value) : Math.round(this.props.value)
+    const decimal = (this.props.value - mainValue).toFixed(3).substr(1)
+
+    return (
+      <View ref={(c) => (this.circle = c)} style={styles.slider} {...this._panResponder.panHandlers}>
+        <FontAwesomeIcon style={{position: 'absolute', left: -22}} icon={faChevronLeft} color={getUIColor(isDark)} size={font3} />
+        <UIText style={{alignSelf: 'center', lineHeight: font3}}>{mainValue}</UIText>
+        {this.props.showDecimals && <UIText style={{alignSelf: 'center', fontSize: font1, lineHeight: font1}}>{decimal}</UIText>}
+      </View>
+    )
   }
 
   _updateNativeStyles() {

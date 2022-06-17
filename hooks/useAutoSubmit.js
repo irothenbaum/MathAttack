@@ -10,7 +10,7 @@ function useAutoSubmit(onCorrect) {
 
   // Auto submit answer
   useEffect(() => {
-    if (!gameSettings.autoSubmitCorrect || !currentQuestion || !userAnswer) {
+    if (!gameSettings.autoSubmit || !currentQuestion || !userAnswer) {
       return
     }
 

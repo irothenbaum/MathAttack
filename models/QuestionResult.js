@@ -11,7 +11,7 @@ class QuestionResult {
   constructor(question, answer, timeToAnswerMS) {
     this.question = question
     this.answer = answer
-    this.timeToAnswerMS = timeToAnswerMS
+    this.timeToAnswerMS = timeToAnswerMS || 1 // do NOT want this value to hit 0
     this.createdAt = Date.now()
   }
 
@@ -36,18 +36,25 @@ class QuestionResult {
    * @param {QuestionResult} obj
    * @returns {number}
    */
+  static getQuestionComplexity(obj) {
+    return Phrase.getDiscreteTerms(obj.question.equation.phrase)
+      .concat(obj.answer)
+      .reduce((sum, t) => {
+        return sum + Math.abs(t)
+      }, 0)
+  }
+
+  /**
+   * @param {QuestionResult} obj
+   * @returns {number}
+   */
   static scoreValue(obj) {
     if (!QuestionResult.isCorrect(obj)) {
       return 0
     }
 
     return Math.floor(
-      Phrase.getDiscreteTerms(obj.question.equation.phrase)
-        .concat(obj.answer)
-        .reduce((sum, t) => {
-          return sum + Math.abs(t)
-        }, 0) /
-        (obj.timeToAnswerMS / 1000), // boosted by the inverse number of seconds
+      QuestionResult.getQuestionComplexity(obj) / (obj.timeToAnswerMS / 1000), // boosted by the inverse number of seconds
     )
   }
 }

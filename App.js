@@ -8,7 +8,7 @@ import isDarkMode from './hooks/isDarkMode'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 
 // just to speed up dev time
-global.hasAnimated = true
+// global.hasAnimated = true
 
 function App() {
   const isDark = isDarkMode()

@@ -38,14 +38,10 @@ function ComplexEquationComponent(props) {
 
 const styles = StyleSheet.create({
   termsContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
     alignItems: 'center',
   },
 
   numberTerm: {
-    flex: 1,
     justifyContent: 'center',
   },
 

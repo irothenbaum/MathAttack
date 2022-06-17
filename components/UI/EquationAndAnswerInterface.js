@@ -1,22 +1,9 @@
 import React from 'react'
-import {
-  Animated,
-  StyleSheet,
-  Pressable,
-  View,
-  TouchableWithoutFeedback,
-} from 'react-native'
+import {Animated, StyleSheet, Pressable, View, TouchableWithoutFeedback} from 'react-native'
 import EquationBox from '../EquationBox'
 import {formatNumber, getVibrateStylesForAnimation} from '../../lib/utilities'
 import TitleText from '../TitleText'
-import {
-  dimmedGreen,
-  dimmedRed,
-  neonGreen,
-  neonRed,
-  sunbeam,
-  shadow,
-} from '../../styles/colors'
+import {dimmedGreen, dimmedRed, neonGreen, neonRed, sunbeam, shadow} from '../../styles/colors'
 import Equation from '../../models/Equation'
 import PropTypes from 'prop-types'
 import {useSelector} from 'react-redux'
@@ -52,21 +39,16 @@ function EquationAndAnswerInterface(props) {
                   outputRange: [1, 1, 0, 0],
                 }),
               }
-            }>
+            }
+          >
             <EquationBox
               style={
                 !!props.answerReactionAnimation && !props.isAnimatingForCorrect
-                  ? getVibrateStylesForAnimation(
-                      props.answerReactionAnimation,
-                      null,
-                      0.25,
-                    )
+                  ? getVibrateStylesForAnimation(props.answerReactionAnimation, null, 0.25)
                   : null
               }
               equation={currentQuestion.equation}
-              timerAnimation={
-                props.isAnimatingNextQuestion ? null : props.equationTimer
-              }
+              timerAnimation={props.equationTimer}
             />
           </Animated.View>
         )}
@@ -85,7 +67,8 @@ function EquationAndAnswerInterface(props) {
                   },
                 ],
               },
-          ]}>
+          ]}
+        >
           <TitleText
             style={[
               styles.answerText,
@@ -93,20 +76,11 @@ function EquationAndAnswerInterface(props) {
                 color: isDark ? sunbeam : shadow,
               },
               props.isAnimatingNextQuestion && {
-                color: props.isAnimatingForCorrect
-                  ? isDark
-                    ? dimmedGreen
-                    : neonGreen
-                  : isDark
-                  ? dimmedRed
-                  : neonRed,
+                color: props.isAnimatingForCorrect ? (isDark ? dimmedGreen : neonGreen) : isDark ? dimmedRed : neonRed,
               },
-            ]}>
-            {formatNumber(
-              props.isAnimatingNextQuestion
-                ? Equation.getSolution(currentQuestion.equation)
-                : userInput || 0,
-            )}
+            ]}
+          >
+            {formatNumber(props.isAnimatingNextQuestion ? Equation.getSolution(currentQuestion.equation) : userInput || 0)}
           </TitleText>
         </Animated.View>
       </View>

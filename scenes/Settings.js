@@ -70,11 +70,7 @@ function Settings() {
               onChange={(v) => dispatch(setDecimalPlaces(v))}
             />
 
-            <BooleanInput
-              value={settings.autoSubmitCorrect}
-              onChange={(v) => dispatch(setAutoSubmitCorrect(v))}
-              label={'Auto submit answer'}
-            />
+            <BooleanInput value={settings.autoSubmit} onChange={(v) => dispatch(setAutoSubmitCorrect(v))} label={'Auto submit answer'} />
           </View>
 
           {/*<View style={styles.sectionContainer}>*/}
