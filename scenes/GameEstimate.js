@@ -67,9 +67,9 @@ function GameEstimate() {
   }
 
   // when skipping the countdown:
-  useEffect(() => {
-    handleGameStart()
-  }, [])
+  // useEffect(() => {
+  //   handleGameStart()
+  // }, [])
 
   const answerColor = isShowingAnswer
     ? isAnimatingForCorrect
@@ -84,7 +84,7 @@ function GameEstimate() {
   return (
     <View style={styles.window}>
       <InGameMenu />
-      {false && !currentQuestion && <GameStartTimer onStart={handleGameStart} />}
+      {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
 
       {!isPerfectAnswer && <GameBackground animation={animation} isAnimatingForCorrect={isAnimatingForCorrect} />}
       {isPerfectAnswer && isShowingAnswer && (
