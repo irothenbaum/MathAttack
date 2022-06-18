@@ -12,7 +12,7 @@ import {setAnswer} from '../../redux/UISlice'
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import PropTypes from 'prop-types'
-import {dimmedRed, neonGreen, neonRed} from '../../styles/colors'
+import {dimmedBlue, dimmedRed, dimmedGreen, neonGreen, neonBlue, neonRed} from '../../styles/colors'
 
 const numberOfSteps = 10
 
@@ -169,15 +169,18 @@ function EstimationInterface(props) {
 const sliderSize = 70
 const halfSlider = sliderSize / 2
 const rulerFontSize = font2
-const correctAnswerMarkerHeight = 6
+const timerBarWidth = 8
+const markerWidth = 30
 
 const styles = StyleSheet.create({
   correctAnswerMarker: {
     position: 'absolute',
-    left: -20,
-    width: 40,
-    height: correctAnswerMarkerHeight,
-    backgroundColor: neonGreen,
+    left: -(timerBarWidth / 2 + markerWidth / 2),
+    width: markerWidth,
+    height: 6,
+    borderTopWidth: 4,
+    borderBottomWidth: 4,
+    borderColor: 'transparent',
   },
 
   timerBar: {
@@ -278,12 +281,26 @@ EstimationInterface.propTypes = {
 
 export default EstimationInterface
 
+/**
+ * @typedef CorrectAnswerDetails
+ * @property {number} guess
+ * @property {number} guessTop
+ * @property {number} answer
+ * @property {number} answerTop
+ * @property {number} answerDif
+ * @property {number} markerTop
+ * @property {number} markerHeight
+ */
+
 function Slider(props) {
+  const isDark = isDarkMode()
   const [containerHeight, setContainerHeight] = useState(undefined)
   const [tempValue, setTempValue] = useState(0)
   const settings = useSelector(selectGameSettings)
   const [startingPosition, setStartingPosition] = useState(undefined)
   const currentQuestion = useSelector(selectCurrentQuestion)
+  /** @type {CorrectAnswerDetails} correctAnswerDetails */
+  const [correctAnswerDetails, setCorrectAnswerDetails] = useState(undefined)
 
   const range = settings.maxValue - settings.minValue
 
@@ -317,7 +334,20 @@ function Slider(props) {
   }
 
   const handleSubmitAnswer = (top) => {
-    dispatch(setAnswer(getAnswerFromTopValue(top)))
+    const guess = getAnswerFromTopValue(top)
+    const guessPosition = top + halfSlider
+    const correctAnswer = Equation.getSolution(currentQuestion.equation)
+    const correctPosition = getTopFromAnswerValue(correctAnswer)
+    setCorrectAnswerDetails({
+      answer: correctAnswer,
+      answerTop: correctPosition,
+      guess: guess,
+      guessTop: guessPosition,
+      answerDif: Math.abs(correctAnswer - guess),
+      markerTop: Math.min(guessPosition, correctPosition),
+      markerHeight: Math.abs(guessPosition - correctPosition),
+    })
+    dispatch(setAnswer(guess))
   }
 
   return (
@@ -331,11 +361,18 @@ function Slider(props) {
         setContainerHeight(height)
       }}
     >
-      {props.showCorrectAnswer && (
+      {props.showCorrectAnswer && correctAnswerDetails && correctAnswerDetails.answerDif > 0 && (
         <View
           style={[
             styles.correctAnswerMarker,
-            {top: getTopFromAnswerValue(Equation.getSolution(currentQuestion.equation)) - correctAnswerMarkerHeight / 2},
+            {
+              top: correctAnswerDetails.markerTop,
+              height: correctAnswerDetails.markerHeight,
+              backgroundColor: isDark ? dimmedBlue : neonBlue,
+              ...(correctAnswerDetails.answer > correctAnswerDetails.guess
+                ? {borderTopColor: isDark ? dimmedGreen : neonGreen}
+                : {borderBottomColor: isDark ? dimmedGreen : neonGreen}),
+            },
           ]}
         />
       )}

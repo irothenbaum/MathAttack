@@ -19,7 +19,7 @@ function RoundsRemainingUI(props) {
 
   const numberCompleted = props.total - props.remaining
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.style]}>
       {arr.map((i) => {
         const isActive = i === numberCompleted
         const isPast = i < numberCompleted

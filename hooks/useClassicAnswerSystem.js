@@ -12,7 +12,7 @@ import {Scene_GameResults} from '../constants/scenes'
 import useDoOnceTimer from './useDoOnceTimer'
 import {setAnswer} from '../redux/UISlice'
 
-const NEXT_QUESTION_TIMEOUT = 2000
+export const NEXT_QUESTION_TIMEOUT = 2000
 const NEXT_QUESTION_TIMER = 'next-question-timer'
 
 /**

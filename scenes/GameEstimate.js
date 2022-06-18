@@ -10,7 +10,7 @@ import EstimationInterface from '../components/UI/EstimationInterface'
 import ComplexEquationComponent from '../components/ComplexEquationComponent'
 import {spaceDefault, spaceLarge} from '../styles/layout'
 import UIText from '../components/UIText'
-import {dimmedGreen, dimmedRed, neonGreen, neonRed, shadow, sunbeam} from '../styles/colors'
+import {dimmedGreen, dimmedRed, neonGreen, neonRed, shadow, shadowStrong, sunbeam, sunbeamStrong} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
 import {font4} from '../styles/typography'
 import GameBackground from '../components/FX/GameBackground'
@@ -20,6 +20,7 @@ import {getUIColor, getVibrateStylesForAnimation} from '../lib/utilities'
 import Equation from '../models/Equation'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
+import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
 
 function GameEstimate() {
   const gameSettings = useSelector(selectGameSettings)
@@ -28,6 +29,7 @@ function GameEstimate() {
   const answer = useSelector(selectUserAnswer)
   const dispatch = useDispatch()
   const [tempAnswer, setTempAnswer] = useState(0)
+  const [isPerfectAnswer, setIsPerfectAnswer] = useState(false)
 
   const {
     handleNextQuestion,
@@ -48,9 +50,11 @@ function GameEstimate() {
 
     let result = new EstimationQuestionResult(currentQuestion, answer)
     if (EstimationQuestionResult.isCorrect(result)) {
+      setIsPerfectAnswer(result.answer === Equation.getSolution(currentQuestion.equation))
       dispatch(recordAnswer(answer))
       animateCorrect()
     } else {
+      setIsPerfectAnswer(false)
       animateIncorrect()
       markLastGuess(answer)
     }
@@ -63,9 +67,9 @@ function GameEstimate() {
   }
 
   // when skipping the countdown:
-  // useEffect(() => {
-  //   handleGameStart()
-  // }, [])
+  useEffect(() => {
+    handleGameStart()
+  }, [])
 
   const answerColor = isShowingAnswer
     ? isAnimatingForCorrect
@@ -80,9 +84,30 @@ function GameEstimate() {
   return (
     <View style={styles.window}>
       <InGameMenu />
-      {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
-      <GameBackground animation={animation} isAnimatingForCorrect={isAnimatingForCorrect} />
-      <RoundsRemainingUI remaining={questionsRemaining} total={gameSettings.classicNumberOfRounds} />
+      {false && !currentQuestion && <GameStartTimer onStart={handleGameStart} />}
+
+      {!isPerfectAnswer && <GameBackground animation={animation} isAnimatingForCorrect={isAnimatingForCorrect} />}
+      {isPerfectAnswer && isShowingAnswer && (
+        <Animated.View
+          style={[
+            styles.perfectAnswer,
+            {
+              backgroundColor: isDark ? shadowStrong : sunbeamStrong,
+              opacity: animation
+                ? animation.interpolate({
+                    inputRange: [0, 0.1],
+                    outputRange: [0, 1],
+                  })
+                : 1,
+            },
+          ]}
+        >
+          <PerfectAnswerCelebration />
+        </Animated.View>
+      )}
+
+      <RoundsRemainingUI style={{flexShrink: 0}} remaining={questionsRemaining} total={gameSettings.classicNumberOfRounds} />
+
       <View style={styles.innerContainer}>
         <Animated.View
           style={[
@@ -150,6 +175,17 @@ const styles = StyleSheet.create({
   answerText: {
     textAlign: 'right',
     fontSize: font4,
+  },
+
+  perfectAnswer: {
+    zIndex: 100,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
 

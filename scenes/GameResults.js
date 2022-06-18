@@ -14,15 +14,15 @@ import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
 import QuestionResult from '../models/QuestionResult'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {faCheck} from '@fortawesome/free-solid-svg-icons'
-import {dimmedBlue, dimmedGreen, dimmedRed, neonBlue, neonGreen, neonRed} from '../styles/colors'
+import {faCheck, faStar} from '@fortawesome/free-solid-svg-icons'
+import {dimmedBlue, dimmedGreen, dimmedRed, neonBlue, neonGreen, neonRed, neonYellow, dimmedYellow} from '../styles/colors'
 import {font2, font4} from '../styles/typography'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
 import isDarkMode from '../hooks/isDarkMode'
 import {formatNumber} from '../lib/utilities'
 import {setAnswer} from '../redux/UISlice'
-import Phrase from '../models/Phrase'
+import EstimationQuestionResult from '../models/EstimationQuestionResult'
 
 const resultStyles = StyleSheet.create({
   singleResultContainer: {
@@ -59,12 +59,17 @@ const resultStyles = StyleSheet.create({
     textDecorationStyle: 'solid',
   },
 
+  exactAnswer: {
+    fontWeight: 'bold',
+  },
+
   correctAnswerCheck: {
     fontSize: font4,
   },
 })
 
 function SingleGameResult({result, count}) {
+  const isDark = isDarkMode()
   const correctAnswer = Equation.getSolution(result.question.equation)
   const userAnswer = result.answer
 
@@ -85,14 +90,49 @@ function SingleGameResult({result, count}) {
       </View>
       <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (
+          <FontAwesomeIcon icon={faCheck} style={resultStyles.correctAnswerCheck} size={font2} color={isDark ? dimmedGreen : neonGreen} />
+        ) : (
+          <NormalText style={{color: isDark ? dimmedRed : neonRed}}>{correctAnswer}</NormalText>
+        )}
+      </View>
+    </View>
+  )
+}
+
+function EstimationGameResult({result, count}) {
+  const isDark = isDarkMode()
+  const correctAnswer = Equation.getSolution(result.question.equation)
+  const userAnswer = result.answer
+  const accuracy = EstimationQuestionResult.getAccuracy(result)
+
+  let isTimeout = EstimationQuestionResult.isTimeout(result)
+  let isExact = accuracy === 0
+  let isCorrect = EstimationQuestionResult.isCorrect(result)
+
+  return (
+    <View style={resultStyles.singleResultContainer}>
+      <View style={resultStyles.singleResultCount}>
+        <NormalText>{count}.</NormalText>
+      </View>
+      <View style={resultStyles.singleResultEquation}>
+        <NormalText>
+          {correctAnswer} {' \u2022 '} {isTimeout ? 'N/A' : userAnswer}
+        </NormalText>
+      </View>
+      <NormalText style={resultStyles.singleResultEquals}>~</NormalText>
+      <View style={resultStyles.singleResultAnswer}>
+        <NormalText style={isExact ? resultStyles.exactAnswer : isCorrect ? null : resultStyles.wrongAnswer}>{accuracy}</NormalText>
+      </View>
+      <View style={resultStyles.singleResultCanon}>
+        {isCorrect ? (
           <FontAwesomeIcon
-            icon={faCheck}
+            icon={isExact ? faStar : faCheck}
             style={resultStyles.correctAnswerCheck}
             size={font2}
-            color={isDarkMode() ? dimmedGreen : neonGreen}
+            color={isExact ? (isDark ? dimmedYellow : neonYellow) : isDark ? dimmedGreen : neonGreen}
           />
         ) : (
-          <NormalText style={{color: isDarkMode() ? dimmedRed : neonRed}}>{correctAnswer}</NormalText>
+          <NormalText style={{color: isDark ? dimmedRed : neonRed}}>{correctAnswer}</NormalText>
         )}
       </View>
     </View>
@@ -106,8 +146,10 @@ function GameResults() {
   const results = useSelector(selectLastGameResults)
   const lastGameTypePlayed = useSelector(selectLastGameTypePlayed)
 
+  const QuestionResultClass = lastGameTypePlayed === Scene_GameEstimate ? EstimationQuestionResult : QuestionResult
+
   const score = results.reduce((total, r) => {
-    return total + QuestionResult.scoreValue(r)
+    return total + QuestionResultClass.scoreValue(r)
   }, 0)
 
   useEffect(() => {
@@ -151,14 +193,23 @@ function GameResults() {
       <View style={styles.resultsContainer}>
         <View>
           <NormalText>Questions: {results.length}</NormalText>
-          <NormalText>Correct: {results.filter(QuestionResult.isCorrect).length}</NormalText>
+          <NormalText>Correct: {results.filter(QuestionResultClass.isCorrect).length}</NormalText>
 
           <UIText>Score: {formatNumber(score)}</UIText>
         </View>
 
         <View style={styles.detailsContainer}>
           {isShowingDetails && (
-            <FlatList data={results} renderItem={({item, index}) => <SingleGameResult count={index + 1} result={item} />} />
+            <FlatList
+              data={results}
+              renderItem={({item, index}) =>
+                lastGameTypePlayed === Scene_GameEstimate ? (
+                  <EstimationGameResult count={index + 1} result={item} />
+                ) : (
+                  <SingleGameResult count={index + 1} result={item} />
+                )
+              }
+            />
           )}
           <NormalText style={{color: isDarkMode() ? dimmedBlue : neonBlue}} onPress={() => setIsShowingDetails(!isShowingDetails)}>
             {isShowingDetails ? 'Hide details' : 'Show details'}

@@ -1,6 +1,7 @@
 import QuestionResult from './QuestionResult'
 import Equation from './Equation'
 import Phrase from './Phrase'
+import {ANSWER_TIMEOUT} from '../constants/game'
 
 class EstimationQuestionResult extends QuestionResult {
   /**
@@ -8,7 +9,7 @@ class EstimationQuestionResult extends QuestionResult {
    * @returns {boolean}
    */
   static isCorrect(obj) {
-    return EstimationQuestionResult.getAccuracy(obj) < EstimationQuestionResult.getCloseEnoughThreshold(obj)
+    return EstimationQuestionResult.getAccuracy(obj) <= EstimationQuestionResult.getCloseEnoughThreshold(obj)
   }
 
   /**
@@ -26,7 +27,7 @@ class EstimationQuestionResult extends QuestionResult {
    */
   static getAccuracy(obj) {
     const correctAnswer = Equation.getSolution(obj.question.equation)
-    return Math.abs(obj.answer - correctAnswer)
+    return obj.answer === ANSWER_TIMEOUT ? ANSWER_TIMEOUT : Math.abs(obj.answer - correctAnswer)
   }
 
   /**
@@ -34,7 +35,7 @@ class EstimationQuestionResult extends QuestionResult {
    * @returns {number}
    */
   static scoreValue(obj) {
-    if (!QuestionResult.isCorrect(obj)) {
+    if (!EstimationQuestionResult.isCorrect(obj)) {
       return 0
     }
 
