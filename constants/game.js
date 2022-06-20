@@ -1,9 +1,4 @@
-import {
-  Scene_GameClassic,
-  Scene_GameEstimate,
-  Scene_GameMarathon,
-  Scene_GameVersus,
-} from './scenes'
+import {Scene_GameClassic, Scene_GameEstimate, Scene_GameMarathon, Scene_GameVersus} from './scenes'
 
 export const ANSWER_TIMEOUT = -99999.1
 
@@ -18,3 +13,5 @@ export const SCENE_TO_LABEL = {
   [Scene_GameEstimate]: GAME_LABEL_ESTIMATE,
   [Scene_GameVersus]: GAME_LABEL_VERSUS,
 }
+
+export const SLAM_ANIMATION_DURATION = 1500

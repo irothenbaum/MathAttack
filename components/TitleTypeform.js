@@ -5,6 +5,9 @@ import useThemedAsset from '../hooks/useThemedAsset'
 import PropTypes from 'prop-types'
 import {screenWidth} from '../styles/layout'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
+import doOnceTimer from '../hooks/useDoOnceTimer'
+import SoundHelper, {SOUND_SLAM} from '../lib/SoundHelper'
+import {SLAM_ANIMATION_DURATION} from '../constants/game'
 
 const typeformWidth = screenWidth * 0.65
 const typeformHeight = typeformWidth * 0.3
@@ -16,7 +19,8 @@ const finalTitle = 'math,'
 const TitleTypeform = React.forwardRef((props, ref) => {
   const {Component, path} = useThemedAsset('attack_typeform.svg')
   const titleText = useRef('')
-  const forceUpdate = useReducer(bool => !bool)[1]
+  const forceUpdate = useReducer((bool) => !bool)[1]
+  const {setTimer} = doOnceTimer()
 
   useEffect(() => {
     if (props.animation) {
@@ -27,6 +31,14 @@ const TitleTypeform = React.forwardRef((props, ref) => {
         titleText.current = finalTitle.substr(0, titleText.current.length + 1)
         forceUpdate()
       }, 100)
+      setTimer(
+        'slam-sound',
+        () => {
+          console.log('PLAYING SOUND')
+          SoundHelper.playSound(SOUND_SLAM).then(() => console.log('PLAYING'))
+        },
+        SLAM_ANIMATION_DURATION * SLAM_STEP,
+      )
     } else {
       titleText.current = finalTitle
     }
@@ -34,14 +46,9 @@ const TitleTypeform = React.forwardRef((props, ref) => {
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        props.style,
-        props.animation
-          ? getVibrateStylesForAnimation(props.animation, SLAM_STEP)
-          : undefined,
-      ]}
-      ref={ref}>
+      style={[styles.container, props.style, props.animation ? getVibrateStylesForAnimation(props.animation, SLAM_STEP) : undefined]}
+      ref={ref}
+    >
       <TitleText>{titleText.current}</TitleText>
       <Animated.View
         style={[
@@ -73,7 +80,8 @@ const TitleTypeform = React.forwardRef((props, ref) => {
                 ],
               }
             : undefined,
-        ]}>
+        ]}
+      >
         <Component width={typeformWidth} height={typeformHeight} />
       </Animated.View>
     </Animated.View>

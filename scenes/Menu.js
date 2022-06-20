@@ -19,7 +19,7 @@ import {faCog} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {shadow, sunbeam} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
-import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON, GAME_LABEL_VERSUS} from '../constants/game'
+import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON, GAME_LABEL_VERSUS, SLAM_ANIMATION_DURATION} from '../constants/game'
 import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -27,7 +27,6 @@ import useAnimationStation from '../hooks/useAnimationStation'
 const pjson = require('../package.json')
 
 const initialWaitTime = 1000
-const animationTime = 1500
 const afterSlamWaitTime = 800
 const positionAnimationTime = 700
 
@@ -57,7 +56,7 @@ function Menu() {
     setTimeout(() => {
       setIsWaiting(false)
       animateLogo(
-        animationTime,
+        SLAM_ANIMATION_DURATION,
         () => {
           if (logoRef.current) {
             logoRef.current.measure((fx, fy, width, height, px, py) => {
