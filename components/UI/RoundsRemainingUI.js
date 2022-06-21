@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {faCircle, faDotCircle} from '@fortawesome/free-solid-svg-icons'
 import {font1} from '../../styles/typography'
 import {StyleSheet, View} from 'react-native'
 import {spaceDefault, spaceSmall} from '../../styles/layout'
 import isDarkMode from '../../hooks/isDarkMode'
 import {sunbeam, shadow, dimmedRed, neonRed} from '../../styles/colors'
 import {getUIColor} from '../../lib/utilities'
+import Icon, {CircleActive, CircleInactive} from '../Icon'
 
 function RoundsRemainingUI(props) {
   const arr = [...new Array(props.total)].map((e, i) => i)
@@ -23,7 +22,7 @@ function RoundsRemainingUI(props) {
       {arr.map((i) => {
         const isActive = i === numberCompleted
         const isPast = i < numberCompleted
-        return <FontAwesomeIcon key={i} icon={isPast ? faDotCircle : faCircle} size={font1} color={getColorForDot(isActive, isPast)} />
+        return <Icon icon={isPast ? CircleInactive : CircleActive} size={font1} color={getColorForDot(isActive, isPast)} />
       })}
     </View>
   )

@@ -1,7 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {BackHandler, Pressable, StyleSheet} from 'react-native'
-import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {shadow, sunbeam} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
 import {spaceDefault} from '../styles/layout'
@@ -11,10 +9,10 @@ import {useDispatch, useSelector} from 'react-redux'
 import {Scene_GameResults, Scene_Menu} from '../constants/scenes'
 import {goToScene} from '../redux/NavigationSlice'
 import UIText from './UIText'
-import {font3} from '../styles/typography'
 import {SCENE_TO_LABEL} from '../constants/game'
 import {selectCurrentScene, selectLastGameResults} from '../redux/selectors'
 import Modal from './Modal'
+import Icon, {ArrowLeft} from './Icon'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
@@ -60,7 +58,7 @@ function InGameMenu(props) {
   return (
     <React.Fragment>
       <Pressable style={styles.openIcon} onPress={() => setIsOpen(true)}>
-        <FontAwesomeIcon icon={faChevronLeft} color={isDark ? sunbeam : shadow} size={font3} />
+        <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
       </Pressable>
       <Modal onClose={handleResume} isOpen={isOpen}>
         <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>

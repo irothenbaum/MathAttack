@@ -1,23 +1,21 @@
 import React from 'react'
-import {View, Text, StyleSheet, Pressable, ScrollView} from 'react-native'
+import {View, StyleSheet, Pressable, ScrollView} from 'react-native'
 import TitleText from '../components/TitleText'
-import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
-import {font2, font3} from '../styles/typography'
-import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
+import {spaceDefault, spaceLarge} from '../styles/layout'
+import {font2} from '../styles/typography'
 import {dimmedBlue, grey, neonBlue, shadow, sunbeam} from '../styles/colors'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import isDarkMode from '../hooks/isDarkMode'
 import SubTitleText from '../components/SubTitleText'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
-import {flushFromCache, setAutoSubmitCorrect, setDecimalPlaces, setMinMaxValues} from '../redux/SettingsSlice'
+import {flushFromCache, setAutoSubmitCorrect, setDecimalPlaces, setMinMaxValues, setMuteSounds} from '../redux/SettingsSlice'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_Menu} from '../constants/scenes'
-import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON} from '../constants/game'
 import BooleanInput from '../components/BooleanInput'
 import DefaultSettings from '../models/GameSettings'
 import UIText from '../components/UIText'
+import Icon, {ArrowLeft, VolumeOff, VolumeOn} from '../components/Icon'
 
 const MAX_VALUE = 999999
 
@@ -42,12 +40,15 @@ function Settings() {
               dispatch(goToScene(Scene_Menu))
             }}
           >
-            <FontAwesomeIcon size={font3} icon={faChevronLeft} color={isDark ? sunbeam : shadow} />
+            <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
           </Pressable>
           <TitleText>Settings</TitleText>
 
           <View style={styles.sectionContainer}>
             <SubTitleText>General</SubTitleText>
+            <Pressable onPress={(v) => dispatch(setMuteSounds(!settings.muteSounds))}>
+              {settings.muteSounds ? <Icon icon={VolumeOff} color={isDark ? sunbeam : shadow} /> : <Icon icon={VolumeOn} />}
+            </Pressable>
             <NumberInput
               label={'Minimum answer value'}
               value={settings.minValue}

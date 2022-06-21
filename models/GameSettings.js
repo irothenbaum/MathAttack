@@ -1,5 +1,6 @@
 const GameSettings = {
   // shared:
+  muteSounds: false,
   minValue: 0,
   maxValue: 100,
   decimalPlaces: 0,

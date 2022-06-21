@@ -13,12 +13,10 @@ import QuestionResult from '../../models/QuestionResult'
 import Equation from '../../models/Equation'
 import MenuButton from '../../components/MenuButton'
 import DividerLine from '../../components/DividerLine'
-import {font3} from '../../styles/typography'
-import {faCheck, faQuestion} from '@fortawesome/free-solid-svg-icons'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import isDarkMode from '../../hooks/isDarkMode'
 import useAnimationStation from '../../hooks/useAnimationStation'
 import {spaceLarge, spaceExtraLarge} from '../../styles/layout'
+import Icon, {Check, Question} from '../../components/Icon'
 
 // FOR TESTING:
 // import GameQuestion from '../../models/GameQuestion'
@@ -156,7 +154,7 @@ function ResultsAndPlayAgain(props) {
           <DividerLine />
           <View style={styles.scoreValueContainer}>{renderScore(props.myScore, props.wonFlag === WON_FLAG_WON)}</View>
           {amIReady ? (
-            <FontAwesomeIcon size={font3} icon={faCheck} color={isDark ? dimmedGreen : neonGreen} />
+            <Icon icon={Check} color={isDark ? dimmedGreen : neonGreen} />
           ) : (
             <MenuButton title={'Play again'} onPress={handlePlayAgain} blurCount={2} />
           )}
@@ -165,11 +163,7 @@ function ResultsAndPlayAgain(props) {
           <NormalText>{props.opponentName}</NormalText>
           <DividerLine />
           <View style={styles.scoreValueContainer}>{renderScore(props.opponentScore, props.wonFlag === WON_FLAG_LOST)}</View>
-          {isOpponentReady ? (
-            <FontAwesomeIcon size={font3} icon={faCheck} color={isDark ? dimmedGreen : neonGreen} />
-          ) : (
-            <FontAwesomeIcon size={font3} icon={faQuestion} color={middleGrey} />
-          )}
+          {isOpponentReady ? <Icon icon={Check} color={isDark ? dimmedGreen : neonGreen} /> : <Icon icon={Question} color={middleGrey} />}
         </View>
       </View>
     </View>

@@ -5,16 +5,11 @@ import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
-import {
-  darkGrey,
-  lightGrey,
-  neonGreen,
-  OPACITY_AMOUNT,
-  transparent,
-} from '../../styles/colors'
+import {darkGrey, lightGrey, neonGreen, OPACITY_AMOUNT, transparent} from '../../styles/colors'
 import UIText from '../UIText'
 import isDarkMode from '../../hooks/isDarkMode'
 import useAnimationStation from '../../hooks/useAnimationStation'
+import SoundHelper, {SOUND_TAP} from '../../lib/SoundHelper'
 
 export const TINT_DURATION = 300
 export const DECIMAL = -1
@@ -30,14 +25,10 @@ function CalculatorButton(props) {
   const userInput = useSelector(selectUserInput)
   const {animation, isAnimating, animate} = useAnimationStation()
 
-  let valueStr =
-    props.value === DECIMAL
-      ? '•'
-      : props.value === CLEAR
-      ? 'CLR'
-      : `${props.value}`
+  let valueStr = props.value === DECIMAL ? '•' : props.value === CLEAR ? 'CLR' : `${props.value}`
 
   const handlePress = useCallback(() => {
+    SoundHelper.playSound(SOUND_TAP).then()
     animate(TINT_DURATION)
 
     if (props.value === CLEAR) {
@@ -62,16 +53,12 @@ function CalculatorButton(props) {
   }, [props.value, dispatch, userInput, animate])
 
   const isDisabled =
-    (props.value === DECIMAL && userInput.includes('.')) ||
-    (typeof props.value === 'number' && props.value >= 0 && userInput === '0')
+    (props.value === DECIMAL && userInput.includes('.')) || (typeof props.value === 'number' && props.value >= 0 && userInput === '0')
 
   const bgColor = getBackgroundColor(isDark, isDisabled)
 
   return (
-    <Pressable
-      style={[styles.pressable]}
-      disabled={isDisabled || props.isDisabled}
-      onPress={handlePress}>
+    <Pressable style={[styles.pressable]} disabled={isDisabled || props.isDisabled} onPress={handlePress}>
       <Animated.View
         style={[
           styles.container,
@@ -84,7 +71,8 @@ function CalculatorButton(props) {
                 })
               : bgColor,
           },
-        ]}>
+        ]}
+      >
         <UIText>{valueStr}</UIText>
       </Animated.View>
     </Pressable>

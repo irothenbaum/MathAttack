@@ -1,12 +1,12 @@
 import React, {useEffect, useRef, useReducer} from 'react'
-import {View, StyleSheet, Animated} from 'react-native'
+import {StyleSheet, Animated} from 'react-native'
 import TitleText from './TitleText'
 import useThemedAsset from '../hooks/useThemedAsset'
 import PropTypes from 'prop-types'
 import {screenWidth} from '../styles/layout'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
 import doOnceTimer from '../hooks/useDoOnceTimer'
-import SoundHelper, {SOUND_SLAM} from '../lib/SoundHelper'
+import SoundHelper, {SOUND_SLAM, SOUND_TYPING} from '../lib/SoundHelper'
 import {SLAM_ANIMATION_DURATION} from '../constants/game'
 
 const typeformWidth = screenWidth * 0.65
@@ -31,14 +31,8 @@ const TitleTypeform = React.forwardRef((props, ref) => {
         titleText.current = finalTitle.substr(0, titleText.current.length + 1)
         forceUpdate()
       }, 100)
-      setTimer(
-        'slam-sound',
-        () => {
-          console.log('PLAYING SOUND')
-          SoundHelper.playSound(SOUND_SLAM).then(() => console.log('PLAYING'))
-        },
-        SLAM_ANIMATION_DURATION * SLAM_STEP,
-      )
+      setTimer('intro-typing-sound', () => SoundHelper.playSound(SOUND_TYPING).then(), 100)
+      setTimer('intro-slam-sound', () => SoundHelper.playSound(SOUND_SLAM).then(), SLAM_ANIMATION_DURATION * SLAM_STEP)
     } else {
       titleText.current = finalTitle
     }

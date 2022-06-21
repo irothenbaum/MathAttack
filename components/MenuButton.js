@@ -2,28 +2,15 @@ import React, {useEffect, useRef} from 'react'
 import {Animated, Pressable, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import {spaceDefault, spaceSmall} from '../styles/layout'
-import {
-  neonBlue,
-  dimmedBlue,
-  dimmedRed,
-  neonRed,
-  dimmedGreen,
-  neonGreen,
-  dimmedMagenta,
-  neonMagenta,
-  darkGrey,
-  grey,
-  black,
-  white,
-} from '../styles/colors'
-import {getBackgroundColor, getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
+import {dimmedRed, neonRed, darkGrey, grey, black, white} from '../styles/colors'
+import {getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
 import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {faSpinner} from '@fortawesome/free-solid-svg-icons'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useDoOnceTimer from '../hooks/useDoOnceTimer'
+import SoundHelper, {SOUND_TAP} from '../lib/SoundHelper'
+import Icon, {Loading} from './Icon'
 
 function ButtonShadow(props) {
   return (
@@ -47,7 +34,7 @@ const BLUR_DURATION = 1000
 const BLUR_DELAY = 1000
 
 function MenuButton(props) {
-  const {animate, isAnimating, animation, cancel} = useAnimationStation()
+  const {animate, animation, cancel} = useAnimationStation()
   const {setTimer} = useDoOnceTimer()
   const blurKey = useRef(getRandomString())
   const isDark = isDarkMode()
@@ -89,6 +76,11 @@ function MenuButton(props) {
     }
   }, [])
 
+  const handlePress = () => {
+    SoundHelper.playSound(SOUND_TAP).then()
+    props.onPress()
+  }
+
   return (
     <View style={props.style}>
       {!props.isDisabled && !!contentRef.current && props.blurCount > 0 && (
@@ -122,13 +114,13 @@ function MenuButton(props) {
             zIndex: 10,
           },
         ]}
-        onPress={canPress ? props.onPress : () => {}}
+        onPress={canPress ? handlePress : () => {}}
       >
         {props.isLoading ? (
-          <FontAwesomeIcon icon={faSpinner} transform={{rotate: 90}} />
+          <Icon icon={Loading} transform={{rotate: 90}} />
         ) : (
           <React.Fragment>
-            {props.icon && <FontAwesomeIcon color={textColor} icon={props.icon} style={styles.icon} size={size} />}
+            {props.icon && <Icon color={textColor} icon={props.icon} style={styles.icon} size={size} />}
             <UIText style={{color: getUIColor(isDark), fontSize: size}}>{props.title}</UIText>
           </React.Fragment>
         )}

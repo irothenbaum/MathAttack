@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react'
-import {View, StyleSheet, Text, FlatList} from 'react-native'
+import React, {useEffect, useState} from 'react'
+import {View, StyleSheet, FlatList} from 'react-native'
 import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
@@ -13,8 +13,6 @@ import {selectGameSettings, selectLastGameResults, selectLastGameTypePlayed} fro
 import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
 import QuestionResult from '../models/QuestionResult'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {faCheck, faStar} from '@fortawesome/free-solid-svg-icons'
 import {dimmedBlue, dimmedGreen, dimmedRed, neonBlue, neonGreen, neonRed, neonYellow, dimmedYellow} from '../styles/colors'
 import {font2, font4} from '../styles/typography'
 import {spaceDefault, spaceSmall} from '../styles/layout'
@@ -23,6 +21,7 @@ import isDarkMode from '../hooks/isDarkMode'
 import {formatNumber} from '../lib/utilities'
 import {setAnswer} from '../redux/UISlice'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
+import Icon, {Check, Star} from '../components/Icon'
 
 const resultStyles = StyleSheet.create({
   singleResultContainer: {
@@ -90,7 +89,7 @@ function SingleGameResult({result, count}) {
       </View>
       <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (
-          <FontAwesomeIcon icon={faCheck} style={resultStyles.correctAnswerCheck} size={font2} color={isDark ? dimmedGreen : neonGreen} />
+          <Icon icon={Check} style={resultStyles.correctAnswerCheck} size={font2} color={isDark ? dimmedGreen : neonGreen} />
         ) : (
           <NormalText style={{color: isDark ? dimmedRed : neonRed}}>{correctAnswer}</NormalText>
         )}
@@ -125,8 +124,8 @@ function EstimationGameResult({result, count}) {
       </View>
       <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (
-          <FontAwesomeIcon
-            icon={isExact ? faStar : faCheck}
+          <Icon
+            icon={isExact ? Star : Check}
             style={resultStyles.correctAnswerCheck}
             size={font2}
             color={isExact ? (isDark ? dimmedYellow : neonYellow) : isDark ? dimmedGreen : neonGreen}

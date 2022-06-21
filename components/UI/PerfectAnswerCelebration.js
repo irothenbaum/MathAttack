@@ -1,13 +1,12 @@
 import React, {useEffect} from 'react'
 import {StyleSheet, View, Animated, Easing} from 'react-native'
-import {faStar} from '@fortawesome/free-solid-svg-icons'
 import {font5} from '../../styles/typography'
 import {neonYellow, dimmedYellow, dimmedOrange, neonOrange} from '../../styles/colors'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import UIText from '../UIText'
 import isDarkMode from '../../hooks/isDarkMode'
 import {spaceDefault} from '../../styles/layout'
 import useAnimationStation from '../../hooks/useAnimationStation'
+import Icon, {Star} from '../Icon'
 
 const SHOOTING_DURATION = 1000
 const bigStarDifference = 20
@@ -42,8 +41,8 @@ function PerfectAnswerCelebration(props) {
               : undefined,
           ]}
         >
-          <FontAwesomeIcon style={styles.icon} icon={faStar} size={font5} color={isDark ? dimmedYellow : neonYellow} />
-          <FontAwesomeIcon icon={faStar} size={font5 + bigStarDifference} color={isDark ? dimmedOrange : neonOrange} />
+          <Icon icon={Star} style={styles.icon} size={font5} color={isDark ? dimmedYellow : neonYellow} />
+          <Icon icon={Star} size={font5 + bigStarDifference} color={isDark ? dimmedOrange : neonOrange} />
         </Animated.View>
       </View>
       <UIText style={styles.text}>Perfect!</UIText>

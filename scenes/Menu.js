@@ -11,18 +11,17 @@ import {Scene_GameClassic, Scene_GameEstimate, Scene_GameMarathon, Scene_GameVer
 import {selectGameSettings} from '../redux/selectors'
 import {screenHeight, spaceDefault, spaceLarge} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
-import {faRunning, faHourglassHalf, faBullseye, faFistRaised} from '@fortawesome/free-solid-svg-icons'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
-import {font1, font3} from '../styles/typography'
-import {faCog} from '@fortawesome/free-solid-svg-icons'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
+import {font1} from '../styles/typography'
 import {shadow, sunbeam} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
 import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON, GAME_LABEL_VERSUS, SLAM_ANIMATION_DURATION} from '../constants/game'
 import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
 import useAnimationStation from '../hooks/useAnimationStation'
+import SoundHelper, {SOUND_TAP} from '../lib/SoundHelper'
+import Icon, {Classic, Estimate, Marathon, Settings, Versus} from '../components/Icon'
 
 const pjson = require('../package.json')
 
@@ -111,40 +110,33 @@ function Menu() {
       <View style={[styles.innerContainer, {opacity: isReady ? 1 : 0}]}>
         <TitleTypeform style={{alignSelf: 'center', zIndex: 10}} ref={logoRef} />
         <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_CLASSIC}
-            onPress={handlePlayClassic}
-            icon={faHourglassHalf}
-            blurCount={3}
-          />
+          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_CLASSIC} onPress={handlePlayClassic} icon={Classic} blurCount={3} />
         </View>
         <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_MARATHON}
-            onPress={handlePlayMarathon}
-            icon={faRunning}
-            blurCount={3}
-          />
+          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_MARATHON} onPress={handlePlayMarathon} icon={Marathon} blurCount={3} />
         </View>
         <View style={styles.gameButtonContainer}>
           <MenuButton
             size={MenuButton.SIZE_LARGE}
             title={GAME_LABEL_ESTIMATE}
             onPress={handlePlayEstimation}
-            icon={faBullseye}
+            icon={Estimate}
             blurCount={3}
           />
         </View>
         <View style={styles.gameButtonContainer}>
-          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_VERSUS} onPress={handlePlayVersus} icon={faFistRaised} blurCount={3} />
+          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_VERSUS} onPress={handlePlayVersus} icon={Versus} blurCount={3} />
         </View>
 
         <View style={styles.footnoteContainer}>
           <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
-          <Pressable onPress={() => dispatch(goToScene(Scene_Settings))}>
-            <FontAwesomeIcon size={font3} icon={faCog} color={isDark ? sunbeam : shadow} />
+          <Pressable
+            onPress={() => {
+              SoundHelper.playSound(SOUND_TAP).then()
+              dispatch(goToScene(Scene_Settings))
+            }}
+          >
+            <Icon icon={Settings} color={isDark ? sunbeam : shadow} />
           </Pressable>
         </View>
       </View>

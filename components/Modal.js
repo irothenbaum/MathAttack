@@ -1,8 +1,6 @@
 import {shadow, sunbeam} from '../styles/colors'
 import {Animated, Pressable, StyleSheet} from 'react-native'
 import {getBackgroundColor} from '../lib/utilities'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
-import {faTimes} from '@fortawesome/free-solid-svg-icons'
 import {font2} from '../styles/typography'
 import React, {useEffect, useState} from 'react'
 import {spaceDefault, spaceSmall} from '../styles/layout'
@@ -10,6 +8,7 @@ import {BoxShadow, FullScreenOverlay} from '../styles/elements'
 import PropTypes from 'prop-types'
 import isDarkMode from '../hooks/isDarkMode'
 import useAnimationStation from '../hooks/useAnimationStation'
+import Icon, {X} from './Icon'
 
 const OPEN_TIME = 200
 const CLOSE_TIME = OPEN_TIME
@@ -42,7 +41,8 @@ function Modal(props) {
                 }),
               }
             : undefined,
-        ]}>
+        ]}
+      >
         <Pressable onPress={props.onClose} style={styles.modalClickHandler}>
           <Animated.View
             style={[
@@ -56,16 +56,11 @@ function Modal(props) {
                     }),
                   }
                 : undefined,
-            ]}>
-            <Pressable
-              onPress={e => e.stopPropagation()}
-              style={{padding: spaceDefault}}>
+            ]}
+          >
+            <Pressable onPress={(e) => e.stopPropagation()} style={{padding: spaceDefault}}>
               <Pressable style={styles.closeIcon} onPress={props.onClose}>
-                <FontAwesomeIcon
-                  icon={faTimes}
-                  color={isDark ? sunbeam : shadow}
-                  size={font2}
-                />
+                <Icon icon={X} color={isDark ? sunbeam : shadow} size={font2} />
               </Pressable>
               {props.children}
             </Pressable>

@@ -9,10 +9,9 @@ import isDarkMode from '../../hooks/isDarkMode'
 import {getUIColor} from '../../lib/utilities'
 import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
-import {faChevronLeft} from '@fortawesome/free-solid-svg-icons'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import PropTypes from 'prop-types'
 import {dimmedBlue, dimmedRed, dimmedGreen, neonGreen, neonBlue, neonRed} from '../../styles/colors'
+import Icon, {ArrowLeft} from '../Icon'
 
 const numberOfSteps = 10
 
@@ -428,13 +427,12 @@ class DraggableCircle extends React.Component {
   }
 
   render() {
-    const isDark = isDarkMode()
     const mainValue = this.props.showDecimals ? parseInt(this.props.value) : Math.round(this.props.value)
     const decimal = (this.props.value - mainValue).toFixed(3).substr(1)
 
     return (
       <View ref={(c) => (this.circle = c)} style={styles.slider} {...this._panResponder.panHandlers}>
-        <FontAwesomeIcon style={{position: 'absolute', left: -22}} icon={faChevronLeft} color={getUIColor(isDark)} size={font3} />
+        <Icon style={{position: 'absolute', left: -22}} icon={ArrowLeft} />
         <UIText style={{alignSelf: 'center', lineHeight: font3}}>{mainValue}</UIText>
         {this.props.showDecimals && <UIText style={{alignSelf: 'center', fontSize: font1, lineHeight: font1}}>{decimal}</UIText>}
       </View>

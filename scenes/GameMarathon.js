@@ -15,13 +15,12 @@ import Equation from '../models/Equation'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import {RoundBox, ScreenContainer} from '../styles/elements'
 import {spaceLarge, spaceSmall} from '../styles/layout'
-import {faTimes} from '@fortawesome/free-solid-svg-icons'
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import isDarkMode from '../hooks/isDarkMode'
 import {font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
 import InGameMenu from '../components/InGameMenu'
 import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
+import Icon, {X} from '../components/Icon'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
@@ -91,9 +90,9 @@ function GameMarathon() {
       {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
       <GameBackground animation={answerReactionAnimation} isAnimatingForCorrect={isAnimatingForCorrect} />
       <View style={styles.strikesContainer}>
-        <FontAwesomeIcon icon={faTimes} size={font4} color={getColorForStrike(strikes < 3)} />
-        <FontAwesomeIcon icon={faTimes} size={font4} color={getColorForStrike(strikes < 2)} />
-        <FontAwesomeIcon icon={faTimes} size={font4} color={getColorForStrike(strikes < 1)} />
+        <Icon icon={X} size={font4} color={getColorForStrike(strikes < 3)} />
+        <Icon icon={X} size={font4} color={getColorForStrike(strikes < 2)} />
+        <Icon icon={X} size={font4} color={getColorForStrike(strikes < 1)} />
       </View>
       <EquationAndAnswerInterface
         onGuess={handleGuess}
