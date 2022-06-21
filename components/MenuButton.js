@@ -9,8 +9,9 @@ import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useDoOnceTimer from '../hooks/useDoOnceTimer'
-import SoundHelper, {SOUND_TAP} from '../lib/SoundHelper'
+import {SOUND_TAP} from '../lib/SoundHelper'
 import Icon, {Loading} from './Icon'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 
 function ButtonShadow(props) {
   return (
@@ -39,6 +40,7 @@ function MenuButton(props) {
   const blurKey = useRef(getRandomString())
   const isDark = isDarkMode()
   const contentRef = useRef()
+  const {playSound} = useSoundPlayer()
 
   const size = props.size || MenuButton.SIZE_DEFAULT
   const variant = props.variant || MenuButton.VARIANT_DEFAULT
@@ -77,7 +79,7 @@ function MenuButton(props) {
   }, [])
 
   const handlePress = () => {
-    SoundHelper.playSound(SOUND_TAP).then()
+    playSound(SOUND_TAP).then()
     props.onPress()
   }
 

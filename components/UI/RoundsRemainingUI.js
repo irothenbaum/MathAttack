@@ -22,7 +22,7 @@ function RoundsRemainingUI(props) {
       {arr.map((i) => {
         const isActive = i === numberCompleted
         const isPast = i < numberCompleted
-        return <Icon icon={isPast ? CircleInactive : CircleActive} size={font1} color={getColorForDot(isActive, isPast)} />
+        return <Icon key={i} icon={isPast ? CircleInactive : CircleActive} size={font1} color={getColorForDot(isActive, isPast)} />
       })}
     </View>
   )

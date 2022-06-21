@@ -6,6 +6,9 @@ import UIText from './UIText'
 import {getUIColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
 import {black, darkGrey, dimmedRed, grey, lightGrey, middleGrey, neonRed, white} from '../styles/colors'
+import {font2} from '../styles/typography'
+import {spaceDefault} from '../styles/layout'
+import Icon from './Icon'
 
 const containerBorderWidth = 2
 const toggleSize = 40
@@ -36,8 +39,8 @@ function BooleanInput(props) {
   const containerBorderColor = isDark ? grey : middleGrey
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => props.onChange(!props.value)}>
+    <View style={props.style}>
+      <Pressable onPress={() => props.onChange(!props.value)} style={styles.container}>
         <View style={[styles.toggleContainer, {backgroundColor: containerColor, borderColor: containerBorderColor}]}>
           <Animated.View
             style={[
@@ -77,21 +80,30 @@ function BooleanInput(props) {
                   : OFF_LEFT,
               },
             ]}
-          />
+          >
+            {props.icon ? <Icon icon={props.icon} style={styles.icon} size={font2} /> : undefined}
+          </Animated.View>
         </View>
-        {!!props.label && <UIText>{props.label}</UIText>}
+        {!!props.label && <UIText style={{fontSize: font2}}>{props.label}</UIText>}
       </Pressable>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    opacity: 0.8,
+  },
   toggleContainer: {
     width: toggleSize * 2,
     height: toggleSize,
     borderRadius: toggleSize / 2,
     borderWidth: containerBorderWidth,
+    marginRight: spaceDefault,
   },
   toggleHandle: {
     position: 'absolute',
@@ -102,6 +114,8 @@ const styles = StyleSheet.create({
     left: 0,
     top: -containerBorderWidth,
     zIndex: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   railHighlight: {
     position: 'absolute',
@@ -118,6 +132,8 @@ BooleanInput.propTypes = {
   value: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
+  style: PropTypes.any,
+  icon: PropTypes.any,
 }
 
 export default BooleanInput

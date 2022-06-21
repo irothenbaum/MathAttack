@@ -20,8 +20,9 @@ import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON, GAME_LABEL
 import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
 import useAnimationStation from '../hooks/useAnimationStation'
-import SoundHelper, {SOUND_TAP} from '../lib/SoundHelper'
+import {SOUND_TAP} from '../lib/SoundHelper'
 import Icon, {Classic, Estimate, Marathon, Settings, Versus} from '../components/Icon'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 
 const pjson = require('../package.json')
 
@@ -41,6 +42,7 @@ function Menu() {
   const isDark = isDarkMode()
   const {animate: animateLogo, animation: logoAnimation} = useAnimationStation()
   const {animate: animatePosition, animation: positionAnimation, isAnimating: isAnimatingPosition} = useAnimationStation()
+  const {playSound} = useSoundPlayer()
 
   useEffect(() => {
     dispatch(setAnswer(''))
@@ -132,7 +134,7 @@ function Menu() {
           <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
           <Pressable
             onPress={() => {
-              SoundHelper.playSound(SOUND_TAP).then()
+              playSound(SOUND_TAP).then()
               dispatch(goToScene(Scene_Settings))
             }}
           >

@@ -9,7 +9,8 @@ import {darkGrey, lightGrey, neonGreen, OPACITY_AMOUNT, transparent} from '../..
 import UIText from '../UIText'
 import isDarkMode from '../../hooks/isDarkMode'
 import useAnimationStation from '../../hooks/useAnimationStation'
-import SoundHelper, {SOUND_TAP} from '../../lib/SoundHelper'
+import {SOUND_TAP} from '../../lib/SoundHelper'
+import useSoundPlayer from '../../hooks/useSoundPlayer'
 
 export const TINT_DURATION = 300
 export const DECIMAL = -1
@@ -24,11 +25,12 @@ function CalculatorButton(props) {
   const dispatch = useDispatch()
   const userInput = useSelector(selectUserInput)
   const {animation, isAnimating, animate} = useAnimationStation()
+  const {playSound} = useSoundPlayer()
 
   let valueStr = props.value === DECIMAL ? '•' : props.value === CLEAR ? 'CLR' : `${props.value}`
 
   const handlePress = useCallback(() => {
-    SoundHelper.playSound(SOUND_TAP).then()
+    playSound(SOUND_TAP).then()
     animate(TINT_DURATION)
 
     if (props.value === CLEAR) {

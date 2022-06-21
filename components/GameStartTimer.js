@@ -9,7 +9,8 @@ import {getBackgroundColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useCountdown from '../hooks/useCountdown'
-import SoundHelper, {SOUND_BEEP, SOUND_START} from '../lib/SoundHelper'
+import {SOUND_BEEP, SOUND_START} from '../lib/SoundHelper'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 
 const START_TIME = 3
 
@@ -19,10 +20,11 @@ function GameStartTimer(props) {
   const [color, setColor] = useState(isDark ? dimmedRed : neonRed)
   const {animate, animation} = useAnimationStation()
   const {hasStarted, secondsRemaining, startCountdown} = useCountdown()
+  const {playSound} = useSoundPlayer()
 
   useEffect(() => {
     startCountdown(START_TIME, () => {
-      SoundHelper.playSound(SOUND_START).then()
+      playSound(SOUND_START).then()
       setTimerFinished(true)
       props.onStart()
     })
@@ -30,7 +32,9 @@ function GameStartTimer(props) {
 
   useEffect(() => {
     setColor(isDark ? dimmedRed : neonRed)
-    SoundHelper.playSound(SOUND_BEEP).then()
+    if (secondsRemaining > 0) {
+      playSound(SOUND_BEEP).then()
+    }
     animate(1000)
   }, [secondsRemaining])
 

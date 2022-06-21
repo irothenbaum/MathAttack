@@ -6,8 +6,9 @@ import PropTypes from 'prop-types'
 import {screenWidth} from '../styles/layout'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
 import doOnceTimer from '../hooks/useDoOnceTimer'
-import SoundHelper, {SOUND_SLAM, SOUND_TYPING} from '../lib/SoundHelper'
+import {SOUND_SLAM, SOUND_TYPING} from '../lib/SoundHelper'
 import {SLAM_ANIMATION_DURATION} from '../constants/game'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 
 const typeformWidth = screenWidth * 0.65
 const typeformHeight = typeformWidth * 0.3
@@ -21,6 +22,7 @@ const TitleTypeform = React.forwardRef((props, ref) => {
   const titleText = useRef('')
   const forceUpdate = useReducer((bool) => !bool)[1]
   const {setTimer} = doOnceTimer()
+  const {playSound} = useSoundPlayer()
 
   useEffect(() => {
     if (props.animation) {
@@ -31,8 +33,8 @@ const TitleTypeform = React.forwardRef((props, ref) => {
         titleText.current = finalTitle.substr(0, titleText.current.length + 1)
         forceUpdate()
       }, 100)
-      setTimer('intro-typing-sound', () => SoundHelper.playSound(SOUND_TYPING).then(), 100)
-      setTimer('intro-slam-sound', () => SoundHelper.playSound(SOUND_SLAM).then(), SLAM_ANIMATION_DURATION * SLAM_STEP)
+      setTimer('intro-typing-sound', () => playSound(SOUND_TYPING).then(), 100)
+      setTimer('intro-slam-sound', () => playSound(SOUND_SLAM).then(), SLAM_ANIMATION_DURATION * SLAM_STEP)
     } else {
       titleText.current = finalTitle
     }

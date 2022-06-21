@@ -1,6 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
 import GameSettings from '../models/GameSettings'
-import SoundHelper from '../lib/SoundHelper'
 
 const settingsSlice = createSlice({
   name: 'Settings',
@@ -20,11 +19,10 @@ const settingsSlice = createSlice({
       state.autoSubmit = payload
     },
     setMuteSounds: (state, {payload}) => {
-      state.muteSounds = SoundHelper.isMuted = payload
+      state.muteSounds = payload
     },
 
     flushFromCache: (state, {payload}) => {
-      SoundHelper.isMuted = !!payload.muteSounds
       return {...state, ...payload}
     },
   },

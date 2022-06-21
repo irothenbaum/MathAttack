@@ -45,11 +45,16 @@ function Settings() {
           <TitleText>Settings</TitleText>
 
           <View style={styles.sectionContainer}>
-            <SubTitleText>General</SubTitleText>
-            <Pressable onPress={(v) => dispatch(setMuteSounds(!settings.muteSounds))}>
-              {settings.muteSounds ? <Icon icon={VolumeOff} color={isDark ? sunbeam : shadow} /> : <Icon icon={VolumeOn} />}
-            </Pressable>
+            {/* <SubTitleText>General</SubTitleText> */}
+            <BooleanInput
+              style={styles.inputRow}
+              value={settings.muteSounds}
+              onChange={(v) => dispatch(setMuteSounds(v))}
+              label={'Mute sounds'}
+              icon={settings.muteSounds ? VolumeOff : VolumeOn}
+            />
             <NumberInput
+              style={styles.inputRow}
               label={'Minimum answer value'}
               value={settings.minValue}
               min={0}
@@ -57,6 +62,7 @@ function Settings() {
               onChange={(v) => dispatch(setMinMaxValues(v, settings.maxValue))}
             />
             <NumberInput
+              style={styles.inputRow}
               label={'Maximum answer value'}
               value={settings.maxValue}
               min={0}
@@ -64,6 +70,7 @@ function Settings() {
               onChange={(v) => dispatch(setMinMaxValues(settings.minValue, v))}
             />
             <NumberInput
+              style={styles.inputRow}
               label={'Decimal places'}
               max={3}
               min={0}
@@ -71,7 +78,12 @@ function Settings() {
               onChange={(v) => dispatch(setDecimalPlaces(v))}
             />
 
-            <BooleanInput value={settings.autoSubmit} onChange={(v) => dispatch(setAutoSubmitCorrect(v))} label={'Auto submit answer'} />
+            <BooleanInput
+              style={styles.inputRow}
+              value={settings.autoSubmit}
+              onChange={(v) => dispatch(setAutoSubmitCorrect(v))}
+              label={'Auto submit answer'}
+            />
           </View>
 
           {/*<View style={styles.sectionContainer}>*/}
@@ -113,10 +125,14 @@ const styles = StyleSheet.create({
   },
 
   sectionContainer: {
-    marginVertical: spaceLarge,
-    paddingTop: spaceDefault,
-    borderTopWidth: 1,
-    borderTopColor: grey,
+    marginBottom: spaceLarge,
+    // marginVertical: spaceLarge,
+    // borderTopWidth: 1,
+    // borderTopColor: grey,
+  },
+
+  inputRow: {
+    marginTop: spaceDefault,
   },
 })
 
