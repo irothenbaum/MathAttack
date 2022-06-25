@@ -14,12 +14,15 @@ import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
 import QuestionResult from '../models/QuestionResult'
 import {setAnswer} from '../redux/UISlice'
 import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
+import useSoundPlayer from '../hooks/useSoundPlayer'
+import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 
 function GameClassic() {
   const dispatch = useDispatch()
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectGameSettings)
+  const {playSound} = useSoundPlayer()
 
   const {
     handleNextQuestion,
@@ -38,9 +41,11 @@ function GameClassic() {
     if (QuestionResult.isCorrect(result)) {
       dispatch(recordAnswer(userAnswer))
       animateCorrect()
+      playSound(SOUND_CORRECT_DING).then()
       handleNextQuestion()
     } else {
       markLastGuess(userAnswer)
+      playSound(SOUND_WRONG).then()
       animateIncorrect()
     }
 

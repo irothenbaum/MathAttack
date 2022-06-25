@@ -21,6 +21,8 @@ import Equation from '../models/Equation'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
 import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
+import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 
 function GameEstimate() {
   const gameSettings = useSelector(selectGameSettings)
@@ -30,10 +32,10 @@ function GameEstimate() {
   const dispatch = useDispatch()
   const [tempAnswer, setTempAnswer] = useState(0)
   const [isPerfectAnswer, setIsPerfectAnswer] = useState(false)
+  const {playSound} = useSoundPlayer()
 
   const {
     handleNextQuestion,
-    markLastGuess,
     animateIncorrect,
     animateCorrect,
     equationTimer,
@@ -49,14 +51,19 @@ function GameEstimate() {
     }
 
     let result = new EstimationQuestionResult(currentQuestion, answer)
+    dispatch(recordAnswer(answer))
+    const isPerfect = EstimationQuestionResult.isPerfect(result)
+    setIsPerfectAnswer(isPerfect)
     if (EstimationQuestionResult.isCorrect(result)) {
-      setIsPerfectAnswer(result.answer === Equation.getSolution(currentQuestion.equation))
-      dispatch(recordAnswer(answer))
       animateCorrect()
+      if (isPerfect) {
+        playSound(SOUND_CORRECT_CHIME).then()
+      } else {
+        playSound(SOUND_CORRECT_DING).then()
+      }
     } else {
-      setIsPerfectAnswer(false)
       animateIncorrect()
-      markLastGuess(answer)
+      playSound(SOUND_WRONG).then()
     }
     handleNextQuestion()
   }

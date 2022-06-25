@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
 import SoundHelper from '../lib/SoundHelper'
 
 function useSoundPlayer() {
   const areSoundsMuted = useSelector(selectGameSettings).muteSounds
-  const [playingSounds, setPlayingSounds] = useState([])
+  const playingSounds = useRef([])
 
   /**
    * @param {string} soundName
@@ -17,7 +17,7 @@ function useSoundPlayer() {
       return
     }
     const s = await SoundHelper.playSound(soundName, volume)
-    setPlayingSounds([...playingSounds, s])
+    playingSounds.current = [...playingSounds.current, s]
     return s.id
   }
 
@@ -26,30 +26,27 @@ function useSoundPlayer() {
    * @returns {Promise<boolean>}
    */
   const stopSound = async (s) => {
-    console.log('STOPPING SOUND WITH ID ' + s)
     if (!s) {
       return
     }
 
     const id = typeof s === 'number' ? s : s.id
 
-    const sound = playingSounds.find((e) => e.id === id)
+    const sound = playingSounds.current.find((e) => e.id === id)
 
     if (!sound) {
-      console.log('CANNOT FIND SOUND WITH ID ' + id)
       return
     }
 
-    await sound.stop()
-    console.log('SOUND STOPPED')
-    setPlayingSounds(playingSounds.filter((e) => e.id !== id))
+    sound.stop()
+    playingSounds.current = playingSounds.current.filter((e) => e.id !== id)
   }
 
   useEffect(() => {
     // when we unmount, we want to stop playing all sounds
     return () => {
-      if (playingSounds.length > 0) {
-        Promise.all(playingSounds.map()).then()
+      if (playingSounds.current.length > 0) {
+        playingSounds.current.forEach((s) => s.stop())
       }
     }
   }, [])

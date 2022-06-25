@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import {Animated, StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
 import UIText from './UIText'
@@ -15,32 +15,25 @@ import useSoundPlayer from '../hooks/useSoundPlayer'
 const START_TIME = 3
 
 function GameStartTimer(props) {
-  const [timerFinished, setTimerFinished] = useState(false)
   const isDark = isDarkMode()
-  const [color, setColor] = useState(isDark ? dimmedRed : neonRed)
   const {animate, animation} = useAnimationStation()
   const {hasStarted, secondsRemaining, startCountdown} = useCountdown()
   const {playSound} = useSoundPlayer()
 
+  const color = isDark ? dimmedRed : neonRed
   useEffect(() => {
-    startCountdown(START_TIME, () => {
-      playSound(SOUND_START).then()
-      setTimerFinished(true)
-      props.onStart()
-    })
+    startCountdown(START_TIME)
   }, [])
 
   useEffect(() => {
-    setColor(isDark ? dimmedRed : neonRed)
     if (secondsRemaining > 0) {
       playSound(SOUND_BEEP).then()
+      animate(1000)
+    } else if (hasStarted) {
+      playSound(SOUND_START).then()
+      props.onStart()
     }
-    animate(1000)
   }, [secondsRemaining])
-
-  if (timerFinished) {
-    return null
-  }
 
   const bGColor = getBackgroundColor(isDark)
 
@@ -65,7 +58,7 @@ function GameStartTimer(props) {
           },
         ]}
       >
-        {hasStarted ? secondsRemaining : START_TIME}
+        {hasStarted ? (secondsRemaining > 0 ? secondsRemaining : '') : START_TIME}
       </UIText>
     </Animated.View>
   )

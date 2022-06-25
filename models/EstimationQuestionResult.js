@@ -16,6 +16,14 @@ class EstimationQuestionResult extends QuestionResult {
    * @param {QuestionResult} obj
    * @returns {boolean}
    */
+  static isPerfect(obj) {
+    return EstimationQuestionResult.getAccuracy(obj) === 0
+  }
+
+  /**
+   * @param {QuestionResult} obj
+   * @returns {boolean}
+   */
   static getCloseEnoughThreshold(obj) {
     // if there are 4 terms, must be within 20, if 5 terms, within 25, etc
     return Phrase.getDiscreteTerms(obj.question.equation.phrase).length * 5

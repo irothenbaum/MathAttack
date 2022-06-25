@@ -21,6 +21,8 @@ import useAnimationStation from '../hooks/useAnimationStation'
 import InGameMenu from '../components/InGameMenu'
 import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
 import Icon, {X} from '../components/Icon'
+import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
@@ -31,6 +33,7 @@ function GameMarathon() {
   const {isAnimatingForCorrect, animation: answerReactionAnimation, animateCorrect, animateIncorrect} = useAnswerReactionResults()
 
   const {animation: nextQuestionAnimation, animate: animateNextQuestion, isAnimating: isAnimatingNextQuestion} = useAnimationStation()
+  const {playSound} = useSoundPlayer()
 
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
@@ -44,6 +47,7 @@ function GameMarathon() {
     let correctAnswer = Equation.getSolution(currentQuestion.equation)
     if (QuestionResult.isCorrect(result)) {
       animateCorrect()
+      playSound(SOUND_CORRECT_DING).then()
       dispatch(setAnswer(''))
       animateNextQuestion(
         NEXT_QUESTION_TIMEOUT,
@@ -59,6 +63,7 @@ function GameMarathon() {
       let hasStrikesRemaining = newStrikes > 0
 
       dispatch(setAnswer(''))
+      playSound(SOUND_WRONG).then()
       animateIncorrect()
       animateNextQuestion(
         NEXT_QUESTION_TIMEOUT,
