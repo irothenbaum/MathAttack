@@ -18,7 +18,7 @@ import GameMarathon from './scenes/GameMarathon'
 import GameEstimate from './scenes/GameEstimate'
 import useAnimationStation from './hooks/useAnimationStation'
 import GameVersus from './scenes/GameVersus'
-import {StyleSheet, Animated, View, Dimensions} from 'react-native'
+import {StyleSheet, Animated, View} from 'react-native'
 import useReduxPersist from './hooks/useReduxPersist'
 import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
 import isDarkMode from './hooks/isDarkMode'
@@ -33,11 +33,6 @@ const SceneMap = {
   [Scene_GameEstimate]: GameEstimate,
   [Scene_GameVersus]: GameVersus,
 }
-
-// we want our transition flash to be a square so we scale the width by a percentage relative to the height
-const {width, height} = Dimensions.get('window')
-const ratio = height / width
-const percent = `${parseInt(100 * ratio)}%`
 
 function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
@@ -69,19 +64,36 @@ function MathAttack() {
   }
 
   return (
-    <View style={styles.sceneWrapper}>
+    <View style={[styles.sceneWrapper]}>
       {isChangingScreens && (
         <View style={styles.sceneTransitionContainer}>
           <Animated.View
             style={{
+              width: '100%',
               backgroundColor: getBackgroundColor(isDark),
               height: screenChangeAnimation.interpolate({
                 inputRange: [0, 0.5, 1],
-                outputRange: ['0%', '100%', '0%'],
+                outputRange: ['0%', '50%', '0%'],
               }),
-              width: screenChangeAnimation.interpolate({
+            }}
+          />
+          <Animated.View
+            style={{
+              width: '100%',
+              backgroundColor: 'transparent',
+              height: screenChangeAnimation.interpolate({
                 inputRange: [0, 0.5, 1],
-                outputRange: ['0%', percent, '0%'],
+                outputRange: ['0%', '0%', '100%'],
+              }),
+            }}
+          />
+          <Animated.View
+            style={{
+              width: '100%',
+              backgroundColor: getBackgroundColor(isDark),
+              height: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: ['0%', '50%', '0%'],
               }),
             }}
           />

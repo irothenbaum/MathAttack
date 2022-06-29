@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {BackHandler, Pressable, StyleSheet} from 'react-native'
 import {shadow, sunbeam} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
@@ -13,27 +13,29 @@ import {SCENE_TO_LABEL} from '../constants/game'
 import {selectCurrentScene, selectLastGameResults} from '../redux/selectors'
 import Modal from './Modal'
 import Icon, {ArrowLeft} from './Icon'
+import useSoundPlayer from '../hooks/useSoundPlayer'
+import {SOUND_SLAM} from '../lib/SoundHelper'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
   const isDark = isDarkMode()
   const [isOpen, setIsOpen] = useState(false)
-
+  const {playSound} = useSoundPlayer()
   const currentGame = useSelector(selectCurrentScene)
   const results = useSelector(selectLastGameResults)
 
-  const backAction = useCallback(() => {
-    setIsOpen(!isOpen)
-    return true
-  }, [isOpen, setIsOpen])
-
   useEffect(() => {
+    const backAction = () => {
+      setIsOpen((o) => !o)
+      return true
+    }
+
     BackHandler.addEventListener('hardwareBackPress', backAction)
 
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction)
     }
-  }, [backAction])
+  }, [])
 
   const handleEndGame = async () => {
     // give the screen a chance to cleanup
@@ -57,7 +59,13 @@ function InGameMenu(props) {
 
   return (
     <React.Fragment>
-      <Pressable style={styles.openIcon} onPress={() => setIsOpen(true)}>
+      <Pressable
+        style={styles.openIcon}
+        onPress={() => {
+          playSound(SOUND_SLAM).then()
+          setIsOpen(true)
+        }}
+      >
         <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
       </Pressable>
       <Modal onClose={handleResume} isOpen={isOpen}>
