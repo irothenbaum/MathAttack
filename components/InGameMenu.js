@@ -65,7 +65,7 @@ function InGameMenu(props) {
         <MenuButton
           style={styles.button}
           title={'Resume'}
-          onPress={() => {
+          onPressStart={() => {
             setIsOpen(false)
             if (typeof props.onResume === 'function') {
               props.onResume()

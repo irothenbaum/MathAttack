@@ -9,7 +9,7 @@ import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useDoOnceTimer from '../hooks/useDoOnceTimer'
-import {SOUND_BUTTON_CHIME} from '../lib/SoundHelper'
+import {SOUND_BUTTON_CHIME, SOUND_TAP} from '../lib/SoundHelper'
 import Icon, {Loading} from './Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 
@@ -67,7 +67,7 @@ function MenuButton(props) {
     }
   }
 
-  const canPress = typeof props.onPress === 'function' && !props.isDisabled && !props.isLoading
+  const canPress = !props.isDisabled && !props.isLoading
 
   const doBlur = () => {
     animate(BLUR_DURATION + Math.random() * BLUR_DURATION, () => setTimer(blurKey, doBlur, parseInt(Math.random() * BLUR_DELAY)))
@@ -85,14 +85,20 @@ function MenuButton(props) {
       return
     }
 
-    playSound(SOUND_BUTTON_CHIME).then()
-
     if (typeof props.onPressStart === 'function') {
-      props.onPressStart()
+      let startResponse = props.onPressStart()
+      if (!startResponse) {
+        playSound(SOUND_TAP).then()
+        return
+      }
     }
-    animatePress(PRESS_DELAY, () => {
-      props.onPress()
-    })
+
+    if (typeof props.onPress === 'function') {
+      playSound(SOUND_BUTTON_CHIME).then()
+      animatePress(PRESS_DELAY, () => {
+        props.onPress()
+      })
+    }
   }
 
   return (
@@ -182,8 +188,8 @@ const styles = StyleSheet.create({
 
 MenuButton.propTypes = {
   title: PropTypes.string.isRequired,
-  onPress: PropTypes.func.isRequired,
-  onPressStart: PropTypes.func,
+  onPress: PropTypes.func,
+  onPressStart: PropTypes.func, // must return true to continue processing the long press
   isDisabled: PropTypes.bool,
   variant: PropTypes.string,
   size: PropTypes.number,
