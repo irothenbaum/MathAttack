@@ -15,3 +15,5 @@ export const SCENE_TO_LABEL = {
 }
 
 export const SLAM_ANIMATION_DURATION = 1500
+
+export const SCENE_CHANGE_TRANSITION_DURATION = 250

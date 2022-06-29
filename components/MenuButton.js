@@ -1,15 +1,15 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Animated, Pressable, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import {dimmedRed, neonRed, darkGrey, grey, black, white} from '../styles/colors'
-import {getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
+import {getFlashStylesForAnimation, getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
 import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useDoOnceTimer from '../hooks/useDoOnceTimer'
-import {SOUND_TAP} from '../lib/SoundHelper'
+import {SOUND_BUTTON_CHIME} from '../lib/SoundHelper'
 import Icon, {Loading} from './Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 
@@ -33,6 +33,7 @@ function ButtonShadow(props) {
 
 const BLUR_DURATION = 1000
 const BLUR_DELAY = 1000
+const PRESS_DELAY = 500
 
 function MenuButton(props) {
   const {animate, animation, cancel} = useAnimationStation()
@@ -41,6 +42,7 @@ function MenuButton(props) {
   const isDark = isDarkMode()
   const contentRef = useRef()
   const {playSound} = useSoundPlayer()
+  const {animate: animatePress, animation: pressingAnimation, isAnimating: isAnimatingPress} = useAnimationStation()
 
   const size = props.size || MenuButton.SIZE_DEFAULT
   const variant = props.variant || MenuButton.VARIANT_DEFAULT
@@ -79,8 +81,18 @@ function MenuButton(props) {
   }, [])
 
   const handlePress = () => {
-    playSound(SOUND_TAP).then()
-    props.onPress()
+    if (isAnimatingPress) {
+      return
+    }
+
+    playSound(SOUND_BUTTON_CHIME).then()
+
+    if (typeof props.onPressStart === 'function') {
+      props.onPressStart()
+    }
+    animatePress(PRESS_DELAY, () => {
+      props.onPress()
+    })
   }
 
   return (
@@ -103,6 +115,17 @@ function MenuButton(props) {
           })}
         </View>
       )}
+      {isAnimatingPress && (
+        <Animated.View
+          style={[
+            styles.pressingOverlay,
+            {
+              backgroundColor: textColor,
+              ...getFlashStylesForAnimation(pressingAnimation),
+            },
+          ]}
+        />
+      )}
       <Pressable
         onLayout={(event) => {
           contentRef.current = event.nativeEvent.layout
@@ -119,7 +142,7 @@ function MenuButton(props) {
         onPress={canPress ? handlePress : () => {}}
       >
         {props.isLoading ? (
-          <Icon icon={Loading} transform={{rotate: 90}} />
+          <Icon icon={Loading} color={textColor} transform={{rotate: 90}} />
         ) : (
           <React.Fragment>
             {props.icon && <Icon color={textColor} icon={props.icon} style={styles.icon} size={size} />}
@@ -132,6 +155,16 @@ function MenuButton(props) {
 }
 
 const styles = StyleSheet.create({
+  pressingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    borderRadius: 4,
+    opacity: 1,
+    zIndex: 12,
+  },
   primary: {
     padding: spaceSmall,
     paddingHorizontal: spaceDefault,
@@ -150,6 +183,7 @@ const styles = StyleSheet.create({
 MenuButton.propTypes = {
   title: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
+  onPressStart: PropTypes.func,
   isDisabled: PropTypes.bool,
   variant: PropTypes.string,
   size: PropTypes.number,

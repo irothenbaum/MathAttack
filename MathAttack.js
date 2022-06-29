@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
+import {useSelector} from 'react-redux'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
@@ -18,8 +18,11 @@ import GameMarathon from './scenes/GameMarathon'
 import GameEstimate from './scenes/GameEstimate'
 import useAnimationStation from './hooks/useAnimationStation'
 import GameVersus from './scenes/GameVersus'
-import {AsyncStorage} from 'react-native'
+import {StyleSheet, Animated, View, Dimensions} from 'react-native'
 import useReduxPersist from './hooks/useReduxPersist'
+import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
+import isDarkMode from './hooks/isDarkMode'
+import {getBackgroundColor} from './lib/utilities'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -31,9 +34,16 @@ const SceneMap = {
   [Scene_GameVersus]: GameVersus,
 }
 
+// we want our transition flash to be a square so we scale the width by a percentage relative to the height
+const {width, height} = Dimensions.get('window')
+const ratio = height / width
+const percent = `${parseInt(100 * ratio)}%`
+
 function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
-  const {} = useAnimationStation()
+  const isTransitioningToScene = useSelector((state) => state.Navigation.isTransitioningToScene)
+  const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
+  const isDark = isDarkMode()
 
   const {flush, hydrate} = useReduxPersist()
 
@@ -41,7 +51,13 @@ function MathAttack() {
     hydrate()
   }, [])
 
-  // whenever the scene changes
+  useEffect(() => {
+    if (isTransitioningToScene) {
+      animateScreenChange(SCENE_CHANGE_TRANSITION_DURATION * 2)
+    }
+  }, [isTransitioningToScene])
+
+  // whenever the scene changes, we save our settings
   useEffect(() => {
     flush()
   }, [currentScene])
@@ -52,7 +68,46 @@ function MathAttack() {
     throw new Error(`Scene missing "${currentScene}"`)
   }
 
-  return <SceneComponent />
+  return (
+    <View style={styles.sceneWrapper}>
+      {isChangingScreens && (
+        <View style={styles.sceneTransitionContainer}>
+          <Animated.View
+            style={{
+              backgroundColor: getBackgroundColor(isDark),
+              height: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: ['0%', '100%', '0%'],
+              }),
+              width: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: ['0%', percent, '0%'],
+              }),
+            }}
+          />
+        </View>
+      )}
+      <SceneComponent />
+    </View>
+  )
 }
+
+const styles = StyleSheet.create({
+  sceneWrapper: {
+    height: '100%',
+    width: '100%',
+  },
+
+  sceneTransitionContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    left: 0,
+    top: 0,
+    zIndex: 1000,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})
 
 export default MathAttack
