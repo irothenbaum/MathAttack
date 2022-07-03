@@ -21,7 +21,6 @@ const gameSlice = createSlice({
       state.currentQuestion = serializeObject(GameQuestion.getRandomFromSettings(state.settings, payload))
     },
     setCurrentQuestion: (state, {payload}) => {
-      console.log('SETTING STATE QUESTION', payload)
       state.currentQuestion = serializeObject(payload)
     },
     startNewGame: (state, {payload}) => {

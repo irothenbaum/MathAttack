@@ -13,8 +13,6 @@ import {EVENT_BroadcastNewQuestion, EVENT_SubmitAnswer} from '../../constants/ve
 import QuestionResult from '../../models/QuestionResult'
 import {recordAnswer, setCurrentQuestion} from '../../redux/GameSlice'
 import {setAnswer} from '../../redux/UISlice'
-import {ANSWER_TIMEOUT} from '../../constants/game'
-import {OPPONENT_WRONG_ANSWER} from '../../constants/versus'
 import isDarkMode from '../../hooks/isDarkMode'
 
 function VersusRound(props) {
@@ -41,12 +39,11 @@ function VersusRound(props) {
     // start listening for opponent answers
     answerListener.current = props.socket.on(EVENT_SubmitAnswer, (e) => {
       let result = new QuestionResult(q, e.answer)
+      dispatch(recordAnswer(result))
       if (QuestionResult.isCorrect(result)) {
-        dispatch(recordAnswer(ANSWER_TIMEOUT))
-        props.onLost(ANSWER_TIMEOUT)
+        props.onLost()
       } else {
-        dispatch(recordAnswer(OPPONENT_WRONG_ANSWER))
-        props.onWon(OPPONENT_WRONG_ANSWER)
+        props.onWon()
       }
     })
   }

@@ -50,7 +50,7 @@ function WaitingForOpponent(props) {
       setHasOpponentJoined(true)
     }
     // listen for when the other player marks ready and store their name
-    const readyListener = props.socket.on(EVENT_MarkReady, e => {
+    const readyListener = props.socket.on(EVENT_MarkReady, (e) => {
       setOpponentName(e.name)
       setHasOpponentReadied(true)
     })
@@ -66,17 +66,14 @@ function WaitingForOpponent(props) {
     <View style={styles.container}>
       <TitleText>How to play:</TitleText>
       <NormalText>
-        You and your opponent will be shown the same question. First one to
-        answer correctly wins. If you answer incorrectly, you lose.
+        You and your opponent will be shown the same question. First one to answer correctly wins. If you answer incorrectly, you lose.
       </NormalText>
 
       <DividerLine />
 
       {!hasOpponentJoined ? (
         <React.Fragment>
-          <NormalText>
-            Share this code with your opponent so they can join your game.
-          </NormalText>
+          <NormalText>Share this code with your opponent so they can join your game.</NormalText>
           <TitleText>{props.code}</TitleText>
         </React.Fragment>
       ) : hasReadied ? (
@@ -90,15 +87,9 @@ function WaitingForOpponent(props) {
         )
       ) : (
         <React.Fragment>
-          <NormalText>
-            Players connected. Enter your name and click Ready when ready.
-          </NormalText>
+          <NormalText>Players connected. Enter your name and click Ready when ready.</NormalText>
           <StringInput label={'name'} value={name} onChange={setName} />
-          <MenuButton
-            isDisabled={!name}
-            title={'Ready'}
-            onPress={handleReady}
-          />
+          <MenuButton isDisabled={!name} title={'Ready'} onPressStart={handleReady} />
         </React.Fragment>
       )}
     </View>

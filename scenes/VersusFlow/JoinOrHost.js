@@ -38,10 +38,10 @@ function JoinOrHost(props) {
     <View style={styles.container}>
       <TitleText style={styles.titleText}>Versus</TitleText>
       <NormalText style={styles.prompt}>Host a new game:</NormalText>
-      <MenuButton blurCount={2} isLoading={isConnecting} title={'New Game'} onPress={handleNewGame} />
+      <MenuButton blurCount={2} isLoading={isConnecting} title={'New Game'} onPressStart={handleNewGame} />
       <DividerLine />
       <StringInput label={'Enter game code'} value={joinCode} onChange={setJoinCode} />
-      <MenuButton blurCount={2} isDisabled={!joinCode} isLoading={isConnecting} title={'Join Game'} onPress={handleJoinGame} />
+      <MenuButton blurCount={2} isDisabled={!joinCode} isLoading={isConnecting} title={'Join Game'} onPressStart={handleJoinGame} />
     </View>
   )
 }

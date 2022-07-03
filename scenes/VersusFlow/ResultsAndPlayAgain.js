@@ -3,9 +3,8 @@ import {StyleSheet, View, Animated} from 'react-native'
 import {FullScreenOverlay, ScreenContainer} from '../../styles/elements'
 import TitleText from '../../components/TitleText'
 import {black, neonGreen, dimmedGreen, white, middleGrey} from '../../styles/colors'
-import VersusSocket from '../../lib/VersusSocket'
 import PropTypes from 'prop-types'
-import {EVENT_MarkReady, WON_FLAG_WON, WON_FLAG_LOST, OPPONENT_WRONG_ANSWER} from '../../constants/versus'
+import {EVENT_MarkReady, WON_FLAG_WON, WON_FLAG_LOST} from '../../constants/versus'
 import NormalText from '../../components/NormalText'
 import {useSelector} from 'react-redux'
 import {selectLastGameResults} from '../../redux/selectors'
@@ -88,18 +87,27 @@ function ResultsAndPlayAgain(props) {
   }, [amIReady, isOpponentReady])
 
   let wonText = ''
-  if (QuestionResult.isCorrect(lastResult)) {
-    if (props.wonFlag === WON_FLAG_WON) {
+
+  if (props.wonFlag === WON_FLAG_WON) {
+    if (QuestionResult.isCorrect(lastResult)) {
+      // we won because we answered correctly
       wonText = 'You answered the correct answer: ' + lastResult.answer
     } else {
-      wonText = `${props.opponentName} answered the correct answer: ${lastResult.answer}`
+      // we won because the opponent answered incorrectly
+      wonText = `${props.opponentName} answered ${lastResult.answer}, the correct answer was ${Equation.getSolution(
+        lastResult.question.equation,
+      )}`
     }
-  } else if (props.wonFlag === WON_FLAG_WON) {
-    wonText = `${props.opponentName} answered ${
-      lastResult.answer === OPPONENT_WRONG_ANSWER ? 'incorrectly, ' : `${lastResult.answer}, but`
-    } the correct answer was ${Equation.getSolution(lastResult.question.equation)}`
   } else {
-    wonText = `You answered ${lastResult.answer}, but the correct answer was ${Equation.getSolution(lastResult.question.equation)}`
+    // we lost, but why?...
+
+    if (QuestionResult.isTimeout(lastResult)) {
+      // lost because opponent answered correctly
+      wonText = `${props.opponentName} answered the correct answer: ${lastResult.answer}`
+    } else {
+      // lost because we answered incorrectly
+      wonText = `You answered ${lastResult.answer}, but the correct answer was ${Equation.getSolution(lastResult.question.equation)}`
+    }
   }
 
   const renderScore = (scoreValue, didWin) => {
@@ -156,7 +164,7 @@ function ResultsAndPlayAgain(props) {
           {amIReady ? (
             <Icon icon={Check} color={isDark ? dimmedGreen : neonGreen} />
           ) : (
-            <MenuButton title={'Play again'} onPress={handlePlayAgain} blurCount={2} />
+            <MenuButton title={'Play again'} onPressStart={handlePlayAgain} blurCount={2} />
           )}
         </View>
         <View style={styles.singleScoreContainer}>

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {Animated, Pressable, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import {spaceDefault, spaceSmall} from '../styles/layout'
@@ -9,7 +9,7 @@ import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useDoOnceTimer from '../hooks/useDoOnceTimer'
-import {SOUND_BUTTON_CHIME, SOUND_TAP} from '../lib/SoundHelper'
+import {SOUND_BUTTON_BEEP, SOUND_BUTTON_CHIME} from '../lib/SoundHelper'
 import Icon, {Loading} from './Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 
@@ -88,7 +88,7 @@ function MenuButton(props) {
     if (typeof props.onPressStart === 'function') {
       let startResponse = props.onPressStart()
       if (!startResponse) {
-        playSound(SOUND_TAP).then()
+        playSound(SOUND_BUTTON_BEEP).then()
         return
       }
     }
