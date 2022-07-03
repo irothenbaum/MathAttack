@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react'
 import {useSelector} from 'react-redux'
-import {View} from 'react-native'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
   Scene_GameEstimate,
   Scene_GameMarathon,
   Scene_GameResults,
+  Scene_GameVersus,
   Scene_Menu,
   Scene_Settings,
 } from './constants/scenes'
@@ -16,7 +16,13 @@ import Settings from './scenes/Settings'
 import GameResults from './scenes/GameResults'
 import GameMarathon from './scenes/GameMarathon'
 import GameEstimate from './scenes/GameEstimate'
-import animationStation from './hooks/animationStation'
+import useAnimationStation from './hooks/useAnimationStation'
+import GameVersus from './scenes/GameVersus'
+import {StyleSheet, Animated, View} from 'react-native'
+import useReduxPersist from './hooks/useReduxPersist'
+import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
+import isDarkMode from './hooks/isDarkMode'
+import {getBackgroundColor} from './lib/utilities'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -25,13 +31,31 @@ const SceneMap = {
   [Scene_GameMarathon]: GameMarathon,
   [Scene_GameResults]: GameResults,
   [Scene_GameEstimate]: GameEstimate,
+  [Scene_GameVersus]: GameVersus,
 }
 
 function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
-  const {} = animationStation()
+  const isTransitioningToScene = useSelector((state) => state.Navigation.isTransitioningToScene)
+  const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
+  const isDark = isDarkMode()
 
-  useEffect(() => {}, [currentScene])
+  const {flush, hydrate} = useReduxPersist()
+
+  useEffect(() => {
+    hydrate()
+  }, [])
+
+  useEffect(() => {
+    if (isTransitioningToScene) {
+      animateScreenChange(SCENE_CHANGE_TRANSITION_DURATION * 2)
+    }
+  }, [isTransitioningToScene])
+
+  // whenever the scene changes, we save our settings
+  useEffect(() => {
+    flush()
+  }, [currentScene])
 
   let SceneComponent = SceneMap[currentScene]
 
@@ -40,10 +64,62 @@ function MathAttack() {
   }
 
   return (
-    <View>
+    <View style={[styles.sceneWrapper]}>
+      {isChangingScreens && (
+        <View style={styles.sceneTransitionContainer}>
+          <Animated.View
+            style={{
+              width: '100%',
+              backgroundColor: getBackgroundColor(isDark),
+              height: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: ['0%', '50%', '0%'],
+              }),
+            }}
+          />
+          <Animated.View
+            style={{
+              width: '100%',
+              backgroundColor: 'transparent',
+              height: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: ['0%', '0%', '100%'],
+              }),
+            }}
+          />
+          <Animated.View
+            style={{
+              width: '100%',
+              backgroundColor: getBackgroundColor(isDark),
+              height: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: ['0%', '50%', '0%'],
+              }),
+            }}
+          />
+        </View>
+      )}
       <SceneComponent />
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  sceneWrapper: {
+    height: '100%',
+    width: '100%',
+  },
+
+  sceneTransitionContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    left: 0,
+    top: 0,
+    zIndex: 1000,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})
 
 export default MathAttack

@@ -18,8 +18,15 @@ class GameQuestion {
    * @returns {GameQuestion}
    */
   static getRandomFromSettings(GameSettings, term1) {
+    return new GameQuestion(Equation.getRandomFromSettings(GameSettings, term1, 2), Date.now(), Date.now() + GameSettings.equationDuration)
+  }
+
+  /**
+   * @param {GameSettings} GameSettings
+   */
+  static getRandomEstimateQuestionFromSettings(GameSettings) {
     return new GameQuestion(
-      Equation.getRandomFromSettings(GameSettings, term1),
+      Equation.getRandomFromSettings(GameSettings, undefined, GameSettings.estimateItems),
       Date.now(),
       Date.now() + GameSettings.equationDuration,
     )

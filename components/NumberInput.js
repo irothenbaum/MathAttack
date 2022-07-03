@@ -1,11 +1,10 @@
 import React from 'react'
 import {TextInput, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
-import {font3} from '../styles/typography'
 import NormalText from './NormalText'
 import isDarkMode from '../hooks/isDarkMode'
-import {spaceDefault} from '../styles/layout'
 import {getUIColor} from '../lib/utilities'
+import {InputStyles} from '../styles/elements'
 
 function NumberInput(props) {
   const isDark = isDarkMode()
@@ -42,25 +41,12 @@ function NumberInput(props) {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spaceDefault,
-  },
-  input: {
-    fontSize: font3,
-  },
-  label: {
-    opacity: 0.5,
-  },
-  inputFrame: {
-    borderWidth: 1,
-    borderRadius: 4,
-  },
-})
+const styles = StyleSheet.create(InputStyles)
 
 NumberInput.propTypes = {
   value: PropTypes.number,
   onChange: PropTypes.func,
+  label: PropTypes.string,
   min: PropTypes.number,
   max: PropTypes.number,
 }

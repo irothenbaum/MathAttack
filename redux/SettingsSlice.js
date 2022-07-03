@@ -15,14 +15,24 @@ const settingsSlice = createSlice({
     setEquationDuration: (state, {payload}) => {
       state.equationDuration = payload
     },
+    setAutoSubmitCorrect: (state, {payload}) => {
+      state.autoSubmit = payload
+    },
+    setMuteSounds: (state, {payload}) => {
+      state.muteSounds = payload
+    },
+
+    flushFromCache: (state, {payload}) => {
+      return {...state, ...payload}
+    },
   },
 })
 
-export const setMinMaxValues = (min, max) => dispatch =>
-  dispatch(settingsSlice.actions.setMinMaxValues({min: min, max: max}))
-export const setDecimalPlaces = places => dispatch =>
-  dispatch(settingsSlice.actions.setDecimalPlaces(places))
-export const setEquationDuration = durationMS => dispatch =>
-  dispatch(settingsSlice.actions.setEquationDuration(durationMS))
+export const setMinMaxValues = (min, max) => (dispatch) => dispatch(settingsSlice.actions.setMinMaxValues({min: min, max: max}))
+export const setDecimalPlaces = (places) => (dispatch) => dispatch(settingsSlice.actions.setDecimalPlaces(places))
+export const setEquationDuration = (durationMS) => (dispatch) => dispatch(settingsSlice.actions.setEquationDuration(durationMS))
+export const setAutoSubmitCorrect = (isActive) => (dispatch) => dispatch(settingsSlice.actions.setAutoSubmitCorrect(isActive))
+export const setMuteSounds = (isMuted) => (dispatch) => dispatch(settingsSlice.actions.setMuteSounds(isMuted))
+export const flushFromCache = (payload) => (dispatch) => dispatch(settingsSlice.actions.flushFromCache(payload))
 
 export default settingsSlice.reducer

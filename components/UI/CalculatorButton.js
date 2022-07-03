@@ -5,16 +5,12 @@ import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
-import {
-  darkGrey,
-  lightGrey,
-  neonGreen,
-  OPACITY_AMOUNT,
-  transparent,
-} from '../../styles/colors'
+import {darkGrey, lightGrey, neonGreen, OPACITY_AMOUNT, transparent} from '../../styles/colors'
 import UIText from '../UIText'
 import isDarkMode from '../../hooks/isDarkMode'
-import animationStation from '../../hooks/animationStation'
+import useAnimationStation from '../../hooks/useAnimationStation'
+import {SOUND_TAP} from '../../lib/SoundHelper'
+import useSoundPlayer from '../../hooks/useSoundPlayer'
 
 export const TINT_DURATION = 300
 export const DECIMAL = -1
@@ -28,21 +24,18 @@ function CalculatorButton(props) {
   const isDark = isDarkMode()
   const dispatch = useDispatch()
   const userInput = useSelector(selectUserInput)
-  const {animation, isAnimating, animate} = animationStation()
+  const {animation, isAnimating, animate} = useAnimationStation()
+  const {playSound} = useSoundPlayer()
 
-  let valueStr =
-    props.value === DECIMAL
-      ? '•'
-      : props.value === CLEAR
-      ? 'CLR'
-      : `${props.value}`
+  let valueStr = props.value === DECIMAL ? '•' : props.value === CLEAR ? 'CLR' : `${props.value}`
 
   const handlePress = useCallback(() => {
+    playSound(SOUND_TAP).then()
     animate(TINT_DURATION)
 
     if (props.value === CLEAR) {
       dispatch(setAnswer(''))
-    } else if (props.value === 0 && !userInput) {
+    } else if (props.value === 0 && userInput === '0') {
       // no leading 0s
       return
     } else {
@@ -61,17 +54,13 @@ function CalculatorButton(props) {
     }
   }, [props.value, dispatch, userInput, animate])
 
-  const isDisabled = props.value === DECIMAL && userInput.includes('.')
+  const isDisabled =
+    (props.value === DECIMAL && userInput.includes('.')) || (typeof props.value === 'number' && props.value >= 0 && userInput === '0')
 
   const bgColor = getBackgroundColor(isDark, isDisabled)
 
-  console.log(isAnimating)
-
   return (
-    <Pressable
-      style={[styles.pressable]}
-      disabled={isDisabled || props.isDisabled}
-      onPress={handlePress}>
+    <Pressable style={[styles.pressable]} disabled={isDisabled || props.isDisabled} onPress={handlePress}>
       <Animated.View
         style={[
           styles.container,
@@ -84,7 +73,8 @@ function CalculatorButton(props) {
                 })
               : bgColor,
           },
-        ]}>
+        ]}
+      >
         <UIText>{valueStr}</UIText>
       </Animated.View>
     </Pressable>

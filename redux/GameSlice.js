@@ -14,46 +14,40 @@ const gameSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     recordAnswer: (state, {payload}) => {
-      let result = new QuestionResult(
-        state.currentQuestion,
-        payload,
-        Date.now() - state.currentQuestion.createdAt,
-      )
-      state.questionResults = [
-        ...state.questionResults,
-        serializeObject(result),
-      ]
+      let result = new QuestionResult(state.currentQuestion, payload, Date.now() - state.currentQuestion.createdAt)
+      state.questionResults = [...state.questionResults, serializeObject(result)]
     },
     generateNewQuestion: (state, {payload}) => {
-      state.currentQuestion = serializeObject(
-        GameQuestion.getRandomFromSettings(state.settings, payload),
-      )
+      state.currentQuestion = serializeObject(GameQuestion.getRandomFromSettings(state.settings, payload))
+    },
+    setCurrentQuestion: (state, {payload}) => {
+      state.currentQuestion = serializeObject(payload)
     },
     startNewGame: (state, {payload}) => {
       Object.assign(state, INITIAL_STATE, {settings: payload})
     },
-    deductTimeRemaining: (state, {payload}) => {
-      // you lose half the time remaining
-      state.currentQuestion = {
-        ...state.currentQuestion,
-        // we shift both because we want the total to remain consistent
-        createdAt: state.currentQuestion.createdAt - payload,
-        expiresAt: state.currentQuestion.expiresAt - payload,
-      }
+
+    generateNewEstimationQuestion: (state) => {
+      state.currentQuestion = serializeObject(GameQuestion.getRandomEstimateQuestionFromSettings(state.settings))
     },
   },
 })
 
-export const recordAnswer = answer => dispatch =>
-  dispatch(gameSlice.actions.recordAnswer(answer))
+/** @param {number} answer */
+export const recordAnswer = (answer) => (dispatch) => dispatch(gameSlice.actions.recordAnswer(answer))
+
 // When you start a new game, we freeze the settings object so it must be passed into this function
-export const startNewGame = classicGameSettings => dispatch => {
+/** @param {GameSettings} classicGameSettings */
+export const startNewGame = (classicGameSettings) => (dispatch) => {
   dispatch(gameSlice.actions.startNewGame(classicGameSettings))
 }
-export const generateNewQuestion = term1 => dispatch =>
-  dispatch(gameSlice.actions.generateNewQuestion(term1))
 
-export const deductTimeRemaining = amount => dispatch =>
-  dispatch(gameSlice.actions.deductTimeRemaining(amount))
+/** @param {number?} term1 */
+export const generateNewQuestion = (term1) => (dispatch) => dispatch(gameSlice.actions.generateNewQuestion(term1))
+
+export const generateNewEstimationQuestion = () => (dispatch) => dispatch(gameSlice.actions.generateNewEstimationQuestion())
+
+/** @param {GameQuestion} q */
+export const setCurrentQuestion = (q) => (dispatch) => dispatch(gameSlice.actions.setCurrentQuestion(serializeObject(q)))
 
 export default gameSlice.reducer

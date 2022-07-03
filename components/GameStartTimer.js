@@ -1,45 +1,39 @@
-import React, {useEffect, useState, useRef} from 'react'
-import {Animated, View, StyleSheet, Easing} from 'react-native'
+import React, {useEffect} from 'react'
+import {Animated, StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
 import UIText from './UIText'
-import doOnceTimer from '../hooks/doOnceTimer'
 import {FullScreenOverlay, TextShadowSoft} from '../styles/elements'
 import {shadow, sunbeam, neonRed, dimmedRed} from '../styles/colors'
 import {spaceExtraLarge} from '../styles/layout'
 import {getBackgroundColor} from '../lib/utilities'
 import isDarkMode from '../hooks/isDarkMode'
-import animationStation from '../hooks/animationStation'
+import useAnimationStation from '../hooks/useAnimationStation'
+import useCountdown from '../hooks/useCountdown'
+import {SOUND_BEEP, SOUND_START} from '../lib/SoundHelper'
+import useSoundPlayer from '../hooks/useSoundPlayer'
+
+const START_TIME = 3
 
 function GameStartTimer(props) {
   const isDark = isDarkMode()
-  const secondsRemaining = useRef(4)
-  const [color, setColor] = useState(isDark ? dimmedRed : neonRed)
-  const {setTimer, cancelAllTimers} = doOnceTimer()
-  const {animate, animation} = animationStation()
+  const {animate, animation} = useAnimationStation()
+  const {hasStarted, secondsRemaining, startCountdown} = useCountdown()
+  const {playSound} = useSoundPlayer()
 
-  const tickTimer = () => {
-    if (secondsRemaining.current > 1) {
-      setColor(isDark ? dimmedRed : neonRed)
-      animate(1000)
-      setTimer('game-start-countdown', tickTimer, 1000)
-    } else if (typeof props.onStart === 'function') {
-      props.onStart()
-    }
-
-    secondsRemaining.current = secondsRemaining.current - 1
-  }
-
+  const color = isDark ? dimmedRed : neonRed
   useEffect(() => {
-    tickTimer()
-
-    return () => {
-      cancelAllTimers()
-    }
+    startCountdown(START_TIME)
   }, [])
 
-  if (secondsRemaining.current <= 0) {
-    return null
-  }
+  useEffect(() => {
+    if (secondsRemaining > 0) {
+      playSound(SOUND_BEEP).then()
+      animate(1000)
+    } else if (hasStarted) {
+      playSound(SOUND_START).then()
+      props.onStart()
+    }
+  }, [secondsRemaining])
 
   const bGColor = getBackgroundColor(isDark)
 
@@ -53,7 +47,8 @@ function GameStartTimer(props) {
             outputRange: [color, bGColor],
           }),
         },
-      ]}>
+      ]}
+    >
       <UIText
         style={[
           styles.counterText,
@@ -61,8 +56,9 @@ function GameStartTimer(props) {
             color: bGColor,
             textShadowColor: isDark ? sunbeam : shadow,
           },
-        ]}>
-        {secondsRemaining.current}
+        ]}
+      >
+        {hasStarted ? (secondsRemaining > 0 ? secondsRemaining : '') : START_TIME}
       </UIText>
     </Animated.View>
   )
