@@ -12,7 +12,7 @@ import QuestionResult from '../../models/QuestionResult'
 import Equation from '../../models/Equation'
 import MenuButton from '../../components/MenuButton'
 import DividerLine from '../../components/DividerLine'
-import isDarkMode from '../../hooks/isDarkMode'
+import useDarkMode from '../../hooks/useDarkMode'
 import useAnimationStation from '../../hooks/useAnimationStation'
 import {spaceLarge, spaceExtraLarge} from '../../styles/layout'
 import Icon, {Check, Question} from '../../components/Icon'
@@ -47,7 +47,7 @@ function ResultsAndPlayAgain(props) {
   const [isFadingOut, setIsFadingOut] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
   const [amIReady, setAmIReady] = useState(false)
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const {animate: fadeOut, animation: fadeOutAnimation, isAnimating: isAnimatingFadeOut} = useAnimationStation()
 
   const [isScoreUpdate, setIsScoreUpdated] = useState(false)

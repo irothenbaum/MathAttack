@@ -2,12 +2,12 @@ import React from 'react'
 import {TextInput, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import NormalText from './NormalText'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {getUIColor} from '../lib/utilities'
 import {InputStyles} from '../styles/elements'
 
 function StringInput(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
 
   return (
     <View style={[styles.container, props.style]}>

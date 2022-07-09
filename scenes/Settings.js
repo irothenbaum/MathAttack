@@ -1,11 +1,10 @@
 import React, {useState} from 'react'
-import {View, StyleSheet, Pressable, ScrollView, useColorScheme} from 'react-native'
+import {Animated, View, StyleSheet, Pressable, ScrollView, useColorScheme} from 'react-native'
 import TitleText from '../components/TitleText'
 import {spaceDefault, spaceExtraSmall, spaceLarge} from '../styles/layout'
 import {font2} from '../styles/typography'
 import {dimmedBlue, grey, neonBlue, shadow, sunbeam} from '../styles/colors'
-import isDarkMode from '../hooks/isDarkMode'
-import SubTitleText from '../components/SubTitleText'
+import useDarkMode from '../hooks/useDarkMode'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
@@ -40,7 +39,7 @@ const colorSchemeLabels = {
 const COLOR_SCHEME_CHANGE_DURATION = 1000
 
 function Settings() {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const dispatch = useDispatch()
 
   const [changingToScheme, setChangingToScheme] = useState(undefined)
@@ -75,9 +74,9 @@ function Settings() {
   return (
     <View style={styles.window}>
       {typeof changingToScheme === 'number' && (
-        <View
+        <Animated.View
           style={[
-            FullScreenOverlay,
+            styles.changeColorSchemeOverlay,
             {
               backgroundColor: changeColorOverlay[changingToScheme],
               opacity: animation.interpolate({
@@ -103,14 +102,20 @@ function Settings() {
           <View style={styles.sectionContainer}>
             {/* <SubTitleText>General</SubTitleText> */}
             <View style={[styles.inputRow, styles.row]}>
-              {Object.entries(colorSchemeLabels).map(([key, label], index) => (
-                <MenuButton
-                  style={index > 0 ? {marginLeft: spaceExtraSmall} : undefined}
-                  title={label}
-                  variant={settings.colorScheme === key ? MenuButton.VARIANT_DEFAULT : MenuButton.VARIANT_DESTRUCTIVE}
-                  onPressStart={() => handleChangeColorScheme(key)}
-                />
-              ))}
+              {Object.entries(colorSchemeLabels).map(([keyStr, label], index) => {
+                const key = parseInt(keyStr)
+                const isActiveScheme = typeof changingToScheme === 'number' ? changingToScheme === key : settings.colorScheme === key
+                return (
+                  <MenuButton
+                    key={keyStr}
+                    blurCount={isActiveScheme ? 2 : 0}
+                    style={index > 0 ? {marginLeft: spaceExtraSmall} : undefined}
+                    title={label}
+                    variant={isActiveScheme ? MenuButton.VARIANT_DESTRUCTIVE : MenuButton.VARIANT_DEFAULT}
+                    onPressStart={() => handleChangeColorScheme(key)}
+                  />
+                )
+              })}
             </View>
             <BooleanInput
               style={styles.inputRow}
@@ -199,6 +204,11 @@ const styles = StyleSheet.create({
 
   inputRow: {
     marginTop: spaceDefault,
+  },
+
+  changeColorSchemeOverlay: {
+    ...FullScreenOverlay,
+    zIndex: 1000,
   },
 })
 

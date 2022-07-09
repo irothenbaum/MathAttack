@@ -5,7 +5,7 @@ import {selectCurrentQuestion, selectGameSettings, selectUserAnswer} from '../..
 import UIText from '../UIText'
 import {font2, font3, font1} from '../../styles/typography'
 import {spaceDefault, spaceSmall} from '../../styles/layout'
-import isDarkMode from '../../hooks/isDarkMode'
+import useDarkMode from '../../hooks/useDarkMode'
 import {getUIColor} from '../../lib/utilities'
 import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
@@ -18,7 +18,7 @@ const numberOfSteps = 10
 // ----------------------------------------------------------------------------------------
 
 function RulerNotch(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const showMinorNotches = props.value !== 0
   const colorStyle = {backgroundColor: getUIColor(isDark)}
   const minorNotchColorStyle = {backgroundColor: showMinorNotches ? colorStyle.backgroundColor : 'transparent'}
@@ -36,51 +36,9 @@ function RulerNotch(props) {
 }
 
 // ----------------------------------------------------------------------------------------
-/*
-Slider not working, some crash bullshit using Draggable Circle for now
-
-import {useSharedValue, useAnimatedStyle, withSpring} from 'react-native-reanimated'
-import {GestureDetector, Gesture} from 'react-native-gesture-handler'
-
-function Slider(props) {
-  const isPressed = useSharedValue(false)
-  const offset = useSharedValue({x: 0, y: 0})
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{translateX: offset.value.x}, {translateY: offset.value.y}, {scale: withSpring(isPressed.value ? 1.2 : 1)}],
-      backgroundColor: isPressed.value ? 'yellow' : 'blue',
-    }
-  })
-
-  const start = useSharedValue({x: 0, y: 0})
-  const gesture = Gesture.Pan()
-    .averageTouches(true)
-    .onUpdate((e) => {
-      console.log('UPDATE')
-      offset.value = {
-        x: e.translationX + start.value.x,
-        y: e.translationY + start.value.y,
-      }
-    })
-    .onEnd(() => {
-      console.log('END')
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      }
-    })
-
-  return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.slider, {borderColor: getUIColor(isDarkMode())}, animatedStyles, props.style]} />
-    </GestureDetector>
-  )
-}*/
-
-// ----------------------------------------------------------------------------------------
 
 function EstimationInterface(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const [containerBottomPosition, setContainerBottomPosition] = useState(0)
   const [topNotchTopPosition, setTopNotchTopPosition] = useState(1)
   const [bottomNotchTopPosition, setBottomNotchTopPosition] = useState(1)
@@ -292,7 +250,7 @@ export default EstimationInterface
  */
 
 function Slider(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const [containerHeight, setContainerHeight] = useState(undefined)
   const [tempValue, setTempValue] = useState(0)
   const settings = useSelector(selectGameSettings)

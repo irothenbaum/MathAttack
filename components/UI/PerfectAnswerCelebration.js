@@ -3,7 +3,7 @@ import {StyleSheet, View, Animated, Easing} from 'react-native'
 import {font5} from '../../styles/typography'
 import {neonYellow, dimmedYellow, dimmedOrange, neonOrange} from '../../styles/colors'
 import UIText from '../UIText'
-import isDarkMode from '../../hooks/isDarkMode'
+import useDarkMode from '../../hooks/useDarkMode'
 import {spaceDefault} from '../../styles/layout'
 import useAnimationStation from '../../hooks/useAnimationStation'
 import Icon, {Star} from '../Icon'
@@ -12,7 +12,7 @@ const SHOOTING_DURATION = 1000
 const bigStarDifference = 20
 
 function PerfectAnswerCelebration(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const {animation, animate, isAnimating, cancel} = useAnimationStation()
 
   useEffect(() => {

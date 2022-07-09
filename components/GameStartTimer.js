@@ -6,7 +6,7 @@ import {FullScreenOverlay, TextShadowSoft} from '../styles/elements'
 import {shadow, sunbeam, neonRed, dimmedRed} from '../styles/colors'
 import {spaceExtraLarge} from '../styles/layout'
 import {getBackgroundColor} from '../lib/utilities'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useCountdown from '../hooks/useCountdown'
 import {SOUND_BEEP, SOUND_START} from '../lib/SoundHelper'
@@ -15,7 +15,7 @@ import useSoundPlayer from '../hooks/useSoundPlayer'
 const START_TIME = 3
 
 function GameStartTimer(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const {animate, animation} = useAnimationStation()
   const {hasStarted, secondsRemaining, startCountdown} = useCountdown()
   const {playSound} = useSoundPlayer()

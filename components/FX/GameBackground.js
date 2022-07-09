@@ -1,24 +1,18 @@
 import React from 'react'
 import {Animated, StyleSheet, View} from 'react-native'
 import {dimmedGreen, dimmedRed, neonGreen, neonRed} from '../../styles/colors'
-import isDarkMode from '../../hooks/isDarkMode'
+import useDarkMode from '../../hooks/useDarkMode'
 import PropTypes from 'prop-types'
 import {getBackgroundColor} from '../../lib/utilities'
 import {FullScreenOverlay} from '../../styles/elements'
 
 const getAnimationColor = (isAnimatingForCorrect, isDark) => {
-  return isAnimatingForCorrect
-    ? isDark
-      ? dimmedGreen
-      : neonGreen
-    : isDark
-    ? dimmedRed
-    : neonRed
+  return isAnimatingForCorrect ? (isDark ? dimmedGreen : neonGreen) : isDark ? dimmedRed : neonRed
 }
 
 function GameBackground({animation, isAnimatingForCorrect}) {
-  const isDark = isDarkMode()
-  const defaultBGColor = getBackgroundColor(isDarkMode())
+  const isDark = useDarkMode()
+  const defaultBGColor = getBackgroundColor(isDark)
 
   return (
     <View style={[styles.container, {backgroundColor: defaultBGColor}]}>

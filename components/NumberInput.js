@@ -2,14 +2,14 @@ import React from 'react'
 import {TextInput, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import NormalText from './NormalText'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {getUIColor} from '../lib/utilities'
 import {InputStyles} from '../styles/elements'
 
 function NumberInput(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
 
-  const handleChange = valStr => {
+  const handleChange = (valStr) => {
     let val = parseInt(valStr)
     if (isNaN(val)) {
       val = null

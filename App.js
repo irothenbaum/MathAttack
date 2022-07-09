@@ -3,18 +3,15 @@ import {SafeAreaView, View, StatusBar, useColorScheme} from 'react-native'
 import {Provider} from 'react-redux'
 import store from './redux/store'
 import MathAttack from './MathAttack'
-import {getBackgroundColor} from './lib/utilities'
-import isDarkMode from './hooks/isDarkMode'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 
 // just to speed up dev time
 // global.hasAnimated = true
 
 function App() {
-  const isDark = isDarkMode()
+  const isDark = useColorScheme() === 'dark'
 
   const backgroundStyle = {
-    backgroundColor: getBackgroundColor(isDark),
     flex: 1,
   }
 

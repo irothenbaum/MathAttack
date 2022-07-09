@@ -11,7 +11,7 @@ import ComplexEquationComponent from '../components/ComplexEquationComponent'
 import {spaceDefault, spaceLarge} from '../styles/layout'
 import UIText from '../components/UIText'
 import {dimmedGreen, dimmedRed, neonGreen, neonRed, shadow, shadowStrong, sunbeam, sunbeamStrong} from '../styles/colors'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {font4} from '../styles/typography'
 import GameBackground from '../components/FX/GameBackground'
 import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
@@ -26,7 +26,7 @@ import useSoundPlayer from '../hooks/useSoundPlayer'
 
 function GameEstimate() {
   const gameSettings = useSelector(selectGameSettings)
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const currentQuestion = useSelector(selectCurrentQuestion)
   const answer = useSelector(selectUserAnswer)
   const dispatch = useDispatch()

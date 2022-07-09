@@ -1,4 +1,4 @@
-import isDarkMode from './isDarkMode'
+import useDarkMode from './useDarkMode'
 
 import darkAttackTypeform from '../assets/dark/attack_typeform.svg'
 import lightAttackTypeform from '../assets/light/attack_typeform.svg'
@@ -11,7 +11,7 @@ const ASSETS = {
 }
 
 function useThemedAsset(fileName) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const themeStr = isDark ? 'dark' : 'light'
   const path = `../assets/${themeStr}/${fileName}`
 

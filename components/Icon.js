@@ -2,7 +2,7 @@ import React from 'react'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import PropTypes from 'prop-types'
 import {getUIColor} from '../lib/utilities'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {font3} from '../styles/typography'
 
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft'
@@ -22,7 +22,7 @@ import {faVolumeHigh} from '@fortawesome/free-solid-svg-icons/faVolumeHigh'
 import {faVolumeMute} from '@fortawesome/free-solid-svg-icons/faVolumeMute'
 
 function Icon(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   return (
     <FontAwesomeIcon
       transform={props.transform}

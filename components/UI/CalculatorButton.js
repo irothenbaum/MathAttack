@@ -5,9 +5,9 @@ import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
-import {darkGrey, lightGrey, neonGreen, OPACITY_AMOUNT, transparent} from '../../styles/colors'
+import {darkGrey, lightGrey, neonGreen, dimmedGreen, OPACITY_AMOUNT} from '../../styles/colors'
 import UIText from '../UIText'
-import isDarkMode from '../../hooks/isDarkMode'
+import useDarkMode from '../../hooks/useDarkMode'
 import useAnimationStation from '../../hooks/useAnimationStation'
 import {SOUND_TAP} from '../../lib/SoundHelper'
 import useSoundPlayer from '../../hooks/useSoundPlayer'
@@ -17,11 +17,11 @@ export const DECIMAL = -1
 export const CLEAR = -2
 
 const getBackgroundColor = (isDark, isDisabled) => {
-  return isDisabled ? (isDark ? darkGrey : lightGrey) : transparent
+  return isDisabled ? (isDark ? darkGrey : lightGrey) : 'transparent'
 }
 
 function CalculatorButton(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const dispatch = useDispatch()
   const userInput = useSelector(selectUserInput)
   const {animation, isAnimating, animate} = useAnimationStation()
@@ -69,7 +69,7 @@ function CalculatorButton(props) {
             backgroundColor: isAnimating
               ? animation.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [neonGreen, bgColor],
+                  outputRange: [isDark ? dimmedGreen : neonGreen, bgColor],
                 })
               : bgColor,
           },

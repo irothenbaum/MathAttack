@@ -13,7 +13,7 @@ import {EVENT_BroadcastNewQuestion, EVENT_SubmitAnswer} from '../../constants/ve
 import QuestionResult from '../../models/QuestionResult'
 import {recordAnswer, setCurrentQuestion} from '../../redux/GameSlice'
 import {setAnswer} from '../../redux/UISlice'
-import isDarkMode from '../../hooks/isDarkMode'
+import useDarkMode from '../../hooks/useDarkMode'
 
 function VersusRound(props) {
   const questionListener = useRef()
@@ -23,7 +23,7 @@ function VersusRound(props) {
   const settings = useSelector((state) => state.Game.settings)
   const question = useSelector(selectCurrentQuestion)
 
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const dispatch = useDispatch()
 
   /**

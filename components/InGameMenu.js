@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {BackHandler, Pressable, StyleSheet} from 'react-native'
 import {shadow, sunbeam} from '../styles/colors'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {spaceDefault} from '../styles/layout'
 import PropTypes from 'prop-types'
 import MenuButton from './MenuButton'
@@ -18,7 +18,7 @@ import {SOUND_SLAM} from '../lib/SoundHelper'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const [isOpen, setIsOpen] = useState(false)
   const {playSound} = useSoundPlayer()
   const currentGame = useSelector(selectCurrentScene)

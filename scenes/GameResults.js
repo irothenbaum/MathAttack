@@ -17,7 +17,7 @@ import {dimmedBlue, dimmedGreen, dimmedRed, neonBlue, neonGreen, neonRed, neonYe
 import {font2, font4} from '../styles/typography'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {formatNumber} from '../lib/utilities'
 import {setAnswer} from '../redux/UISlice'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
@@ -68,7 +68,7 @@ const resultStyles = StyleSheet.create({
 })
 
 function SingleGameResult({result, count}) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const correctAnswer = Equation.getSolution(result.question.equation)
   const userAnswer = result.answer
 
@@ -99,7 +99,7 @@ function SingleGameResult({result, count}) {
 }
 
 function EstimationGameResult({result, count}) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const correctAnswer = Equation.getSolution(result.question.equation)
   const userAnswer = result.answer
   const accuracy = EstimationQuestionResult.getAccuracy(result)
@@ -210,7 +210,7 @@ function GameResults() {
               }
             />
           )}
-          <NormalText style={{color: isDarkMode() ? dimmedBlue : neonBlue}} onPress={() => setIsShowingDetails(!isShowingDetails)}>
+          <NormalText style={{color: useDarkMode() ? dimmedBlue : neonBlue}} onPress={() => setIsShowingDetails(!isShowingDetails)}>
             {isShowingDetails ? 'Hide details' : 'Show details'}
           </NormalText>
         </View>

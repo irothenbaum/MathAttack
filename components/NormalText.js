@@ -2,7 +2,7 @@ import React from 'react'
 import {Text, StyleSheet} from 'react-native'
 import {normalText} from '../styles/typography'
 import {getUIColor} from '../lib/utilities'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import PropTypes from 'prop-types'
 
 const styles = StyleSheet.create({
@@ -12,10 +12,9 @@ const styles = StyleSheet.create({
 })
 
 function NormalText(props) {
+  const isDark = useDarkMode()
   return (
-    <Text
-      style={[styles.text, {color: getUIColor(isDarkMode())}, props.style]}
-      onPress={props.onPress}>
+    <Text style={[styles.text, {color: getUIColor(isDark)}, props.style]} onPress={props.onPress}>
       {props.children}
     </Text>
   )

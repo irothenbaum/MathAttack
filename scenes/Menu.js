@@ -15,7 +15,7 @@ import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
 import {font1} from '../styles/typography'
 import {shadow, sunbeam} from '../styles/colors'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON, GAME_LABEL_VERSUS, SLAM_ANIMATION_DURATION} from '../constants/game'
 import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
@@ -39,7 +39,7 @@ function Menu() {
   const [isReady, setIsReady] = useState(false)
   const [topPosition, setTopPosition] = useState(0)
   const logoRef = useRef()
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const {animate: animateLogo, animation: logoAnimation} = useAnimationStation()
   const {animate: animatePosition, animation: positionAnimation, isAnimating: isAnimatingPosition} = useAnimationStation()
   const {playSound} = useSoundPlayer()

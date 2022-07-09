@@ -7,23 +7,17 @@ import {font4} from '../styles/typography'
 import {spaceDefault, spaceLarge} from '../styles/layout'
 import TitleText from './TitleText'
 import {formatNumber, getUIColor} from '../lib/utilities'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import Phrase from '../models/Phrase'
 
 function EquationBox(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const textComponent = props.equation ? (
     <View style={styles.longFormContainer}>
-      <TitleText style={styles.operationText}>
-        {props.equation.phrase.operation}
-      </TitleText>
+      <TitleText style={styles.operationText}>{props.equation.phrase.operation}</TitleText>
       <View>
-        <TitleText style={styles.equationText}>
-          {formatNumber(Phrase.defineTerm(props.equation.phrase.term1))}
-        </TitleText>
-        <TitleText style={styles.equationText}>
-          {formatNumber(Phrase.defineTerm(props.equation.phrase.term2))}
-        </TitleText>
+        <TitleText style={styles.equationText}>{formatNumber(Phrase.defineTerm(props.equation.phrase.term1))}</TitleText>
+        <TitleText style={styles.equationText}>{formatNumber(Phrase.defineTerm(props.equation.phrase.term2))}</TitleText>
       </View>
     </View>
   ) : null

@@ -5,10 +5,10 @@ import UIText from './UIText'
 import {spaceSmall} from '../styles/layout'
 import {font4} from '../styles/typography'
 import {dimmedRed, neonRed} from '../styles/colors'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 
 function OperationTerm(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   return <UIText style={[styles.operationTerm, {color: isDark ? dimmedRed : neonRed}]}>{props.operator}</UIText>
 }
 

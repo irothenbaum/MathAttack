@@ -1,4 +1,4 @@
-import {transparent, black} from './colors'
+import {black} from './colors'
 import {spaceDefault, spaceSmall} from './layout'
 import {font3} from './typography'
 
@@ -10,7 +10,7 @@ export const ScreenContainer = {
 }
 
 export const RoundBox = {
-  backgroundColor: transparent,
+  backgroundColor: 'transparent',
   padding: spaceDefault,
   borderRadius: spaceSmall,
   alignItems: 'center',

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import {dimmedRed, neonRed, darkGrey, grey, black, white} from '../styles/colors'
 import {getFlashStylesForAnimation, getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -39,7 +39,7 @@ function MenuButton(props) {
   const {animate, animation, cancel} = useAnimationStation()
   const {setTimer} = useDoOnceTimer()
   const blurKey = useRef(getRandomString())
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const contentRef = useRef()
   const {playSound} = useSoundPlayer()
   const {animate: animatePress, animation: pressingAnimation, isAnimating: isAnimatingPress} = useAnimationStation()

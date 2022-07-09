@@ -15,7 +15,7 @@ import Equation from '../models/Equation'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import {RoundBox, ScreenContainer} from '../styles/elements'
 import {spaceLarge, spaceSmall} from '../styles/layout'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import {font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
 import InGameMenu from '../components/InGameMenu'
@@ -28,7 +28,7 @@ const NEXT_QUESTION_TIMEOUT = 2000
 const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
 
 function GameMarathon() {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const dispatch = useDispatch()
   const {isAnimatingForCorrect, animation: answerReactionAnimation, animateCorrect, animateIncorrect} = useAnswerReactionResults()
 

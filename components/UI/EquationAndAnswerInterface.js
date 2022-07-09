@@ -8,12 +8,12 @@ import Equation from '../../models/Equation'
 import PropTypes from 'prop-types'
 import {useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectUserInput} from '../../redux/selectors'
-import isDarkMode from '../../hooks/isDarkMode'
+import useDarkMode from '../../hooks/useDarkMode'
 import {RoundBox} from '../../styles/elements'
 import {spaceLarge} from '../../styles/layout'
 
 function EquationAndAnswerInterface(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const currentQuestion = useSelector(selectCurrentQuestion)
   const userInput = useSelector(selectUserInput)
 

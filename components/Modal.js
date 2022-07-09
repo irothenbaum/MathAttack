@@ -6,7 +6,7 @@ import React, {useEffect, useState} from 'react'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import {BoxShadow, FullScreenOverlay} from '../styles/elements'
 import PropTypes from 'prop-types'
-import isDarkMode from '../hooks/isDarkMode'
+import useDarkMode from '../hooks/useDarkMode'
 import useAnimationStation from '../hooks/useAnimationStation'
 import Icon, {X} from './Icon'
 
@@ -14,7 +14,7 @@ const OPEN_TIME = 200
 const CLOSE_TIME = OPEN_TIME
 
 function Modal(props) {
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
   const {animate, animation, isAnimating} = useAnimationStation()
   const [isVisible, setIsVisible] = useState(false)
 

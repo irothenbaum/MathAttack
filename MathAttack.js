@@ -21,7 +21,7 @@ import GameVersus from './scenes/GameVersus'
 import {StyleSheet, Animated, View} from 'react-native'
 import useReduxPersist from './hooks/useReduxPersist'
 import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
-import isDarkMode from './hooks/isDarkMode'
+import useDarkMode from './hooks/useDarkMode'
 import {getBackgroundColor} from './lib/utilities'
 
 const SceneMap = {
@@ -38,7 +38,7 @@ function MathAttack() {
   const currentScene = useSelector(selectCurrentScene)
   const isTransitioningToScene = useSelector((state) => state.Navigation.isTransitioningToScene)
   const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
-  const isDark = isDarkMode()
+  const isDark = useDarkMode()
 
   const {flush, hydrate} = useReduxPersist()
 
@@ -64,7 +64,7 @@ function MathAttack() {
   }
 
   return (
-    <View style={[styles.sceneWrapper]}>
+    <View style={[styles.sceneWrapper, {backgroundColor: getBackgroundColor(isDark)}]}>
       {isChangingScreens && (
         <View style={styles.sceneTransitionContainer}>
           <Animated.View
