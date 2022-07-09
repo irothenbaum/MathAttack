@@ -1,6 +1,9 @@
+import {COLOR_SCHEME_SYSTEM} from '../constants/game'
+
 const GameSettings = {
   // shared:
   muteSounds: false,
+  colorScheme: COLOR_SCHEME_SYSTEM,
   minValue: 0,
   maxValue: 100,
   decimalPlaces: 0,

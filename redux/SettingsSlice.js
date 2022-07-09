@@ -21,7 +21,9 @@ const settingsSlice = createSlice({
     setMuteSounds: (state, {payload}) => {
       state.muteSounds = payload
     },
-
+    setColorScheme: (state, {payload}) => {
+      state.colorScheme = payload
+    },
     flushFromCache: (state, {payload}) => {
       return {...state, ...payload}
     },
@@ -34,5 +36,6 @@ export const setEquationDuration = (durationMS) => (dispatch) => dispatch(settin
 export const setAutoSubmitCorrect = (isActive) => (dispatch) => dispatch(settingsSlice.actions.setAutoSubmitCorrect(isActive))
 export const setMuteSounds = (isMuted) => (dispatch) => dispatch(settingsSlice.actions.setMuteSounds(isMuted))
 export const flushFromCache = (payload) => (dispatch) => dispatch(settingsSlice.actions.flushFromCache(payload))
+export const setColorScheme = (payload) => (dispatch) => dispatch(settingsSlice.actions.setColorScheme(payload))
 
 export default settingsSlice.reducer

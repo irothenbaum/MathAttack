@@ -17,3 +17,7 @@ export const SCENE_TO_LABEL = {
 export const SLAM_ANIMATION_DURATION = 1500
 
 export const SCENE_CHANGE_TRANSITION_DURATION = 250
+
+export const COLOR_SCHEME_LIGHT = 1
+export const COLOR_SCHEME_DARK = -1
+export const COLOR_SCHEME_SYSTEM = 0

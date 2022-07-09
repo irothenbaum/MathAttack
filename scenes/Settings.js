@@ -1,7 +1,7 @@
-import React from 'react'
-import {View, StyleSheet, Pressable, ScrollView} from 'react-native'
+import React, {useState} from 'react'
+import {View, StyleSheet, Pressable, ScrollView, useColorScheme} from 'react-native'
 import TitleText from '../components/TitleText'
-import {spaceDefault, spaceLarge} from '../styles/layout'
+import {spaceDefault, spaceExtraSmall, spaceLarge} from '../styles/layout'
 import {font2} from '../styles/typography'
 import {dimmedBlue, grey, neonBlue, shadow, sunbeam} from '../styles/colors'
 import isDarkMode from '../hooks/isDarkMode'
@@ -9,19 +9,47 @@ import SubTitleText from '../components/SubTitleText'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
-import {flushFromCache, setAutoSubmitCorrect, setDecimalPlaces, setMinMaxValues, setMuteSounds} from '../redux/SettingsSlice'
+import {
+  flushFromCache,
+  setAutoSubmitCorrect,
+  setColorScheme,
+  setDecimalPlaces,
+  setMinMaxValues,
+  setMuteSounds,
+} from '../redux/SettingsSlice'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_Menu} from '../constants/scenes'
 import BooleanInput from '../components/BooleanInput'
 import DefaultSettings from '../models/GameSettings'
 import UIText from '../components/UIText'
 import Icon, {ArrowLeft, VolumeOff, VolumeOn} from '../components/Icon'
+import MenuButton from '../components/MenuButton'
+import {COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM} from '../constants/game'
+import useAnimationStation from '../hooks/useAnimationStation'
+import {FullScreenOverlay} from '../styles/elements'
+import {getBackgroundColor} from '../lib/utilities'
 
 const MAX_VALUE = 999999
+
+const colorSchemeLabels = {
+  [COLOR_SCHEME_SYSTEM]: 'Auto',
+  [COLOR_SCHEME_LIGHT]: 'Light',
+  [COLOR_SCHEME_DARK]: 'Dark',
+}
+
+const COLOR_SCHEME_CHANGE_DURATION = 1000
 
 function Settings() {
   const isDark = isDarkMode()
   const dispatch = useDispatch()
+
+  const [changingToScheme, setChangingToScheme] = useState(undefined)
+  const {animate, animation} = useAnimationStation()
+  const changeColorOverlay = {
+    [COLOR_SCHEME_SYSTEM]: getBackgroundColor(useColorScheme() === 'dark'),
+    [COLOR_SCHEME_DARK]: getBackgroundColor(true),
+    [COLOR_SCHEME_LIGHT]: getBackgroundColor(false),
+  }
 
   const settings = useSelector(selectGameSettings)
 
@@ -31,8 +59,36 @@ function Settings() {
     dispatch(flushFromCache(DefaultSettings))
   }
 
+  const handleChangeColorScheme = (nextScheme) => {
+    if (nextScheme === settings.colorScheme || typeof changingToScheme === 'number') {
+      return
+    }
+
+    setChangingToScheme(nextScheme)
+    animate(COLOR_SCHEME_CHANGE_DURATION, () => setChangingToScheme(undefined))
+    setTimeout(() => {
+      dispatch(setColorScheme(nextScheme))
+    }, COLOR_SCHEME_CHANGE_DURATION / 2)
+    return false
+  }
+
   return (
     <View style={styles.window}>
+      {typeof changingToScheme === 'number' && (
+        <View
+          style={[
+            FullScreenOverlay,
+            {
+              backgroundColor: changeColorOverlay[changingToScheme],
+              opacity: animation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [0, 1, 0],
+              }),
+            },
+          ]}
+        />
+      )}
+
       <ScrollView>
         <View style={styles.innerWindow}>
           <Pressable
@@ -46,6 +102,16 @@ function Settings() {
 
           <View style={styles.sectionContainer}>
             {/* <SubTitleText>General</SubTitleText> */}
+            <View style={[styles.inputRow, styles.row]}>
+              {Object.entries(colorSchemeLabels).map(([key, label], index) => (
+                <MenuButton
+                  style={index > 0 ? {marginLeft: spaceExtraSmall} : undefined}
+                  title={label}
+                  variant={settings.colorScheme === key ? MenuButton.VARIANT_DEFAULT : MenuButton.VARIANT_DESTRUCTIVE}
+                  onPressStart={() => handleChangeColorScheme(key)}
+                />
+              ))}
+            </View>
             <BooleanInput
               style={styles.inputRow}
               value={settings.muteSounds}
