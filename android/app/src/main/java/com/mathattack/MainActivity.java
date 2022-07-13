@@ -1,4 +1,4 @@
-package com.mathattack;
+package com.jkfoundit.mathattack;
 
 import com.facebook.react.ReactActivity;
 
