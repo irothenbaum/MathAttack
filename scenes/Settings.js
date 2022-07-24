@@ -3,7 +3,7 @@ import {Animated, View, StyleSheet, Pressable, ScrollView, useColorScheme} from 
 import TitleText from '../components/TitleText'
 import {spaceDefault, spaceExtraSmall, spaceLarge} from '../styles/layout'
 import {font2} from '../styles/typography'
-import {dimmedBlue, grey, neonBlue, shadow, sunbeam} from '../styles/colors'
+import {dimmedBlue, neonBlue, shadow, sunbeam} from '../styles/colors'
 import useDarkMode from '../hooks/useDarkMode'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
@@ -27,6 +27,7 @@ import {COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM} from '../con
 import useAnimationStation from '../hooks/useAnimationStation'
 import {FullScreenOverlay} from '../styles/elements'
 import {getBackgroundColor} from '../lib/utilities'
+import useBackAction from '../hooks/useBackAction'
 
 const MAX_VALUE = 999999
 
@@ -49,6 +50,13 @@ function Settings() {
     [COLOR_SCHEME_DARK]: getBackgroundColor(true),
     [COLOR_SCHEME_LIGHT]: getBackgroundColor(false),
   }
+
+  // setting up the Android Back Behavior
+  const backAction = () => {
+    dispatch(goToScene(Scene_Menu))
+    return true
+  }
+  useBackAction(backAction)
 
   const settings = useSelector(selectGameSettings)
 
@@ -90,11 +98,7 @@ function Settings() {
 
       <ScrollView>
         <View style={styles.innerWindow}>
-          <Pressable
-            onPress={() => {
-              dispatch(goToScene(Scene_Menu))
-            }}
-          >
+          <Pressable onPress={backAction}>
             <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
           </Pressable>
           <TitleText>Settings</TitleText>

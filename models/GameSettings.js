@@ -10,7 +10,7 @@ const GameSettings = {
   autoSubmit: true,
   allowNegative: true,
 
-  // classic:
+  // classic
   equationDuration: 5000,
   classicNumberOfRounds: 6,
 
@@ -19,6 +19,9 @@ const GameSettings = {
 
   // estimate:
   estimateItems: 4,
+
+  // crescendo:
+  crescendoRoundDuration: 10000,
 }
 
 export default GameSettings

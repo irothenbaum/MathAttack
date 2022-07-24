@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {BackHandler, Pressable, StyleSheet} from 'react-native'
+import React, {useState} from 'react'
+import {Pressable, StyleSheet} from 'react-native'
 import {shadow, sunbeam} from '../styles/colors'
 import useDarkMode from '../hooks/useDarkMode'
 import {spaceDefault} from '../styles/layout'
@@ -15,6 +15,7 @@ import Modal from './Modal'
 import Icon, {ArrowLeft} from './Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import {SOUND_SLAM} from '../lib/SoundHelper'
+import useBackAction from '../hooks/useBackAction'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
@@ -24,18 +25,11 @@ function InGameMenu(props) {
   const currentGame = useSelector(selectCurrentScene)
   const results = useSelector(selectLastGameResults)
 
-  useEffect(() => {
-    const backAction = () => {
-      setIsOpen((o) => !o)
-      return true
-    }
-
-    BackHandler.addEventListener('hardwareBackPress', backAction)
-
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', backAction)
-    }
-  }, [])
+  const backAction = () => {
+    setIsOpen((o) => !o)
+    return true
+  }
+  useBackAction(backAction)
 
   const handleEndGame = async () => {
     // give the screen a chance to cleanup
