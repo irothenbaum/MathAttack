@@ -34,6 +34,19 @@ class GameQuestion {
   }
 
   /**
+   * @param {GameSettings} gameSettings
+   * @param {number} terms
+   * @returns {GameQuestion}
+   */
+  static getRandomCrescendoQuestionFromSettings(gameSettings, terms) {
+    return new GameQuestion(
+      Equation.getRandomFromSettings(gameSettings, undefined, terms),
+      Date.now(),
+      Date.now() + gameSettings.crescendoRoundDuration,
+    )
+  }
+
+  /**
    * @param {{expiresAt: number}} obj
    * @returns {number}
    */

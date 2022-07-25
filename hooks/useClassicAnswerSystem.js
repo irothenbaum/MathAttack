@@ -21,8 +21,9 @@ const NEXT_QUESTION_TIMER = 'next-question-timer'
  * @param {number} questionDurationMS
  * @param {number} numberOfQuestions
  * @param {function} questionGeneratorFunction
+ * @param {boolean?} suddenDeath
  */
-function useClassicAnswerSystem(questionDurationMS, numberOfQuestions, questionGeneratorFunction) {
+function useClassicAnswerSystem(questionDurationMS, numberOfQuestions, questionGeneratorFunction, suddenDeath) {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const lastGuess = useRef(null)
   const [questionsRemaining, setQuestionsRemaining] = useState(numberOfQuestions)
@@ -37,21 +38,30 @@ function useClassicAnswerSystem(questionDurationMS, numberOfQuestions, questionG
     if (currentQuestion) {
       let msRemaining = GameQuestion.getMSRemaining(currentQuestion)
       let amountRemaining = 1 - msRemaining / questionDurationMS
-      startEquationTimer(msRemaining, handleTimeout, Easing.linear, amountRemaining)
+      startEquationTimer(msRemaining, () => handleTimeout(), Easing.linear, amountRemaining)
     } else {
       cancelEquationTimer()
     }
   }, [currentQuestion])
 
-  const handleNextQuestion = () => {
+  /**
+   * @param {boolean?} forceGameOver
+   */
+  const handleNextQuestion = (forceGameOver) => {
     dispatch(setAnswer(''))
     cancelEquationTimer()
     // always reset the input
     lastGuess.current = null
     let nextQuestionsRemaining = questionsRemaining - 1
-    if (nextQuestionsRemaining > 0) {
-      setQuestionsRemaining(nextQuestionsRemaining)
-      setTimer(NEXT_QUESTION_TIMER, () => dispatch(questionGeneratorFunction()), NEXT_QUESTION_TIMEOUT)
+    if (nextQuestionsRemaining > 0 && !forceGameOver) {
+      setTimer(
+        NEXT_QUESTION_TIMER,
+        () => {
+          setQuestionsRemaining(nextQuestionsRemaining)
+          dispatch(questionGeneratorFunction())
+        },
+        NEXT_QUESTION_TIMEOUT,
+      )
     } else {
       setTimer(NEXT_QUESTION_TIMER, () => dispatch(goToScene(Scene_GameResults)), NEXT_QUESTION_TIMEOUT)
     }
@@ -61,7 +71,7 @@ function useClassicAnswerSystem(questionDurationMS, numberOfQuestions, questionG
     dispatch(recordAnswer(typeof lastGuess.current === 'number' ? lastGuess.current : ANSWER_TIMEOUT))
     animateIncorrect()
     playSound(SOUND_WRONG).then()
-    handleNextQuestion()
+    handleNextQuestion(suddenDeath)
   }
 
   const markLastGuess = (a) => {

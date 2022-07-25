@@ -1,5 +1,6 @@
 import {COLOR_SCHEME_SYSTEM} from '../constants/game'
 
+/** @typedef GameSettings */
 const GameSettings = {
   // shared:
   muteSounds: false,

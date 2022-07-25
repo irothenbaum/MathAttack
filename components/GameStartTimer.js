@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import UIText from './UIText'
 import {FullScreenOverlay, TextShadowSoft} from '../styles/elements'
 import {shadow, sunbeam, neonRed, dimmedRed} from '../styles/colors'
-import {spaceExtraLarge} from '../styles/layout'
+import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 import {getBackgroundColor} from '../lib/utilities'
 import useDarkMode from '../hooks/useDarkMode'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -53,7 +53,8 @@ function GameStartTimer(props) {
         style={[
           styles.counterText,
           {
-            color: bGColor,
+            backgroundColor: bGColor,
+            color: color,
             textShadowColor: isDark ? sunbeam : shadow,
           },
         ]}
@@ -64,12 +65,17 @@ function GameStartTimer(props) {
   )
 }
 
+const circleSize = 120
+
 const styles = StyleSheet.create({
   container: {
     ...FullScreenOverlay,
     zIndex: 15,
   },
   counterText: {
+    height: circleSize,
+    width: circleSize,
+    borderRadius: circleSize / 2,
     fontSize: 72,
     marginBottom: spaceExtraLarge,
     ...TextShadowSoft,
