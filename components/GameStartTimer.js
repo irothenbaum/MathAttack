@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react'
-import {Animated, StyleSheet} from 'react-native'
+import React, {useEffect, useState} from 'react'
+import {Animated, View, StyleSheet, Text} from 'react-native'
 import PropTypes from 'prop-types'
 import UIText from './UIText'
 import {BoxShadow, FullScreenOverlay, TextShadowSoft} from '../styles/elements'
@@ -11,14 +11,31 @@ import useAnimationStation from '../hooks/useAnimationStation'
 import useCountdown from '../hooks/useCountdown'
 import {SOUND_BEEP, SOUND_START} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
+import Icon, {OperationAdd, OperationDivide, OperationMultiply, OperationSubtract} from './Icon'
 
 const START_TIME = 3
+
+const icons = [OperationMultiply, OperationAdd, OperationDivide, OperationSubtract]
+
+/**
+ * @returns {number}
+ */
+function getRandomIconIndex(previousIndex) {
+  let nextIndex
+
+  do {
+    nextIndex = Math.floor(Math.random() * icons.length)
+  } while (nextIndex === previousIndex)
+
+  return nextIndex
+}
 
 function GameStartTimer(props) {
   const isDark = useDarkMode()
   const {animate, animation} = useAnimationStation()
   const {hasStarted, secondsRemaining, startCountdown} = useCountdown()
   const {playSound} = useSoundPlayer()
+  const [iconIndex, setIconIndex] = useState(getRandomIconIndex())
 
   const color = isDark ? dimmedRed : neonRed
   useEffect(() => {
@@ -31,6 +48,7 @@ function GameStartTimer(props) {
 
   useEffect(() => {
     if (secondsRemaining > 0) {
+      setIconIndex((iconIndex + 1) % icons.length)
       playSound(SOUND_BEEP).then()
       animate(1000)
     } else if (hasStarted) {
@@ -53,11 +71,13 @@ function GameStartTimer(props) {
         },
       ]}
     >
+      <View style={styles.backgroundIcon}>
+        <Icon icon={icons[iconIndex]} color={bGColor} size={400} />
+      </View>
       <UIText
         style={[
           styles.counterText,
           {
-            backgroundColor: bGColor,
             color: color,
             textShadowColor: isDark ? sunbeam : shadow,
           },
@@ -69,22 +89,25 @@ function GameStartTimer(props) {
   )
 }
 
-const circleSize = 120
-
 const styles = StyleSheet.create({
   container: {
     ...FullScreenOverlay,
     zIndex: 15,
   },
-  counterText: {
-    height: circleSize,
-    width: circleSize,
+  backgroundIcon: {
+    position: 'absolute',
+    top: 0,
+    left: -200,
+    right: -200,
+    bottom: 0,
     alignItems: 'center',
-    lineHeight: circleSize,
-    borderRadius: circleSize / 2,
+    justifyContent: 'center',
+  },
+  counterText: {
+    zIndex: 5,
+    alignItems: 'center',
     fontSize: 72,
     textAlign: 'center',
-    ...BoxShadow,
     ...TextShadowSoft,
   },
 })

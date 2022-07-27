@@ -5,7 +5,7 @@ import store from './redux/store'
 import MathAttack from './MathAttack'
 
 // just to speed up dev time
-global.skipOnDev = true
+global.skipOnDev = false
 
 global.hasAnimated = global.skipOnDev || false
 

@@ -21,6 +21,9 @@ import {faCircle} from '@fortawesome/free-solid-svg-icons/faCircle'
 import {faDotCircle} from '@fortawesome/free-solid-svg-icons/faDotCircle'
 import {faVolumeHigh} from '@fortawesome/free-solid-svg-icons/faVolumeHigh'
 import {faVolumeMute} from '@fortawesome/free-solid-svg-icons/faVolumeMute'
+import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus'
+import {faSubtract} from '@fortawesome/free-solid-svg-icons/faSubtract'
+import {faDivide} from '@fortawesome/free-solid-svg-icons/faDivide'
 
 function Icon(props) {
   const isDark = useDarkMode()
@@ -51,6 +54,10 @@ export const CircleActive = faCircle
 export const CircleInactive = faDotCircle
 export const VolumeOn = faVolumeHigh
 export const VolumeOff = faVolumeMute
+export const OperationMultiply = faTimes
+export const OperationAdd = faPlus
+export const OperationSubtract = faSubtract
+export const OperationDivide = faDivide
 
 Icon.propTypes = {
   icon: PropTypes.any.isRequired,
