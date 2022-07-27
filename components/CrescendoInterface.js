@@ -3,8 +3,6 @@ import {Animated, View, StyleSheet, Pressable} from 'react-native'
 import Equation from '../models/Equation'
 import UIText from './UIText'
 import {spaceSmall} from '../styles/layout'
-import {font4} from '../styles/typography'
-import {dimmedRed, neonRed} from '../styles/colors'
 import useDarkMode from '../hooks/useDarkMode'
 import PhraseBuffer from '../models/PhraseBuffer'
 import Phrase from '../models/Phrase'
@@ -13,7 +11,6 @@ import {selectGameSettings} from '../redux/selectors'
 import {useSelector} from 'react-redux'
 import {ANSWER_TIMEOUT} from '../constants/game'
 import {RoundBox} from '../styles/elements'
-import {isDraft} from '@reduxjs/toolkit'
 import {getFlashStylesForAnimation, getResultColor, getUIColor} from '../lib/utilities'
 
 /**
@@ -41,7 +38,12 @@ function Term(props) {
 
   return (
     <Pressable onPress={props.onPress}>
-      <View style={[styles.singleTermContainer, {borderColor: getUIColor(isDark)}]}>
+      <View
+        style={[
+          styles.singleTermContainer,
+          {borderColor: getUIColor(isDark), backgroundColor: props.isSelected ? getResultColor(true, isDark) : undefined},
+        ]}
+      >
         {props.children}
         <UIText style={{zIndex: 2}}>
           {operation} {term}
@@ -79,6 +81,7 @@ function CrescendoInterface(props) {
   const [selectedTerms, setSelectedTerms] = useState([])
   const gameSettings = useSelector(selectGameSettings)
 
+  // TODO: the order is backwards? I'm not sure what's going on but it seems to be upside down
   const numbersAndOperators = Equation.getLeftSideInfixNotation(props.equation)
   const answer = Equation.getSolution(props.equation)
   const [stepsToRender, setStepsToRender] = useState([])
@@ -133,6 +136,12 @@ function CrescendoInterface(props) {
 
   const handleClickTerm = (stepIndex, termStr) => {
     console.log(`CLICKED TERM ${termStr} - ${stepIndex}`)
+
+    // must click them in order
+    if (stepIndex > selectedTerms.length) {
+      return
+    }
+
     // do nothing if it's already selected
     if (selectedTerms[stepIndex] === termStr) {
       return
@@ -170,44 +179,47 @@ function CrescendoInterface(props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.answerContainer}>
-        <Pressable onPress={handleGuessPath} style={styles.answerPressable}>
-          <UIText>{answer}</UIText>
-        </Pressable>
+      <View style={styles.firstTermContainer}>
+        <UIText>{firstTerm}</UIText>
       </View>
       <View style={[styles.pathsContainer, {flex: stepsToRender.length + 1}]}>
-        <View style={styles.equalsContainer} />
+        <View style={styles.startArrowContainer} />
         {stepsToRender.map((termsArr, stepIndex) => (
           <View
             style={[styles.termsRow, stepIndex > 0 && stepsToRender.length > 0 && {borderTopWidth: 0}]}
             key={`terms-row-${stepIndex}-${termsArr.join()}`}
           >
-            {termsArr.map((t, termIndex) => (
-              <Term
-                termStr={t}
-                key={`${stepIndex}-${termIndex}-${t}`}
-                isSelected={selectedTerms[stepIndex] === t}
-                onPress={() => handleClickTerm(stepIndex, t)}
-              >
-                {props.isShowingResult && correctTerms.includes(t) && (
-                  <Animated.View
-                    style={[
-                      styles.resultFlashOverlay,
-                      {
-                        backgroundColor: getResultColor(props.isResultCorrect, isDark),
-                        ...getFlashStylesForAnimation(props.resultAnimation),
-                      },
-                    ]}
-                  />
-                )}
-              </Term>
-            ))}
+            {termsArr.map((t, termIndex) => {
+              const shouldFlash = props.isShowingResult && props.resultAnimation && correctTerms.includes(t)
+              return (
+                <Term
+                  termStr={t}
+                  key={`${stepIndex}-${termIndex}-${t}`}
+                  isSelected={selectedTerms[stepIndex] === t}
+                  onPress={() => handleClickTerm(stepIndex, t)}
+                >
+                  {shouldFlash && (
+                    <Animated.View
+                      style={[
+                        styles.resultFlashOverlay,
+                        {
+                          backgroundColor: getResultColor(props.isResultCorrect, isDark),
+                          ...getFlashStylesForAnimation(props.resultAnimation),
+                        },
+                      ]}
+                    />
+                  )}
+                </Term>
+              )
+            })}
           </View>
         ))}
-        <View style={styles.startArrowContainer} />
+        <View style={styles.equalsContainer} />
       </View>
-      <View style={styles.firstTermContainer}>
-        <UIText>{firstTerm}</UIText>
+      <View style={styles.answerContainer}>
+        <Pressable onPress={handleGuessPath} style={styles.answerPressable}>
+          <UIText>{answer}</UIText>
+        </Pressable>
       </View>
     </View>
   )
@@ -272,8 +284,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+    right: 0,
+    bottom: 0,
     borderRadius: spaceSmall,
   },
 })

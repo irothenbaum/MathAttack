@@ -75,7 +75,7 @@ function GameCrescendo(props) {
           equation={currentQuestion.equation}
           difficulty={round.current}
           onSubmitAnswer={handleGuess}
-          isShowingRequest={isShowingAnswer}
+          isShowingResult={isShowingAnswer}
           isResultCorrect={isAnimatingForCorrect}
           resultAnimation={animation}
           equationTimer={equationTimer}
