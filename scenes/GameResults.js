@@ -7,8 +7,16 @@ import {goToScene} from '../redux/NavigationSlice'
 import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
 import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
 import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
+import {startNewGame as startNewCrescendoGame} from '../redux/GameSlice'
 import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
-import {Scene_GameClassic, Scene_GameEstimate, Scene_GameMarathon, Scene_GameVersus, Scene_Menu} from '../constants/scenes'
+import {
+  Scene_GameClassic,
+  Scene_GameCrescendo,
+  Scene_GameEstimate,
+  Scene_GameMarathon,
+  Scene_GameVersus,
+  Scene_Menu,
+} from '../constants/scenes'
 import {selectGameSettings, selectLastGameResults, selectLastGameTypePlayed} from '../redux/selectors'
 import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
@@ -168,6 +176,10 @@ function GameResults() {
 
       case Scene_GameEstimate:
         dispatch(startNewEstimateGame(settings))
+        break
+
+      case Scene_GameCrescendo:
+        dispatch(startNewCrescendoGame(settings))
         break
 
       case Scene_GameVersus:

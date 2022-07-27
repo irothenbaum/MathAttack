@@ -8,13 +8,11 @@ import GameStartTimer from '../components/GameStartTimer'
 import GameBackground from '../components/FX/GameBackground'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
-import {generateNewQuestion, recordAnswer} from '../redux/GameSlice'
+import {generateNewCrescendoQuestion, recordAnswer} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import {setAnswer} from '../redux/UISlice'
-import useAutoSubmit from '../hooks/useAutoSubmit'
 import CrescendoInterface, {MAX_FAKES_PER_ROW} from '../components/CrescendoInterface'
-import GameQuestion from '../models/GameQuestion'
 
 // lol, basically
 const INFINITE = 9999999
@@ -26,6 +24,11 @@ function GameCrescendo(props) {
   const {playSound} = useSoundPlayer()
   const round = useRef(1)
 
+  const generateNextCrescendoQuestion = () => {
+    console.log('GENERATING QUESTIONS, round: ' + round.current)
+    return generateNewCrescendoQuestion(Math.ceil(round.current / MAX_FAKES_PER_ROW) + 1)
+  }
+
   const {
     handleNextQuestion,
     animateCorrect,
@@ -35,11 +38,10 @@ function GameCrescendo(props) {
     animation,
     isAnimatingForCorrect,
     isShowingAnswer,
-  } = useClassicAnswerSystem(gameSettings.crescendoRoundDuration, INFINITE, () => {
-    GameQuestion.getRandomCrescendoQuestionFromSettings(gameSettings, Math.ceil(round.current / MAX_FAKES_PER_ROW))
-  })
+  } = useClassicAnswerSystem(gameSettings.crescendoRoundDuration, INFINITE, generateNextCrescendoQuestion)
 
   const handleGuess = (userAnswer) => {
+    console.log('GUESS HANDLED ' + userAnswer)
     let result = new QuestionResult(currentQuestion, userAnswer)
     if (QuestionResult.isCorrect(result)) {
       dispatch(recordAnswer(userAnswer))
@@ -56,10 +58,9 @@ function GameCrescendo(props) {
 
     dispatch(setAnswer(''))
   }
-  useAutoSubmit(handleGuess)
 
   const handleGameStart = () => {
-    dispatch(generateNewQuestion())
+    dispatch(generateNextCrescendoQuestion())
     animateCorrect()
   }
 
@@ -69,15 +70,17 @@ function GameCrescendo(props) {
       {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
       <GameBackground animation={animation} isAnimatingForCorrect={isAnimatingForCorrect} />
 
-      <CrescendoInterface
-        equation={currentQuestion.equation}
-        difficulty={round.current}
-        onSubmitAnswer={handleGuess}
-        isShowingRequest={isShowingAnswer}
-        isResultCorrect={isAnimatingForCorrect}
-        resultAnimation={animation}
-        equationTimer={equationTimer}
-      />
+      {currentQuestion && (
+        <CrescendoInterface
+          equation={currentQuestion.equation}
+          difficulty={round.current}
+          onSubmitAnswer={handleGuess}
+          isShowingRequest={isShowingAnswer}
+          isResultCorrect={isAnimatingForCorrect}
+          resultAnimation={animation}
+          equationTimer={equationTimer}
+        />
+      )}
     </View>
   )
 }

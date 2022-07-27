@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react'
 import {Animated, Pressable, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
-import {spaceDefault, spaceSmall} from '../styles/layout'
+import {spaceDefault, spaceExtraSmall, spaceSmall} from '../styles/layout'
 import {dimmedRed, neonRed, darkGrey, grey, black, white} from '../styles/colors'
 import {getFlashStylesForAnimation, getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
 import useDarkMode from '../hooks/useDarkMode'
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     zIndex: 12,
   },
   primary: {
-    padding: spaceSmall,
+    padding: spaceExtraSmall,
     paddingHorizontal: spaceDefault,
     borderRadius: 4,
     flexDirection: 'row',

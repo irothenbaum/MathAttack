@@ -14,6 +14,7 @@ import {faRunning} from '@fortawesome/free-solid-svg-icons/faRunning'
 import {faBullseye} from '@fortawesome/free-solid-svg-icons/faBullseye'
 import {faCog} from '@fortawesome/free-solid-svg-icons/faCog'
 import {faFistRaised} from '@fortawesome/free-solid-svg-icons/faFistRaised'
+import {faArrowUpRightDots} from '@fortawesome/free-solid-svg-icons/faArrowUpRightDots'
 import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner'
 import {faQuestion} from '@fortawesome/free-solid-svg-icons/faQuestion'
 import {faCircle} from '@fortawesome/free-solid-svg-icons/faCircle'
@@ -42,6 +43,7 @@ export const Classic = faHourglassHalf
 export const Marathon = faRunning
 export const Estimate = faBullseye
 export const Versus = faFistRaised
+export const Crescendo = faArrowUpRightDots
 export const Settings = faCog
 export const Loading = faSpinner
 export const Question = faQuestion

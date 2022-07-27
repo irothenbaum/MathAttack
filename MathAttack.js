@@ -3,6 +3,7 @@ import {useSelector} from 'react-redux'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
+  Scene_GameCrescendo,
   Scene_GameEstimate,
   Scene_GameMarathon,
   Scene_GameResults,
@@ -23,6 +24,7 @@ import useReduxPersist from './hooks/useReduxPersist'
 import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
 import useDarkMode from './hooks/useDarkMode'
 import {getBackgroundColor} from './lib/utilities'
+import GameCrescendo from './scenes/GameCrescendo'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -31,6 +33,7 @@ const SceneMap = {
   [Scene_GameMarathon]: GameMarathon,
   [Scene_GameResults]: GameResults,
   [Scene_GameEstimate]: GameEstimate,
+  [Scene_GameCrescendo]: GameCrescendo,
   [Scene_GameVersus]: GameVersus,
 }
 
@@ -66,7 +69,21 @@ function MathAttack() {
   return (
     <View style={[styles.sceneWrapper, {backgroundColor: getBackgroundColor(isDark)}]}>
       {isChangingScreens && (
-        <View style={styles.sceneTransitionContainer}>
+        <Animated.View
+          style={[
+            styles.sceneTransitionContainer,
+            {
+              width: '100%',
+              height: '100%',
+              backgroundColor: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: isDark
+                  ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0)']
+                  : ['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0)'],
+              }),
+            },
+          ]}
+        >
           <Animated.View
             style={{
               width: '100%',
@@ -97,7 +114,7 @@ function MathAttack() {
               }),
             }}
           />
-        </View>
+        </Animated.View>
       )}
       <SceneComponent />
     </View>

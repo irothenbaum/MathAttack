@@ -10,9 +10,14 @@ import PhraseBuffer from '../models/PhraseBuffer'
 import Phrase from '../models/Phrase'
 import PropTypes from 'prop-types'
 import {selectGameSettings} from '../redux/selectors'
+import {useSelector} from 'react-redux'
+import {ANSWER_TIMEOUT} from '../constants/game'
+import {RoundBox} from '../styles/elements'
+import {isDraft} from '@reduxjs/toolkit'
+import {getFlashStylesForAnimation, getResultColor, getUIColor} from '../lib/utilities'
 
 /**
- * @param {term: number, operation: string} t
+ * @param {{term: number, operation: string}} t
  * @returns {string}
  */
 function termToStr(t) {
@@ -32,17 +37,20 @@ function termStrToTerm(str) {
 
 function Term(props) {
   const {operation, term} = termStrToTerm(props.termStr)
+  const isDark = useDarkMode()
 
   return (
     <Pressable onPress={props.onPress}>
-      <View style={[styles.singleTermContainer]}>
-        <UIText>
+      <View style={[styles.singleTermContainer, {borderColor: getUIColor(isDark)}]}>
+        {props.children}
+        <UIText style={{zIndex: 2}}>
           {operation} {term}
         </UIText>
       </View>
     </Pressable>
   )
 }
+
 Term.propTypes = {
   termStr: PropTypes.string.isRequired,
   isSelected: PropTypes.bool,
@@ -69,29 +77,34 @@ function shuffleArray(comps) {
 
 function CrescendoInterface(props) {
   const [selectedTerms, setSelectedTerms] = useState([])
-  const gameSettings = selectGameSettings()
+  const gameSettings = useSelector(selectGameSettings)
 
   const numbersAndOperators = Equation.getLeftSideInfixNotation(props.equation)
   const answer = Equation.getSolution(props.equation)
   const [stepsToRender, setStepsToRender] = useState([])
+  const [correctTerms, setCorrectTerms] = useState([])
+  const isDark = useDarkMode()
 
   // we shift off the first term, and then the rest are the paths in groups of 2
   const firstTerm = numbersAndOperators.shift()
 
   useEffect(() => {
+    console.log('use effect: ', numbersAndOperators)
     const correctPath = []
     for (let i = 0; i < numbersAndOperators.length; i += 2) {
       correctPath.push(termToStr({operation: numbersAndOperators[i], term: numbersAndOperators[i + 1]}))
     }
 
     let fakesToMake = Math.max(0, props.difficulty - correctPath.length)
+    console.log(`Making ${fakesToMake} fakes`)
 
-    setStepsToRender(
-      correctPath.map((t, i) => {
-        const fakesOnThisRow = Math.min(fakesToMake, MAX_FAKES_PER_ROW)
-        const termsToRender = [
-          t,
-          [...new Array(fakesOnThisRow)].map(() => {
+    const s = correctPath.map((t, i) => {
+      const fakesOnThisRow = Math.min(fakesToMake, MAX_FAKES_PER_ROW)
+      const termsToRender = [t]
+      if (fakesOnThisRow > 0) {
+        console.log(`Making ${fakesOnThisRow} fakes on this row`)
+        termsToRender.push(
+          ...[...new Array(fakesOnThisRow)].map(() => {
             let termStr
             do {
               const eq = Equation.getRandomFromSettings(gameSettings)
@@ -99,16 +112,27 @@ function CrescendoInterface(props) {
             } while (termStr === t)
             return termStr
           }),
-        ]
+        )
+      }
 
-        fakesToMake -= fakesOnThisRow
+      fakesToMake -= fakesOnThisRow
 
-        return shuffleArray(termsToRender)
-      }),
-    )
-  }, [props.equation, numbersAndOperators])
+      return shuffleArray(termsToRender)
+    })
+
+    setCorrectTerms(correctPath)
+    setStepsToRender(s)
+  }, [props.equation])
+
+  useEffect(() => {
+    if (selectedTerms.length > 0 && selectedTerms.length === stepsToRender.length && gameSettings.autoSubmit) {
+      console.log('AUTO SUBMITTING')
+      handleGuessPath()
+    }
+  }, [selectedTerms])
 
   const handleClickTerm = (stepIndex, termStr) => {
+    console.log(`CLICKED TERM ${termStr} - ${stepIndex}`)
     // do nothing if it's already selected
     if (selectedTerms[stepIndex] === termStr) {
       return
@@ -131,29 +155,52 @@ function CrescendoInterface(props) {
       const {term: t, operation: o} = termStrToTerm(termStr)
       phraseBuffer.addTerm(t, o)
     })
-    const phrase = phraseBuffer.toPhrase()
-    const a = Phrase.getSolution(phrase)
-    props.onSubmitAnswer(a)
+    // reset selections
+    setSelectedTerms([])
+    try {
+      const phrase = phraseBuffer.toPhrase()
+      const a = Phrase.getSolution(phrase)
+      props.onSubmitAnswer(a)
+    } catch (err) {
+      props.onSubmitAnswer(ANSWER_TIMEOUT)
+    }
   }
+
+  console.log(stepsToRender)
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={handleGuessPath}>
-        <View style={styles.answerContainer}>
+      <View style={styles.answerContainer}>
+        <Pressable onPress={handleGuessPath} style={styles.answerPressable}>
           <UIText>{answer}</UIText>
-        </View>
-      </Pressable>
-      <View style={[styles.pathsContainer, {flex: stepsToRender.length}]}>
+        </Pressable>
+      </View>
+      <View style={[styles.pathsContainer, {flex: stepsToRender.length + 1}]}>
         <View style={styles.equalsContainer} />
         {stepsToRender.map((termsArr, stepIndex) => (
-          <View style={styles.termsRow} key={termsArr.join()}>
+          <View
+            style={[styles.termsRow, stepIndex > 0 && stepsToRender.length > 0 && {borderTopWidth: 0}]}
+            key={`terms-row-${stepIndex}-${termsArr.join()}`}
+          >
             {termsArr.map((t, termIndex) => (
               <Term
                 termStr={t}
                 key={`${stepIndex}-${termIndex}-${t}`}
                 isSelected={selectedTerms[stepIndex] === t}
                 onPress={() => handleClickTerm(stepIndex, t)}
-              />
+              >
+                {props.isShowingResult && correctTerms.includes(t) && (
+                  <Animated.View
+                    style={[
+                      styles.resultFlashOverlay,
+                      {
+                        backgroundColor: getResultColor(props.isResultCorrect, isDark),
+                        ...getFlashStylesForAnimation(props.resultAnimation),
+                      },
+                    ]}
+                  />
+                )}
+              </Term>
             ))}
           </View>
         ))}
@@ -166,34 +213,69 @@ function CrescendoInterface(props) {
   )
 }
 
+const boxStyle = {
+  ...RoundBox,
+  padding: spaceSmall,
+}
+
+const centerFlex = {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+}
+
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-  },
-
-  pathsContainer: {
-    flex: 1,
+    ...centerFlex,
+    height: '100%',
   },
 
   termsRow: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    paddingVertical: spaceSmall,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
 
-  singleTermContainer: {},
+  singleTermContainer: {
+    ...boxStyle,
+    borderWidth: 1,
+  },
 
   answerContainer: {
-    flex: 1,
+    ...centerFlex,
+    justifyContent: 'flex-end',
+  },
+
+  pathsContainer: {
+    ...centerFlex,
   },
 
   firstTermContainer: {
-    flex: 1,
+    ...centerFlex,
+    justifyContent: 'flex-start',
   },
 
   startArrowContainer: {},
 
   equalsContainer: {},
+
+  answerPressable: {
+    ...boxStyle,
+  },
+
+  resultFlashOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    borderRadius: spaceSmall,
+  },
 })
 
 CrescendoInterface.propTypes = {

@@ -7,21 +7,36 @@ import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
 import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
 import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
 import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
-import {Scene_GameClassic, Scene_GameEstimate, Scene_GameMarathon, Scene_GameVersus, Scene_Settings} from '../constants/scenes'
+import {startNewGame as startNewCrescendoGame} from '../redux/GameSlice'
+import {
+  Scene_GameClassic,
+  Scene_GameCrescendo,
+  Scene_GameEstimate,
+  Scene_GameMarathon,
+  Scene_GameVersus,
+  Scene_Settings,
+} from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
-import {screenHeight, spaceDefault, spaceLarge} from '../styles/layout'
+import {screenHeight, spaceDefault, spaceExtraSmall, spaceLarge, spaceSmall} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
 import {font1} from '../styles/typography'
 import {shadow, sunbeam} from '../styles/colors'
 import useDarkMode from '../hooks/useDarkMode'
-import {GAME_LABEL_CLASSIC, GAME_LABEL_ESTIMATE, GAME_LABEL_MARATHON, GAME_LABEL_VERSUS, SLAM_ANIMATION_DURATION} from '../constants/game'
+import {
+  GAME_LABEL_CLASSIC,
+  GAME_LABEL_CRESCENDO,
+  GAME_LABEL_ESTIMATE,
+  GAME_LABEL_MARATHON,
+  GAME_LABEL_VERSUS,
+  SLAM_ANIMATION_DURATION,
+} from '../constants/game'
 import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
 import useAnimationStation from '../hooks/useAnimationStation'
 import {SOUND_TAP} from '../lib/SoundHelper'
-import Icon, {Classic, Estimate, Marathon, Settings, Versus} from '../components/Icon'
+import Icon, {Classic, Estimate, Marathon, Settings, Versus, Crescendo} from '../components/Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 
 const pjson = require('../package.json')
@@ -107,6 +122,12 @@ function Menu() {
     dispatch(goToScene(Scene_GameVersus))
   }
 
+  const handlePlayCrescendo = () => {
+    dispatch(startNewCrescendoGame(settings))
+    dispatch(setCurrentGame(Scene_GameCrescendo))
+    dispatch(goToScene(Scene_GameCrescendo))
+  }
+
   return (
     <View style={styles.window}>
       <View style={[styles.innerContainer, {opacity: isReady ? 1 : 0}]}>
@@ -123,6 +144,15 @@ function Menu() {
             title={GAME_LABEL_ESTIMATE}
             onPress={handlePlayEstimation}
             icon={Estimate}
+            blurCount={3}
+          />
+        </View>
+        <View style={styles.gameButtonContainer}>
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_CRESCENDO}
+            onPress={handlePlayCrescendo}
+            icon={Crescendo}
             blurCount={3}
           />
         </View>
@@ -175,6 +205,7 @@ const styles = StyleSheet.create({
 
   innerContainer: {
     ...ScreenContainer,
+    paddingHorizontal: spaceDefault,
     paddingBottom: 100,
   },
 
@@ -184,7 +215,7 @@ const styles = StyleSheet.create({
 
   gameButtonContainer: {
     width: '100%',
-    padding: spaceDefault,
+    padding: spaceSmall,
   },
 
   footnoteContainer: {

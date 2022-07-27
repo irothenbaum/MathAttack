@@ -157,15 +157,21 @@ class Equation {
     // next we continue to select random terms until we've reached n-1 terms
     let runningTotal = term1 || 0
     while (phraseBuffer.getTotalTerms() < totalTerms - 1) {
+      console.log(`total terms: ${phraseBuffer.getTotalTerms()}`)
       // select the next term and operation
       let [newTerm, operation] = selectNextTerm(answer, runningTotal, termRange, gameSettings, possibleOperations)
+
+      console.log(`next term: ${operation} ${newTerm}`)
 
       phraseBuffer.addTerm(newTerm, operation)
       runningTotal = Phrase.performOperation(runningTotal, operation, newTerm)
     }
 
     const [finalTerm, finalOperation] = findFinalTerm(answer, runningTotal, gameSettings, possibleOperations)
+    console.log(`Final term: ${finalOperation} ${finalTerm}`)
     phraseBuffer.addTerm(finalTerm, finalOperation)
+
+    console.log(`Buffer: ${JSON.stringify(phraseBuffer)}, answer: ${answer}`)
 
     return new Equation(phraseBuffer.toPhrase())
   }

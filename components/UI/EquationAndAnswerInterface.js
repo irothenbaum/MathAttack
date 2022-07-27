@@ -1,7 +1,7 @@
 import React from 'react'
 import {Animated, StyleSheet, Pressable, View, TouchableWithoutFeedback} from 'react-native'
 import EquationBox from '../EquationBox'
-import {formatNumber, getVibrateStylesForAnimation} from '../../lib/utilities'
+import {formatNumber, getResultColor, getVibrateStylesForAnimation} from '../../lib/utilities'
 import TitleText from '../TitleText'
 import {dimmedGreen, dimmedRed, neonGreen, neonRed, sunbeam, shadow} from '../../styles/colors'
 import Equation from '../../models/Equation'
@@ -76,7 +76,7 @@ function EquationAndAnswerInterface(props) {
                 color: isDark ? sunbeam : shadow,
               },
               props.isAnimatingNextQuestion && {
-                color: props.isAnimatingForCorrect ? (isDark ? dimmedGreen : neonGreen) : isDark ? dimmedRed : neonRed,
+                color: getResultColor(props.isAnimatingForCorrect, isDark),
               },
             ]}
           >

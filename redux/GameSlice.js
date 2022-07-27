@@ -30,6 +30,10 @@ const gameSlice = createSlice({
     generateNewEstimationQuestion: (state) => {
       state.currentQuestion = serializeObject(GameQuestion.getRandomEstimateQuestionFromSettings(state.settings))
     },
+
+    generateNewCrescendoQuestion: (state, {payload}) => {
+      state.currentQuestion = serializeObject(GameQuestion.getRandomCrescendoQuestionFromSettings(state.settings, payload))
+    },
   },
 })
 
@@ -46,6 +50,10 @@ export const startNewGame = (classicGameSettings) => (dispatch) => {
 export const generateNewQuestion = (term1) => (dispatch) => dispatch(gameSlice.actions.generateNewQuestion(term1))
 
 export const generateNewEstimationQuestion = () => (dispatch) => dispatch(gameSlice.actions.generateNewEstimationQuestion())
+
+/** @param {number} termsCount */
+export const generateNewCrescendoQuestion = (termsCount) => (dispatch) =>
+  dispatch(gameSlice.actions.generateNewCrescendoQuestion(termsCount))
 
 /** @param {GameQuestion} q */
 export const setCurrentQuestion = (q) => (dispatch) => dispatch(gameSlice.actions.setCurrentQuestion(serializeObject(q)))

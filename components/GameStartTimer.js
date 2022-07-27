@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import {Animated, StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
 import UIText from './UIText'
-import {FullScreenOverlay, TextShadowSoft} from '../styles/elements'
+import {BoxShadow, FullScreenOverlay, TextShadowSoft} from '../styles/elements'
 import {shadow, sunbeam, neonRed, dimmedRed} from '../styles/colors'
 import {spaceDefault, spaceExtraLarge} from '../styles/layout'
 import {getBackgroundColor} from '../lib/utilities'
@@ -22,7 +22,11 @@ function GameStartTimer(props) {
 
   const color = isDark ? dimmedRed : neonRed
   useEffect(() => {
-    startCountdown(START_TIME)
+    if (global.skipOnDev) {
+      props.onStart()
+    } else {
+      startCountdown(START_TIME)
+    }
   }, [])
 
   useEffect(() => {
@@ -75,9 +79,12 @@ const styles = StyleSheet.create({
   counterText: {
     height: circleSize,
     width: circleSize,
+    alignItems: 'center',
+    lineHeight: circleSize,
     borderRadius: circleSize / 2,
     fontSize: 72,
-    marginBottom: spaceExtraLarge,
+    textAlign: 'center',
+    ...BoxShadow,
     ...TextShadowSoft,
   },
 })

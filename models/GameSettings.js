@@ -22,7 +22,7 @@ const GameSettings = {
   estimateItems: 4,
 
   // crescendo:
-  crescendoRoundDuration: 10000,
+  crescendoRoundDuration: 1000000, // 10000,
 }
 
 export default GameSettings
