@@ -12,10 +12,14 @@ import {generateNewCrescendoQuestion, recordAnswer} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import {setAnswer} from '../redux/UISlice'
-import CrescendoInterface, {MAX_FAKES_PER_ROW} from '../components/CrescendoInterface'
+import CrescendoInterface, {getMaxFakesForRound} from '../components/CrescendoInterface'
 
 // lol, basically
 const INFINITE = 9999999
+
+function log(base, number) {
+  return Math.log(number) / Math.log(base)
+}
 
 function GameCrescendo(props) {
   const dispatch = useDispatch()
@@ -25,8 +29,10 @@ function GameCrescendo(props) {
   const round = useRef(1)
 
   const generateNextCrescendoQuestion = () => {
-    console.log('GENERATING QUESTIONS, round: ' + round.current)
-    return generateNewCrescendoQuestion(Math.ceil(round.current / MAX_FAKES_PER_ROW) + 1)
+    const logBase = getMaxFakesForRound(round.current)
+    const numberOfTermsToGuess = Math.max(1, Math.ceil(log(logBase, round.current)))
+    console.log('GENERATING QUESTIONS, round: ' + round.current, logBase, numberOfTermsToGuess)
+    return generateNewCrescendoQuestion(numberOfTermsToGuess + 1)
   }
 
   const {

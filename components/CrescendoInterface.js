@@ -99,29 +99,36 @@ function CrescendoInterface(props) {
     }
 
     let fakesToMake = Math.max(0, props.difficulty - correctPath.length)
-    console.log(`Making ${fakesToMake} fakes`)
+    const maxFakesPerRow = getMaxFakesForRound(props.difficulty)
 
-    const s = correctPath.map((t, i) => {
-      const fakesOnThisRow = Math.min(fakesToMake, MAX_FAKES_PER_ROW)
-      const termsToRender = [t]
-      if (fakesOnThisRow > 0) {
-        console.log(`Making ${fakesOnThisRow} fakes on this row`)
-        termsToRender.push(
-          ...[...new Array(fakesOnThisRow)].map(() => {
-            let termStr
-            do {
-              const eq = Equation.getRandomFromSettings(gameSettings)
-              termStr = termToStr({term: eq.phrase.term2, operation: eq.phrase.operation})
-            } while (termStr === t)
-            return termStr
-          }),
-        )
-      }
+    console.log(`Making ${fakesToMake} with ${maxFakesPerRow} per row`)
 
-      fakesToMake -= fakesOnThisRow
+    const s = [...correctPath]
+      // we do reverse so the later terms have the most fakes
+      .reverse()
+      .map((t, i) => {
+        const fakesOnThisRow = Math.min(maxFakesPerRow, fakesToMake)
+        const termsToRender = [t]
+        if (fakesOnThisRow > 0) {
+          console.log(`Making ${fakesOnThisRow} fakes on this row`)
+          termsToRender.push(
+            ...[...new Array(fakesOnThisRow)].map(() => {
+              let termStr
+              do {
+                const eq = Equation.getRandomFromSettings(gameSettings)
+                termStr = termToStr({term: eq.phrase.term2, operation: eq.phrase.operation})
+              } while (termStr === t)
+              return termStr
+            }),
+          )
+        }
 
-      return shuffleArray(termsToRender)
-    })
+        fakesToMake -= fakesOnThisRow
+
+        return shuffleArray(termsToRender)
+      })
+      // but need to reverse back so the order is maintained
+      .reverse()
 
     setCorrectTerms(correctPath)
     setStepsToRender(s)
@@ -153,6 +160,7 @@ function CrescendoInterface(props) {
   }
 
   const handleGuessPath = () => {
+    console.log('Handling guess path')
     if (selectedTerms.length < stepsToRender.length) {
       // have not selected enough terms yet
       return
@@ -244,6 +252,7 @@ const styles = StyleSheet.create({
   },
 
   termsRow: {
+    flex: 1,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-evenly',
@@ -302,4 +311,10 @@ CrescendoInterface.propTypes = {
 
 export default CrescendoInterface
 
-export const MAX_FAKES_PER_ROW = 3
+/**
+ * @param {number} roundNumber
+ * @return {number}
+ */
+export function getMaxFakesForRound(roundNumber) {
+  return roundNumber < 10 ? 2 : 3
+}

@@ -75,7 +75,8 @@ function selectNextTerm(answer, otherTerm, termRange, gameSettings, possibleOper
       thisTerm = roundIfNeeded(termVal, gameSettings)
     } while (thisTerm === 0 || thisTerm === answer)
 
-    if (thisTerm < 0) {
+    // we only convert a negative to a subtract+positive if our previous term exists
+    if (thisTerm < 0 && !!otherTerm) {
       thisTerm = Math.abs(thisTerm)
       operation = OPERATION_SUBTRACT
     } else {
@@ -145,10 +146,7 @@ class Equation {
     }
 
     let answer
-    let answerRange = gameSettings.maxValue - gameSettings.minValue
-    // if we're using a lot of numbers we apply a small scale to keep the values manageable
-    const termRange = answerRange / Math.min(totalTerms - 1, 4)
-
+    const answerRange = gameSettings.maxValue - gameSettings.minValue
     // we select the answer randomly from our answerRange
     do {
       answer = roundIfNeeded(gameSettings.minValue + Math.random() * answerRange, gameSettings)
@@ -156,22 +154,32 @@ class Equation {
 
     // next we continue to select random terms until we've reached n-1 terms
     let runningTotal = term1 || 0
+    // if we're using a lot of numbers we apply a small scale to keep the values manageable
+    const termRange = answerRange / Math.min(totalTerms - 1, 4)
     while (phraseBuffer.getTotalTerms() < totalTerms - 1) {
-      console.log(`total terms: ${phraseBuffer.getTotalTerms()}`)
+      // console.log(`total terms: ${phraseBuffer.getTotalTerms()}`)
       // select the next term and operation
       let [newTerm, operation] = selectNextTerm(answer, runningTotal, termRange, gameSettings, possibleOperations)
 
-      console.log(`next term: ${operation} ${newTerm}`)
+      // console.log(`next term: ${operation} ${newTerm}`)
+
+      // TODO: There's a bug here. If newTerm === 31 and operation === Subtract, but it's the first term we're adding
+      //  the PhraseBuffer will drop the operation, making term1 in the buffer = 31 (no negative),
+      //  but the next line applies the term and operation to runningTotal which will make running total -31
+      //  this makes phraseBuffer and runningTotal out of sync. Options are:
+      //  1: Don't allow subtract operations for the first term, knowing it will be dropped by the buffer
+      //  2. Convert a term1 to a negative if it's the first term and it's a subtract operation
+      //  3. Don't modify the runningTotal cache in this way- instead, always calculate it from the buffer
 
       phraseBuffer.addTerm(newTerm, operation)
       runningTotal = Phrase.performOperation(runningTotal, operation, newTerm)
     }
 
     const [finalTerm, finalOperation] = findFinalTerm(answer, runningTotal, gameSettings, possibleOperations)
-    console.log(`Final term: ${finalOperation} ${finalTerm}`)
+    // console.log(`Final term: ${finalOperation} ${finalTerm}`)
     phraseBuffer.addTerm(finalTerm, finalOperation)
 
-    console.log(`Buffer: ${JSON.stringify(phraseBuffer)}, answer: ${answer}`)
+    // console.log(`Buffer: ${JSON.stringify(phraseBuffer)}, answer: ${answer}`)
 
     return new Equation(phraseBuffer.toPhrase())
   }

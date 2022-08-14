@@ -1,4 +1,4 @@
-import Phrase, {OPERATION_ADD} from './Phrase'
+import Phrase from './Phrase'
 
 class PhraseBuffer {
   constructor() {
@@ -12,7 +12,7 @@ class PhraseBuffer {
    * @param {string?} operation
    */
   addTerm(term, operation) {
-    if (!this.term1) {
+    if (this.term1 === undefined) {
       // we ignore the operation
       this.term1 = term
       return
