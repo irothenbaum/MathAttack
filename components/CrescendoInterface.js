@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Animated, View, StyleSheet, Pressable} from 'react-native'
 import Equation from '../models/Equation'
 import UIText from './UIText'
-import {spaceSmall} from '../styles/layout'
+import {spaceExtraLarge, spaceSmall} from '../styles/layout'
 import useDarkMode from '../hooks/useDarkMode'
 import PhraseBuffer from '../models/PhraseBuffer'
 import Phrase from '../models/Phrase'
@@ -12,6 +12,23 @@ import {useSelector} from 'react-redux'
 import {ANSWER_TIMEOUT} from '../constants/game'
 import {RoundBox} from '../styles/elements'
 import {getFlashStylesForAnimation, getResultColor, getUIColor} from '../lib/utilities'
+import Svg, {Circle, Line} from 'react-native-svg'
+import {shadow, sunbeam} from '../styles/colors'
+
+/**
+ * @param {*} e
+ * @returns {Promise<{x: number, y: number}>}
+ */
+function getScreenPositionFromLayoutEvent(e) {
+  return new Promise((resolve, reject) => {
+    e.target.measure((x, y, width, height, pageX, pageY) => {
+      resolve({
+        x: x + pageX + width / 2,
+        y: y + pageY + height / 2,
+      })
+    })
+  })
+}
 
 /**
  * @param {{term: number, operation: string}} t
@@ -34,15 +51,19 @@ function termStrToTerm(str) {
 
 function Term(props) {
   const {operation, term} = termStrToTerm(props.termStr)
+  const screenPosition = useRef({})
   const isDark = useDarkMode()
 
+  const handleLayout = (e) => getScreenPositionFromLayoutEvent(e).then((pos) => (screenPosition.current = pos))
+
   return (
-    <Pressable onPress={props.onPress}>
+    <Pressable onPress={() => props.onPress(screenPosition.current)}>
       <View
         style={[
           styles.singleTermContainer,
           {borderColor: getUIColor(isDark), backgroundColor: props.isSelected ? getResultColor(true, isDark) : undefined},
         ]}
+        onLayout={handleLayout}
       >
         {props.children}
         <UIText style={{zIndex: 2}}>
@@ -77,8 +98,13 @@ function shuffleArray(comps) {
 
 // ---------------------------------------------------------------------
 
+const LINE_WIDTH = 6
+
 function CrescendoInterface(props) {
   const [selectedTerms, setSelectedTerms] = useState([])
+  const [selectedTermLines, setSelectedTermLines] = useState([])
+  const answerPosition = useRef({})
+  const firstTermPosition = useRef({})
   const gameSettings = useSelector(selectGameSettings)
 
   // TODO: the order is backwards? I'm not sure what's going on but it seems to be upside down
@@ -132,6 +158,10 @@ function CrescendoInterface(props) {
 
     setCorrectTerms(correctPath)
     setStepsToRender(s)
+
+    // reset selections
+    setSelectedTerms([])
+    setSelectedTermLines([])
   }, [props.equation])
 
   useEffect(() => {
@@ -141,7 +171,12 @@ function CrescendoInterface(props) {
     }
   }, [selectedTerms])
 
-  const handleClickTerm = (stepIndex, termStr) => {
+  /**
+   * @param {number} stepIndex
+   * @param {string} termStr
+   * @param {{x: number, y:number}} screenPosition
+   */
+  const handleClickTerm = (stepIndex, termStr, screenPosition) => {
     console.log(`CLICKED TERM ${termStr} - ${stepIndex}`)
 
     // must click them in order
@@ -157,6 +192,10 @@ function CrescendoInterface(props) {
     const newSelectedTerms = [...selectedTerms]
     newSelectedTerms[stepIndex] = termStr
     setSelectedTerms(newSelectedTerms)
+
+    const newSelectedTermLines = [...selectedTermLines]
+    newSelectedTermLines[stepIndex] = screenPosition
+    setSelectedTermLines(newSelectedTermLines)
   }
 
   const handleGuessPath = () => {
@@ -172,8 +211,7 @@ function CrescendoInterface(props) {
       const {term: t, operation: o} = termStrToTerm(termStr)
       phraseBuffer.addTerm(t, o)
     })
-    // reset selections
-    setSelectedTerms([])
+
     try {
       const phrase = phraseBuffer.toPhrase()
       const a = Phrase.getSolution(phrase)
@@ -183,15 +221,38 @@ function CrescendoInterface(props) {
     }
   }
 
-  console.log(stepsToRender)
+  console.log(stepsToRender, selectedTermLines)
+
+  const finalTermPosition = selectedTermLines[selectedTermLines.length - 1]
+
+  const LINE_COLOR = props.isShowingResult ? getResultColor(props.isShowingResult, isDark) : isDark ? sunbeam : shadow
 
   return (
     <View style={styles.container}>
-      <View style={styles.firstTermContainer}>
-        <UIText>{firstTerm}</UIText>
+      <View style={styles.effectsContainer}>
+        <Svg>
+          {selectedTermLines.map((thisPos, index) => {
+            const prevPos = index === 0 ? firstTermPosition.current : selectedTermLines[index - 1]
+            return (
+              <Line key={index} x1={prevPos.x} y1={prevPos.y} x2={thisPos.x} y2={thisPos.y} stroke={LINE_COLOR} strokeWidth={LINE_WIDTH} />
+            )
+          })}
+          {props.isShowingResult && props.isResultCorrect && (
+            <Line
+              x1={finalTermPosition.x}
+              y1={finalTermPosition.y}
+              x2={answerPosition.current.x}
+              y2={answerPosition.current.y}
+              stroke={LINE_COLOR}
+              strokeWidth={LINE_WIDTH}
+            />
+          )}
+        </Svg>
       </View>
-      <View style={[styles.pathsContainer, {flex: stepsToRender.length + 1}]}>
-        <View style={styles.startArrowContainer} />
+      <View style={styles.firstTermContainer}>
+        <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}>{firstTerm}</UIText>
+      </View>
+      <View style={styles.pathsContainer}>
         {stepsToRender.map((termsArr, stepIndex) => (
           <View
             style={[styles.termsRow, stepIndex > 0 && stepsToRender.length > 0 && {borderTopWidth: 0}]}
@@ -204,14 +265,14 @@ function CrescendoInterface(props) {
                   termStr={t}
                   key={`${stepIndex}-${termIndex}-${t}`}
                   isSelected={selectedTerms[stepIndex] === t}
-                  onPress={() => handleClickTerm(stepIndex, t)}
+                  onPress={(screenPosition) => handleClickTerm(stepIndex, t, screenPosition)}
                 >
                   {shouldFlash && (
                     <Animated.View
                       style={[
                         styles.resultFlashOverlay,
                         {
-                          backgroundColor: getResultColor(props.isResultCorrect, isDark),
+                          backgroundColor: LINE_COLOR,
                           ...getFlashStylesForAnimation(props.resultAnimation),
                         },
                       ]}
@@ -222,11 +283,10 @@ function CrescendoInterface(props) {
             })}
           </View>
         ))}
-        <View style={styles.equalsContainer} />
       </View>
       <View style={styles.answerContainer}>
-        <Pressable onPress={handleGuessPath} style={styles.answerPressable}>
-          <UIText>{answer}</UIText>
+        <Pressable onPress={handleGuessPath}>
+          <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (answerPosition.current = pos))}>{answer}</UIText>
         </Pressable>
       </View>
     </View>
@@ -251,6 +311,14 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 
+  effectsContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+  },
+
   termsRow: {
     flex: 1,
     width: '100%',
@@ -258,8 +326,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     flexDirection: 'row',
     paddingVertical: spaceSmall,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
   },
 
   singleTermContainer: {
@@ -269,7 +335,8 @@ const styles = StyleSheet.create({
 
   answerContainer: {
     ...centerFlex,
-    justifyContent: 'flex-end',
+    flex: 0,
+    marginVertical: spaceExtraLarge,
   },
 
   pathsContainer: {
@@ -278,15 +345,8 @@ const styles = StyleSheet.create({
 
   firstTermContainer: {
     ...centerFlex,
-    justifyContent: 'flex-start',
-  },
-
-  startArrowContainer: {},
-
-  equalsContainer: {},
-
-  answerPressable: {
-    ...boxStyle,
+    flex: 0,
+    marginVertical: spaceExtraLarge,
   },
 
   resultFlashOverlay: {

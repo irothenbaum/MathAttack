@@ -13,11 +13,16 @@ const styles = StyleSheet.create({
 
 function UIText(props) {
   const isDark = useDarkMode()
-  return <Animated.Text style={[styles.text, {color: getUIColor(isDark)}, props.style]}>{props.children}</Animated.Text>
+  return (
+    <Animated.Text onLayout={props.onLayout} style={[styles.text, {color: getUIColor(isDark)}, props.style]}>
+      {props.children}
+    </Animated.Text>
+  )
 }
 
 UIText.propTypes = {
   style: PropTypes.any,
+  onLayout: PropTypes.func,
 }
 
 export default UIText
