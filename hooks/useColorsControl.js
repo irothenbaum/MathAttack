@@ -101,9 +101,10 @@ const specialTheme = {
 function useColorsControl() {
   const isDark = useDarkMode()
 
-  // const theme = isDark ? darkTheme : lightTheme
+  const theme = isDark ? darkTheme : lightTheme
   // const theme = specialTheme
-  const theme = lightTheme
+  // const theme = lightTheme
+
   return {
     ...theme,
     getResultColor: (isCorrect) => (isCorrect ? theme.green : theme.red),

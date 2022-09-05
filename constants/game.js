@@ -22,4 +22,5 @@ export const SCENE_CHANGE_TRANSITION_DURATION = 250
 
 export const COLOR_SCHEME_LIGHT = 1
 export const COLOR_SCHEME_DARK = -1
+export const COLOR_SCHEME_SPECIAL = 2
 export const COLOR_SCHEME_SYSTEM = 0

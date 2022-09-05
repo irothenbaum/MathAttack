@@ -26,28 +26,18 @@ function GameCrescendo(props) {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectGameSettings)
   const {playSound} = useSoundPlayer()
-  const round = useRef(10)
+  const round = useRef(1)
 
   const generateNextCrescendoQuestion = () => {
     const logBase = getMaxFakesForRound(round.current)
     const numberOfTermsToGuess = Math.max(1, Math.ceil(log(logBase, round.current)))
-    console.log('GENERATING QUESTIONS, round: ' + round.current, logBase, numberOfTermsToGuess)
     return generateNewCrescendoQuestion(numberOfTermsToGuess + 1)
   }
 
-  const {
-    handleNextQuestion,
-    animateCorrect,
-    animateIncorrect,
-    markLastGuess,
-    equationTimer,
-    animation,
-    isAnimatingForCorrect,
-    isShowingAnswer,
-  } = useClassicAnswerSystem(gameSettings.crescendoRoundDuration, INFINITE, generateNextCrescendoQuestion)
+  const {handleNextQuestion, animateCorrect, animateIncorrect, equationTimer, animation, isAnimatingForCorrect, isShowingAnswer} =
+    useClassicAnswerSystem(gameSettings.crescendoRoundDuration, INFINITE, generateNextCrescendoQuestion)
 
   const handleGuess = (userAnswer) => {
-    console.log('GUESS HANDLED ' + userAnswer)
     let result = new QuestionResult(currentQuestion, userAnswer)
     if (QuestionResult.isCorrect(result)) {
       dispatch(recordAnswer(userAnswer))
@@ -56,7 +46,7 @@ function GameCrescendo(props) {
       handleNextQuestion()
       round.current = round.current + 1
     } else {
-      markLastGuess(userAnswer)
+      dispatch(recordAnswer(userAnswer))
       playSound(SOUND_WRONG).then()
       animateIncorrect()
       handleNextQuestion(true)

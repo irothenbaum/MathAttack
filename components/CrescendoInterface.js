@@ -51,7 +51,7 @@ function termStrToTerm(str) {
 
 function Term(props) {
   const {operation, term} = termStrToTerm(props.termStr)
-  const {green, foreground, background, backgroundTint, shadowLight} = useColorsControl()
+  const {green, foreground, background} = useColorsControl()
 
   const handleLayout = (e) => getScreenPositionFromLayoutEvent(e).then(props.onRendered)
 
@@ -61,7 +61,7 @@ function Term(props) {
         style={[
           styles.singleTermContainer,
           {
-            backgroundColor: props.isSelected ? green : props.isDisabled ? backgroundTint : shadowLight,
+            backgroundColor: props.isSelected ? props.selectedColor || green : 'transparent',
           },
         ]}
         onLayout={handleLayout}
@@ -78,6 +78,7 @@ function Term(props) {
 Term.propTypes = {
   termStr: PropTypes.string.isRequired,
   isSelected: PropTypes.bool,
+  selectedColor: PropTypes.string,
   onPress: PropTypes.func.isRequired,
   onRendered: PropTypes.func,
   isDisabled: PropTypes.bool,
@@ -124,7 +125,7 @@ function CrescendoInterface(props) {
   const answer = Equation.getSolution(props.equation)
   const [stepsToRender, setStepsToRender] = useState([])
   const [correctTerms, setCorrectTerms] = useState([])
-  const {getResultColor, shadow, backgroundTint, background, green} = useColorsControl()
+  const {getResultColor, shadow, backgroundTint, background, red, green} = useColorsControl()
 
   // we shift off the first term, and then the rest are the paths in groups of 2
   const firstTerm = numbersAndOperators.shift()
@@ -227,8 +228,10 @@ function CrescendoInterface(props) {
     }
   }
 
-  const finalTermPosition = termPositions.current[termPositionKey(selectedTerms[selectedTerms.length - 1], selectedTerms.length - 1)]
-  const termLinesToDraw = (props.isShowingResult ? correctTerms : selectedTerms).map((t, i) => termPositions.current[termPositionKey(t, i)])
+  const termsToDrawLinesBetween = props.isShowingResult ? correctTerms : selectedTerms
+  const termLinesToDraw = termsToDrawLinesBetween.map((t, i) => termPositions.current[termPositionKey(t, i)])
+  const finalTermPosition =
+    termPositions.current[termPositionKey(termsToDrawLinesBetween[termsToDrawLinesBetween.length - 1], termsToDrawLinesBetween.length - 1)]
 
   const LINE_COLOR = props.isShowingResult ? getResultColor(props.isResultCorrect) : shadow
 
@@ -239,10 +242,18 @@ function CrescendoInterface(props) {
           {termLinesToDraw.map((thisPos, index) => {
             const prevPos = index === 0 ? firstTermPosition.current : termLinesToDraw[index - 1]
             return (
-              <Line key={index} x1={prevPos.x} y1={prevPos.y} x2={thisPos.x} y2={thisPos.y} stroke={LINE_COLOR} strokeWidth={LINE_WIDTH} />
+              <Line
+                key={`(${prevPos.x},${prevPos.y})->(${thisPos.x},${thisPos.y})`}
+                x1={prevPos.x}
+                y1={prevPos.y}
+                x2={thisPos.x}
+                y2={thisPos.y}
+                stroke={LINE_COLOR}
+                strokeWidth={LINE_WIDTH}
+              />
             )
           })}
-          {props.isShowingResult && props.isResultCorrect && (
+          {props.isShowingResult && (
             <Line
               x1={finalTermPosition.x}
               y1={finalTermPosition.y}
@@ -255,7 +266,12 @@ function CrescendoInterface(props) {
         </Svg>
       </View>
       <View style={styles.firstTermContainer}>
-        <View style={[styles.staticTermCircle, {borderColor: backgroundTint, backgroundColor: background}]}>
+        <View
+          style={[
+            styles.staticTermCircle,
+            {borderColor: props.isResultCorrect ? getResultColor(props.isResultCorrect) : green, backgroundColor: background},
+          ]}
+        >
           <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}>
             {firstTerm}
           </UIText>
@@ -270,7 +286,8 @@ function CrescendoInterface(props) {
                 <Term
                   termStr={t}
                   key={`${stepIndex}-${termIndex}-${t}`}
-                  isSelected={!shouldFlash && selectedTerms[stepIndex] === t}
+                  isSelected={selectedTerms[stepIndex] === t || shouldFlash}
+                  selectedColor={shouldFlash && !props.isResultCorrect ? red : green}
                   onRendered={(screenPos) => (termPositions.current[termPositionKey(t, stepIndex)] = screenPos)}
                   onPress={() => handleClickTerm(stepIndex, t)}
                   isDisabled={stepIndex !== selectedTerms.length}
@@ -280,7 +297,7 @@ function CrescendoInterface(props) {
                       style={[
                         styles.resultFlashOverlay,
                         {
-                          backgroundColor: getResultColor(props.isResultCorrect),
+                          backgroundColor: background,
                           ...getFlashStylesForAnimation(props.resultAnimation),
                         },
                       ]}
@@ -298,13 +315,14 @@ function CrescendoInterface(props) {
             style={[
               styles.staticTermCircle,
               {
-                borderColor:
-                  selectedTerms.length === stepsToRender.length
-                    ? pulseAnimation.interpolate({
-                        inputRange: [0, 0.5, 1],
-                        outputRange: [green, fadeColor(green, 0.1), green],
-                      })
-                    : backgroundTint,
+                borderColor: props.isShowingResult
+                  ? getResultColor(props.isResultCorrect)
+                  : selectedTerms.length === stepsToRender.length
+                  ? pulseAnimation.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [green, fadeColor(green, 0.1), green],
+                    })
+                  : backgroundTint,
                 backgroundColor: background,
               },
             ]}

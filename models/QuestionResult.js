@@ -54,7 +54,7 @@ class QuestionResult {
     }
 
     return Math.floor(
-      QuestionResult.getQuestionComplexity(obj) / (obj.timeToAnswerMS / 1000), // boosted by the inverse number of seconds
+      QuestionResult.getQuestionComplexity(obj) / (Math.max(1, obj.timeToAnswerMS) / 1000), // boosted by the inverse number of seconds
     )
   }
 }

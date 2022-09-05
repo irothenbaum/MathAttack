@@ -1,10 +1,10 @@
-import {COLOR_SCHEME_SYSTEM} from '../constants/game'
+import {COLOR_SCHEME_LIGHT} from '../constants/game'
 
 /** @typedef GameSettings */
 const GameSettings = {
   // shared:
   muteSounds: false,
-  colorScheme: COLOR_SCHEME_SYSTEM,
+  colorScheme: COLOR_SCHEME_LIGHT, // default to Light
   minValue: 0,
   maxValue: 100,
   decimalPlaces: 0,
