@@ -128,7 +128,9 @@ function EstimationGameResult({result, count}) {
       </View>
       <NormalText style={resultStyles.singleResultEquals}>~</NormalText>
       <View style={resultStyles.singleResultAnswer}>
-        <NormalText style={isExact ? resultStyles.exactAnswer : isCorrect ? null : resultStyles.wrongAnswer}>{accuracy}</NormalText>
+        <NormalText style={isExact ? resultStyles.exactAnswer : isCorrect ? null : resultStyles.wrongAnswer}>
+          {isTimeout ? 'N/A' : accuracy}
+        </NormalText>
       </View>
       <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (

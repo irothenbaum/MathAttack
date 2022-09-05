@@ -26,7 +26,7 @@ function GameCrescendo(props) {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectGameSettings)
   const {playSound} = useSoundPlayer()
-  const round = useRef(1)
+  const round = useRef(10)
 
   const generateNextCrescendoQuestion = () => {
     const logBase = getMaxFakesForRound(round.current)

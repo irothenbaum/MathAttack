@@ -2,8 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {Animated, View, StyleSheet, Pressable} from 'react-native'
 import Equation from '../models/Equation'
 import UIText from './UIText'
-import {spaceExtraLarge, spaceSmall} from '../styles/layout'
-import useDarkMode from '../hooks/useDarkMode'
+import {spaceExtraLarge, spaceLarge, spaceSmall} from '../styles/layout'
 import PhraseBuffer from '../models/PhraseBuffer'
 import Phrase from '../models/Phrase'
 import PropTypes from 'prop-types'
@@ -11,9 +10,10 @@ import {selectGameSettings} from '../redux/selectors'
 import {useSelector} from 'react-redux'
 import {ANSWER_TIMEOUT} from '../constants/game'
 import {RoundBox} from '../styles/elements'
-import {getFlashStylesForAnimation, getResultColor, getUIColor} from '../lib/utilities'
+import {fadeColor, getFlashStylesForAnimation} from '../lib/utilities'
 import Svg, {Circle, Line} from 'react-native-svg'
-import {shadow, sunbeam} from '../styles/colors'
+import useColorsControl from '../hooks/useColorsControl'
+import useAnimationStation from '../hooks/useAnimationStation'
 
 /**
  * @param {*} e
@@ -51,22 +51,23 @@ function termStrToTerm(str) {
 
 function Term(props) {
   const {operation, term} = termStrToTerm(props.termStr)
-  const screenPosition = useRef({})
-  const isDark = useDarkMode()
+  const {green, foreground, background, backgroundTint, shadowLight} = useColorsControl()
 
-  const handleLayout = (e) => getScreenPositionFromLayoutEvent(e).then((pos) => (screenPosition.current = pos))
+  const handleLayout = (e) => getScreenPositionFromLayoutEvent(e).then(props.onRendered)
 
   return (
-    <Pressable onPress={() => props.onPress(screenPosition.current)}>
+    <Pressable onPress={props.onPress}>
       <View
         style={[
           styles.singleTermContainer,
-          {borderColor: getUIColor(isDark), backgroundColor: props.isSelected ? getResultColor(true, isDark) : undefined},
+          {
+            backgroundColor: props.isSelected ? green : props.isDisabled ? backgroundTint : shadowLight,
+          },
         ]}
         onLayout={handleLayout}
       >
         {props.children}
-        <UIText style={{zIndex: 2}}>
+        <UIText style={{zIndex: 2, color: props.isSelected ? background : foreground}}>
           {operation} {term}
         </UIText>
       </View>
@@ -78,6 +79,8 @@ Term.propTypes = {
   termStr: PropTypes.string.isRequired,
   isSelected: PropTypes.bool,
   onPress: PropTypes.func.isRequired,
+  onRendered: PropTypes.func,
+  isDisabled: PropTypes.bool,
 }
 
 /**
@@ -99,26 +102,35 @@ function shuffleArray(comps) {
 // ---------------------------------------------------------------------
 
 const LINE_WIDTH = 6
+const PULSE_SPEED = 1000
+
+/**
+ * @param {string} termStr
+ * @param {number} index
+ */
+function termPositionKey(termStr, index) {
+  return `${index},${termStr}`
+}
 
 function CrescendoInterface(props) {
+  const termPositions = useRef({})
   const [selectedTerms, setSelectedTerms] = useState([])
-  const [selectedTermLines, setSelectedTermLines] = useState([])
   const answerPosition = useRef({})
   const firstTermPosition = useRef({})
   const gameSettings = useSelector(selectGameSettings)
+  const {loop: loopPulse, cancel: cancelPulse, animation: pulseAnimation} = useAnimationStation()
 
-  // TODO: the order is backwards? I'm not sure what's going on but it seems to be upside down
   const numbersAndOperators = Equation.getLeftSideInfixNotation(props.equation)
   const answer = Equation.getSolution(props.equation)
   const [stepsToRender, setStepsToRender] = useState([])
   const [correctTerms, setCorrectTerms] = useState([])
-  const isDark = useDarkMode()
+  const {getResultColor, shadow, backgroundTint, background, green} = useColorsControl()
 
   // we shift off the first term, and then the rest are the paths in groups of 2
   const firstTerm = numbersAndOperators.shift()
 
+  // Equation change effect
   useEffect(() => {
-    console.log('use effect: ', numbersAndOperators)
     const correctPath = []
     for (let i = 0; i < numbersAndOperators.length; i += 2) {
       correctPath.push(termToStr({operation: numbersAndOperators[i], term: numbersAndOperators[i + 1]}))
@@ -127,8 +139,6 @@ function CrescendoInterface(props) {
     let fakesToMake = Math.max(0, props.difficulty - correctPath.length)
     const maxFakesPerRow = getMaxFakesForRound(props.difficulty)
 
-    console.log(`Making ${fakesToMake} with ${maxFakesPerRow} per row`)
-
     const s = [...correctPath]
       // we do reverse so the later terms have the most fakes
       .reverse()
@@ -136,7 +146,6 @@ function CrescendoInterface(props) {
         const fakesOnThisRow = Math.min(maxFakesPerRow, fakesToMake)
         const termsToRender = [t]
         if (fakesOnThisRow > 0) {
-          console.log(`Making ${fakesOnThisRow} fakes on this row`)
           termsToRender.push(
             ...[...new Array(fakesOnThisRow)].map(() => {
               let termStr
@@ -161,13 +170,17 @@ function CrescendoInterface(props) {
 
     // reset selections
     setSelectedTerms([])
-    setSelectedTermLines([])
   }, [props.equation])
 
   useEffect(() => {
-    if (selectedTerms.length > 0 && selectedTerms.length === stepsToRender.length && gameSettings.autoSubmit) {
-      console.log('AUTO SUBMITTING')
-      handleGuessPath()
+    if (selectedTerms.length > 0 && selectedTerms.length === stepsToRender.length) {
+      loopPulse(PULSE_SPEED)
+      // Disabling AUTO SUBMIT for now
+      if (false && gameSettings.autoSubmit) {
+        handleGuessPath()
+      }
+    } else {
+      cancelPulse()
     }
   }, [selectedTerms])
 
@@ -177,8 +190,6 @@ function CrescendoInterface(props) {
    * @param {{x: number, y:number}} screenPosition
    */
   const handleClickTerm = (stepIndex, termStr, screenPosition) => {
-    console.log(`CLICKED TERM ${termStr} - ${stepIndex}`)
-
     // must click them in order
     if (stepIndex > selectedTerms.length) {
       return
@@ -192,14 +203,9 @@ function CrescendoInterface(props) {
     const newSelectedTerms = [...selectedTerms]
     newSelectedTerms[stepIndex] = termStr
     setSelectedTerms(newSelectedTerms)
-
-    const newSelectedTermLines = [...selectedTermLines]
-    newSelectedTermLines[stepIndex] = screenPosition
-    setSelectedTermLines(newSelectedTermLines)
   }
 
   const handleGuessPath = () => {
-    console.log('Handling guess path')
     if (selectedTerms.length < stepsToRender.length) {
       // have not selected enough terms yet
       return
@@ -221,18 +227,17 @@ function CrescendoInterface(props) {
     }
   }
 
-  console.log(stepsToRender, selectedTermLines)
+  const finalTermPosition = termPositions.current[termPositionKey(selectedTerms[selectedTerms.length - 1], selectedTerms.length - 1)]
+  const termLinesToDraw = (props.isShowingResult ? correctTerms : selectedTerms).map((t, i) => termPositions.current[termPositionKey(t, i)])
 
-  const finalTermPosition = selectedTermLines[selectedTermLines.length - 1]
-
-  const LINE_COLOR = props.isShowingResult ? getResultColor(props.isShowingResult, isDark) : isDark ? sunbeam : shadow
+  const LINE_COLOR = props.isShowingResult ? getResultColor(props.isResultCorrect) : shadow
 
   return (
     <View style={styles.container}>
       <View style={styles.effectsContainer}>
         <Svg>
-          {selectedTermLines.map((thisPos, index) => {
-            const prevPos = index === 0 ? firstTermPosition.current : selectedTermLines[index - 1]
+          {termLinesToDraw.map((thisPos, index) => {
+            const prevPos = index === 0 ? firstTermPosition.current : termLinesToDraw[index - 1]
             return (
               <Line key={index} x1={prevPos.x} y1={prevPos.y} x2={thisPos.x} y2={thisPos.y} stroke={LINE_COLOR} strokeWidth={LINE_WIDTH} />
             )
@@ -250,29 +255,32 @@ function CrescendoInterface(props) {
         </Svg>
       </View>
       <View style={styles.firstTermContainer}>
-        <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}>{firstTerm}</UIText>
+        <View style={[styles.staticTermCircle, {borderColor: backgroundTint, backgroundColor: background}]}>
+          <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}>
+            {firstTerm}
+          </UIText>
+        </View>
       </View>
       <View style={styles.pathsContainer}>
         {stepsToRender.map((termsArr, stepIndex) => (
-          <View
-            style={[styles.termsRow, stepIndex > 0 && stepsToRender.length > 0 && {borderTopWidth: 0}]}
-            key={`terms-row-${stepIndex}-${termsArr.join()}`}
-          >
+          <View style={styles.termsRow} key={`terms-row-${stepIndex}-${termsArr.join()}`}>
             {termsArr.map((t, termIndex) => {
               const shouldFlash = props.isShowingResult && props.resultAnimation && correctTerms.includes(t)
               return (
                 <Term
                   termStr={t}
                   key={`${stepIndex}-${termIndex}-${t}`}
-                  isSelected={selectedTerms[stepIndex] === t}
-                  onPress={(screenPosition) => handleClickTerm(stepIndex, t, screenPosition)}
+                  isSelected={!shouldFlash && selectedTerms[stepIndex] === t}
+                  onRendered={(screenPos) => (termPositions.current[termPositionKey(t, stepIndex)] = screenPos)}
+                  onPress={() => handleClickTerm(stepIndex, t)}
+                  isDisabled={stepIndex !== selectedTerms.length}
                 >
                   {shouldFlash && (
                     <Animated.View
                       style={[
                         styles.resultFlashOverlay,
                         {
-                          backgroundColor: LINE_COLOR,
+                          backgroundColor: getResultColor(props.isResultCorrect),
                           ...getFlashStylesForAnimation(props.resultAnimation),
                         },
                       ]}
@@ -286,7 +294,23 @@ function CrescendoInterface(props) {
       </View>
       <View style={styles.answerContainer}>
         <Pressable onPress={handleGuessPath}>
-          <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (answerPosition.current = pos))}>{answer}</UIText>
+          <Animated.View
+            style={[
+              styles.staticTermCircle,
+              {
+                borderColor:
+                  selectedTerms.length === stepsToRender.length
+                    ? pulseAnimation.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [green, fadeColor(green, 0.1), green],
+                      })
+                    : backgroundTint,
+                backgroundColor: background,
+              },
+            ]}
+          >
+            <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (answerPosition.current = pos))}>{answer}</UIText>
+          </Animated.View>
         </Pressable>
       </View>
     </View>
@@ -319,6 +343,11 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 
+  highlightedTermsRow: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+
   termsRow: {
     flex: 1,
     width: '100%',
@@ -330,13 +359,12 @@ const styles = StyleSheet.create({
 
   singleTermContainer: {
     ...boxStyle,
-    borderWidth: 1,
   },
 
   answerContainer: {
     ...centerFlex,
     flex: 0,
-    marginVertical: spaceExtraLarge,
+    marginVertical: spaceLarge,
   },
 
   pathsContainer: {
@@ -346,7 +374,16 @@ const styles = StyleSheet.create({
   firstTermContainer: {
     ...centerFlex,
     flex: 0,
-    marginVertical: spaceExtraLarge,
+    marginVertical: spaceLarge,
+  },
+
+  staticTermCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   resultFlashOverlay: {

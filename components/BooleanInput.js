@@ -9,6 +9,7 @@ import {black, darkGrey, dimmedRed, grey, lightGrey, middleGrey, neonRed, white}
 import {font2} from '../styles/typography'
 import {spaceDefault} from '../styles/layout'
 import Icon from './Icon'
+import useColorsControl from '../hooks/useColorsControl'
 
 const containerBorderWidth = 2
 const toggleSize = 40
@@ -21,6 +22,7 @@ const RAIL_ON_OPACITY = 0.25
 
 function BooleanInput(props) {
   const isDark = useDarkMode()
+  const {red: onHandleColor, background: offHandleColor, backgroundTint: containerColor, grey: containerBorderColor} = useColorsControl()
   const {animate, animation, isAnimating} = useAnimationStation()
   const previousValue = useRef(props.value)
 
@@ -32,11 +34,6 @@ function BooleanInput(props) {
     previousValue.current = props.value
     animate(SLIDE_DURATION)
   }, [props.value])
-
-  const onHandleColor = isDark ? dimmedRed : neonRed
-  const offHandleColor = isDark ? black : white
-  const containerColor = isDark ? darkGrey : lightGrey
-  const containerBorderColor = isDark ? grey : middleGrey
 
   return (
     <View style={props.style}>

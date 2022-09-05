@@ -1,9 +1,8 @@
 import React from 'react'
 import {Animated, StyleSheet} from 'react-native'
 import {uiText} from '../styles/typography'
-import {getUIColor} from '../lib/utilities'
-import useDarkMode from '../hooks/useDarkMode'
 import PropTypes from 'prop-types'
+import useColorsControl from '../hooks/useColorsControl'
 
 const styles = StyleSheet.create({
   text: {
@@ -12,9 +11,9 @@ const styles = StyleSheet.create({
 })
 
 function UIText(props) {
-  const isDark = useDarkMode()
+  const {foreground} = useColorsControl()
   return (
-    <Animated.Text onLayout={props.onLayout} style={[styles.text, {color: getUIColor(isDark)}, props.style]}>
+    <Animated.Text onLayout={props.onLayout} style={[styles.text, {color: foreground}, props.style]}>
       {props.children}
     </Animated.Text>
   )
