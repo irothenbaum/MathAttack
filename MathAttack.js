@@ -23,8 +23,8 @@ import {StyleSheet, Animated, View} from 'react-native'
 import useReduxPersist from './hooks/useReduxPersist'
 import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
 import useDarkMode from './hooks/useDarkMode'
-import {getBackgroundColor} from './lib/utilities'
 import GameCrescendo from './scenes/GameCrescendo'
+import useColorsControl from './hooks/useColorsControl'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -42,6 +42,7 @@ function MathAttack() {
   const isTransitioningToScene = useSelector((state) => state.Navigation.isTransitioningToScene)
   const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
   const isDark = useDarkMode()
+  const {background} = useColorsControl()
 
   const {flush, hydrate} = useReduxPersist()
 
@@ -67,7 +68,7 @@ function MathAttack() {
   }
 
   return (
-    <View style={[styles.sceneWrapper, {backgroundColor: getBackgroundColor(isDark)}]}>
+    <View style={[styles.sceneWrapper, {backgroundColor: background}]}>
       {isChangingScreens && (
         <Animated.View
           style={[
@@ -87,7 +88,7 @@ function MathAttack() {
           <Animated.View
             style={{
               width: '100%',
-              backgroundColor: getBackgroundColor(isDark),
+              backgroundColor: background,
               height: screenChangeAnimation.interpolate({
                 inputRange: [0, 0.5, 1],
                 outputRange: ['0%', '50%', '0%'],
@@ -107,7 +108,7 @@ function MathAttack() {
           <Animated.View
             style={{
               width: '100%',
-              backgroundColor: getBackgroundColor(isDark),
+              backgroundColor: background,
               height: screenChangeAnimation.interpolate({
                 inputRange: [0, 0.5, 1],
                 outputRange: ['0%', '50%', '0%'],

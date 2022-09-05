@@ -1,10 +1,7 @@
 import React from 'react'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import PropTypes from 'prop-types'
-import {getUIColor} from '../lib/utilities'
-import useDarkMode from '../hooks/useDarkMode'
 import {font3} from '../styles/typography'
-
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes'
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck'
@@ -24,16 +21,17 @@ import {faVolumeMute} from '@fortawesome/free-solid-svg-icons/faVolumeMute'
 import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus'
 import {faSubtract} from '@fortawesome/free-solid-svg-icons/faSubtract'
 import {faDivide} from '@fortawesome/free-solid-svg-icons/faDivide'
+import useColorsControl from '../hooks/useColorsControl'
 
 function Icon(props) {
-  const isDark = useDarkMode()
+  const {foreground} = useColorsControl()
   return (
     <FontAwesomeIcon
       transform={props.transform}
       style={props.style}
       size={props.size || font3}
       icon={props.icon}
-      color={props.color || getUIColor(isDark)}
+      color={props.color || foreground}
     />
   )
 }

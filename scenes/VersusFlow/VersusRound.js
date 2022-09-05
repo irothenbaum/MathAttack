@@ -7,13 +7,12 @@ import {selectCurrentQuestion, selectUserAnswer} from '../../redux/selectors'
 import GameQuestion from '../../models/GameQuestion'
 import VersusSocket from '../../lib/VersusSocket'
 import PropTypes from 'prop-types'
-import {neonBlue, dimmedBlue} from '../../styles/colors'
 import EquationAndAnswerInterface from '../../components/UI/EquationAndAnswerInterface'
 import {EVENT_BroadcastNewQuestion, EVENT_SubmitAnswer} from '../../constants/versus'
 import QuestionResult from '../../models/QuestionResult'
 import {recordAnswer, setCurrentQuestion} from '../../redux/GameSlice'
 import {setAnswer} from '../../redux/UISlice'
-import useDarkMode from '../../hooks/useDarkMode'
+import useColorsControl from '../../hooks/useColorsControl'
 
 function VersusRound(props) {
   const questionListener = useRef()
@@ -23,7 +22,7 @@ function VersusRound(props) {
   const settings = useSelector((state) => state.Game.settings)
   const question = useSelector(selectCurrentQuestion)
 
-  const isDark = useDarkMode()
+  const {blue} = useColorsControl()
   const dispatch = useDispatch()
 
   /**
@@ -100,7 +99,7 @@ function VersusRound(props) {
         <View
           style={{
             ...styles.waitingVeil,
-            backgroundColor: isDark ? dimmedBlue : neonBlue,
+            backgroundColor: blue,
           }}
         />
       )}
@@ -119,7 +118,6 @@ const styles = StyleSheet.create({
   waitingVeil: {
     ...FullScreenOverlay,
     zIndex: 10,
-    backgroundColor: neonBlue,
   },
   calculatorContainer: {
     flex: 1,

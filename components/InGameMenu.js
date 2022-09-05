@@ -1,7 +1,5 @@
 import React, {useState} from 'react'
 import {Pressable, StyleSheet} from 'react-native'
-import {shadow, sunbeam} from '../styles/colors'
-import useDarkMode from '../hooks/useDarkMode'
 import {spaceDefault} from '../styles/layout'
 import PropTypes from 'prop-types'
 import MenuButton from './MenuButton'
@@ -16,10 +14,11 @@ import Icon, {ArrowLeft} from './Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import {SOUND_SLAM} from '../lib/SoundHelper'
 import useBackAction from '../hooks/useBackAction'
+import useColorsControl from '../hooks/useColorsControl'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
-  const isDark = useDarkMode()
+  const {shadow} = useColorsControl()
   const [isOpen, setIsOpen] = useState(false)
   const {playSound} = useSoundPlayer()
   const currentGame = useSelector(selectCurrentScene)
@@ -60,7 +59,7 @@ function InGameMenu(props) {
           setIsOpen(true)
         }}
       >
-        <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
+        <Icon icon={ArrowLeft} color={shadow} />
       </Pressable>
       <Modal onClose={handleResume} isOpen={isOpen}>
         <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>

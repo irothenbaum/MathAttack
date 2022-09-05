@@ -2,12 +2,11 @@ import React from 'react'
 import {TextInput, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import NormalText from './NormalText'
-import useDarkMode from '../hooks/useDarkMode'
-import {getUIColor} from '../lib/utilities'
 import {InputStyles} from '../styles/elements'
+import useColorsControl from '../hooks/useColorsControl'
 
 function NumberInput(props) {
-  const isDark = useDarkMode()
+  const {foreground} = useColorsControl()
 
   const handleChange = (valStr) => {
     let val = parseInt(valStr)
@@ -28,9 +27,9 @@ function NumberInput(props) {
   return (
     <View style={[styles.container, props.style]}>
       <NormalText style={styles.label}>{props.label}</NormalText>
-      <View style={[styles.inputFrame, {borderColor: getUIColor(isDark)}]}>
+      <View style={[styles.inputFrame, {borderColor: foreground}]}>
         <TextInput
-          style={[styles.input, {color: getUIColor(isDark)}]}
+          style={[styles.input, {color: foreground}]}
           value={typeof props.value === 'number' ? '' + props.value : ''}
           keyboardType={'numeric'}
           onChangeText={handleChange}

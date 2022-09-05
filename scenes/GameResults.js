@@ -21,15 +21,14 @@ import {selectGameSettings, selectLastGameResults, selectLastGameTypePlayed} fro
 import NormalText from '../components/NormalText'
 import Equation from '../models/Equation'
 import QuestionResult from '../models/QuestionResult'
-import {dimmedBlue, dimmedGreen, dimmedRed, neonBlue, neonGreen, neonRed, neonYellow, dimmedYellow} from '../styles/colors'
 import {font2, font4} from '../styles/typography'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
-import useDarkMode from '../hooks/useDarkMode'
 import {formatNumber} from '../lib/utilities'
 import {setAnswer} from '../redux/UISlice'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import Icon, {Check, Star} from '../components/Icon'
+import useColorsControl from '../hooks/useColorsControl'
 
 const resultStyles = StyleSheet.create({
   singleResultContainer: {
@@ -76,7 +75,7 @@ const resultStyles = StyleSheet.create({
 })
 
 function SingleGameResult({result, count}) {
-  const isDark = useDarkMode()
+  const {green, red} = useColorsControl()
   const correctAnswer = Equation.getSolution(result.question.equation)
   const userAnswer = result.answer
 
@@ -97,9 +96,9 @@ function SingleGameResult({result, count}) {
       </View>
       <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (
-          <Icon icon={Check} style={resultStyles.correctAnswerCheck} size={font2} color={isDark ? dimmedGreen : neonGreen} />
+          <Icon icon={Check} style={resultStyles.correctAnswerCheck} size={font2} color={green} />
         ) : (
-          <NormalText style={{color: isDark ? dimmedRed : neonRed}}>{correctAnswer}</NormalText>
+          <NormalText style={{color: red}}>{correctAnswer}</NormalText>
         )}
       </View>
     </View>
@@ -107,7 +106,7 @@ function SingleGameResult({result, count}) {
 }
 
 function EstimationGameResult({result, count}) {
-  const isDark = useDarkMode()
+  const {yellow, green, red} = useColorsControl()
   const correctAnswer = Equation.getSolution(result.question.equation)
   const userAnswer = result.answer
   const accuracy = EstimationQuestionResult.getAccuracy(result)
@@ -134,14 +133,9 @@ function EstimationGameResult({result, count}) {
       </View>
       <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (
-          <Icon
-            icon={isExact ? Star : Check}
-            style={resultStyles.correctAnswerCheck}
-            size={font2}
-            color={isExact ? (isDark ? dimmedYellow : neonYellow) : isDark ? dimmedGreen : neonGreen}
-          />
+          <Icon icon={isExact ? Star : Check} style={resultStyles.correctAnswerCheck} size={font2} color={isExact ? yellow : green} />
         ) : (
-          <NormalText style={{color: isDark ? dimmedRed : neonRed}}>{correctAnswer}</NormalText>
+          <NormalText style={{color: red}}>{correctAnswer}</NormalText>
         )}
       </View>
     </View>
@@ -150,6 +144,7 @@ function EstimationGameResult({result, count}) {
 
 function GameResults() {
   const dispatch = useDispatch()
+  const {blue} = useColorsControl()
   const settings = useSelector(selectGameSettings)
   const [isShowingDetails, setIsShowingDetails] = useState(false)
   const results = useSelector(selectLastGameResults)
@@ -224,7 +219,7 @@ function GameResults() {
               }
             />
           )}
-          <NormalText style={{color: useDarkMode() ? dimmedBlue : neonBlue}} onPress={() => setIsShowingDetails(!isShowingDetails)}>
+          <NormalText style={{color: blue}} onPress={() => setIsShowingDetails(!isShowingDetails)}>
             {isShowingDetails ? 'Hide details' : 'Show details'}
           </NormalText>
         </View>

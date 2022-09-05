@@ -1,19 +1,18 @@
 import React from 'react'
-import {Animated, StyleSheet, Pressable, View, TouchableWithoutFeedback} from 'react-native'
+import {Animated, StyleSheet, View, TouchableWithoutFeedback} from 'react-native'
 import EquationBox from '../EquationBox'
-import {formatNumber, getResultColor, getVibrateStylesForAnimation} from '../../lib/utilities'
+import {formatNumber, getVibrateStylesForAnimation} from '../../lib/utilities'
 import TitleText from '../TitleText'
-import {dimmedGreen, dimmedRed, neonGreen, neonRed, sunbeam, shadow} from '../../styles/colors'
 import Equation from '../../models/Equation'
 import PropTypes from 'prop-types'
 import {useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectUserInput} from '../../redux/selectors'
-import useDarkMode from '../../hooks/useDarkMode'
 import {RoundBox} from '../../styles/elements'
 import {spaceLarge} from '../../styles/layout'
+import useColorsControl from '../../hooks/useColorsControl'
 
 function EquationAndAnswerInterface(props) {
-  const isDark = useDarkMode()
+  const {shadow, getResultColor} = useColorsControl()
   const currentQuestion = useSelector(selectCurrentQuestion)
   const userInput = useSelector(selectUserInput)
 
@@ -73,10 +72,10 @@ function EquationAndAnswerInterface(props) {
             style={[
               styles.answerText,
               userInput.length === 0 && {
-                color: isDark ? sunbeam : shadow,
+                color: shadow,
               },
               props.isAnimatingNextQuestion && {
-                color: getResultColor(props.isAnimatingForCorrect, isDark),
+                color: getResultColor(props.isAnimatingForCorrect),
               },
             ]}
           >

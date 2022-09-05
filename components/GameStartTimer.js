@@ -2,16 +2,13 @@ import React, {useEffect, useState} from 'react'
 import {Animated, View, StyleSheet, Text} from 'react-native'
 import PropTypes from 'prop-types'
 import UIText from './UIText'
-import {BoxShadow, FullScreenOverlay, TextShadowSoft} from '../styles/elements'
-import {shadow, sunbeam, neonRed, dimmedRed} from '../styles/colors'
-import {spaceDefault, spaceExtraLarge} from '../styles/layout'
-import {getBackgroundColor} from '../lib/utilities'
-import useDarkMode from '../hooks/useDarkMode'
+import {FullScreenOverlay, TextShadowSoft} from '../styles/elements'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useCountdown from '../hooks/useCountdown'
 import {SOUND_BEEP, SOUND_START} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import Icon, {OperationAdd, OperationDivide, OperationMultiply, OperationSubtract} from './Icon'
+import useColorsControl from '../hooks/useColorsControl'
 
 const START_TIME = 3
 
@@ -31,13 +28,13 @@ function getRandomIconIndex(previousIndex) {
 }
 
 function GameStartTimer(props) {
-  const isDark = useDarkMode()
+  const {shadow, background, red} = useColorsControl()
   const {animate, animation} = useAnimationStation()
   const {hasStarted, secondsRemaining, startCountdown} = useCountdown()
   const {playSound} = useSoundPlayer()
   const [iconIndex, setIconIndex] = useState(getRandomIconIndex())
 
-  const color = isDark ? dimmedRed : neonRed
+  const color = red
   useEffect(() => {
     if (global.skipOnDev) {
       props.onStart()
@@ -57,7 +54,7 @@ function GameStartTimer(props) {
     }
   }, [secondsRemaining])
 
-  const bGColor = getBackgroundColor(isDark)
+  const bGColor = background
 
   return (
     <Animated.View
@@ -79,7 +76,7 @@ function GameStartTimer(props) {
           styles.counterText,
           {
             color: color,
-            textShadowColor: isDark ? sunbeam : shadow,
+            textShadowColor: shadow,
           },
         ]}
       >

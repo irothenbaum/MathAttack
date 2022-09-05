@@ -1,17 +1,16 @@
 import React from 'react'
 import {View, StyleSheet} from 'react-native'
-import useDarkMode from '../hooks/useDarkMode'
-import {shadow, sunbeam} from '../styles/colors'
 import {spaceDefault} from '../styles/layout'
+import useColorsControl from '../hooks/useColorsControl'
 
 function DividerLine() {
-  const isDark = useDarkMode()
+  const {shadow} = useColorsControl()
   return (
     <View
       style={[
         styles.divider,
         {
-          backgroundColor: isDark ? sunbeam : shadow,
+          backgroundColor: shadow,
         },
       ]}
     />

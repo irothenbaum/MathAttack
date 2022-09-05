@@ -17,13 +17,11 @@ import {
   Scene_Settings,
 } from '../constants/scenes'
 import {selectGameSettings} from '../redux/selectors'
-import {screenHeight, spaceDefault, spaceExtraSmall, spaceLarge, spaceSmall} from '../styles/layout'
+import {screenHeight, spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
 import {setCurrentGame} from '../redux/GlobalSlice'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
 import {font1} from '../styles/typography'
-import {shadow, sunbeam} from '../styles/colors'
-import useDarkMode from '../hooks/useDarkMode'
 import {
   GAME_LABEL_CLASSIC,
   GAME_LABEL_CRESCENDO,
@@ -38,6 +36,7 @@ import useAnimationStation from '../hooks/useAnimationStation'
 import {SOUND_TAP} from '../lib/SoundHelper'
 import Icon, {Classic, Estimate, Marathon, Settings, Versus, Crescendo} from '../components/Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
+import useColorsControl from '../hooks/useColorsControl'
 
 const pjson = require('../package.json')
 
@@ -54,7 +53,7 @@ function Menu() {
   const [isReady, setIsReady] = useState(false)
   const [topPosition, setTopPosition] = useState(0)
   const logoRef = useRef()
-  const isDark = useDarkMode()
+  const {shadow} = useColorsControl()
   const {animate: animateLogo, animation: logoAnimation} = useAnimationStation()
   const {animate: animatePosition, animation: positionAnimation, isAnimating: isAnimatingPosition} = useAnimationStation()
   const {playSound} = useSoundPlayer()
@@ -168,7 +167,7 @@ function Menu() {
               dispatch(goToScene(Scene_Settings))
             }}
           >
-            <Icon icon={Settings} color={isDark ? sunbeam : shadow} />
+            <Icon icon={Settings} color={shadow} />
           </Pressable>
         </View>
       </View>

@@ -1,18 +1,17 @@
 import React, {useEffect} from 'react'
 import {StyleSheet, View, Animated, Easing} from 'react-native'
 import {font5} from '../../styles/typography'
-import {neonYellow, dimmedYellow, dimmedOrange, neonOrange} from '../../styles/colors'
 import UIText from '../UIText'
-import useDarkMode from '../../hooks/useDarkMode'
 import {spaceDefault} from '../../styles/layout'
 import useAnimationStation from '../../hooks/useAnimationStation'
 import Icon, {Star} from '../Icon'
+import useColorsControl from '../../hooks/useColorsControl'
 
 const SHOOTING_DURATION = 1000
 const bigStarDifference = 20
 
 function PerfectAnswerCelebration(props) {
-  const isDark = useDarkMode()
+  const {yellow, orange} = useColorsControl()
   const {animation, animate, isAnimating, cancel} = useAnimationStation()
 
   useEffect(() => {
@@ -41,8 +40,8 @@ function PerfectAnswerCelebration(props) {
               : undefined,
           ]}
         >
-          <Icon icon={Star} style={styles.icon} size={font5} color={isDark ? dimmedYellow : neonYellow} />
-          <Icon icon={Star} size={font5 + bigStarDifference} color={isDark ? dimmedOrange : neonOrange} />
+          <Icon icon={Star} style={styles.icon} size={font5} color={yellow} />
+          <Icon icon={Star} size={font5 + bigStarDifference} color={orange} />
         </Animated.View>
       </View>
       <UIText style={styles.text}>Perfect!</UIText>

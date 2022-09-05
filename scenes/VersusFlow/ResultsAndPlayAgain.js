@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react'
 import {StyleSheet, View, Animated} from 'react-native'
 import {FullScreenOverlay, ScreenContainer} from '../../styles/elements'
 import TitleText from '../../components/TitleText'
-import {black, neonGreen, dimmedGreen, white, middleGrey} from '../../styles/colors'
 import PropTypes from 'prop-types'
 import {EVENT_MarkReady, WON_FLAG_WON, WON_FLAG_LOST} from '../../constants/versus'
 import NormalText from '../../components/NormalText'
@@ -12,11 +11,11 @@ import QuestionResult from '../../models/QuestionResult'
 import Equation from '../../models/Equation'
 import MenuButton from '../../components/MenuButton'
 import DividerLine from '../../components/DividerLine'
-import useDarkMode from '../../hooks/useDarkMode'
 import useAnimationStation from '../../hooks/useAnimationStation'
 import {spaceLarge, spaceExtraLarge} from '../../styles/layout'
 import Icon, {Check, Question} from '../../components/Icon'
 import VersusSocket from '../../lib/VersusSocket'
+import useColorsControl from '../../hooks/useColorsControl'
 
 // FOR TESTING:
 // import GameQuestion from '../../models/GameQuestion'
@@ -47,7 +46,7 @@ function ResultsAndPlayAgain(props) {
   const [isFadingOut, setIsFadingOut] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
   const [amIReady, setAmIReady] = useState(false)
-  const isDark = useDarkMode()
+  const {green, backgroundColor, grey} = useColorsControl()
   const {animate: fadeOut, animation: fadeOutAnimation, isAnimating: isAnimatingFadeOut} = useAnimationStation()
 
   const [isScoreUpdate, setIsScoreUpdated] = useState(false)
@@ -143,7 +142,7 @@ function ResultsAndPlayAgain(props) {
           style={[
             styles.waitingVeil,
             {
-              backgroundColor: isDark ? black : white,
+              backgroundColor: backgroundColor,
               opacity: isAnimatingFadeOut
                 ? fadeOutAnimation.interpolate({
                     inputRange: [0, 1],
@@ -163,7 +162,7 @@ function ResultsAndPlayAgain(props) {
           <DividerLine />
           <View style={styles.scoreValueContainer}>{renderScore(props.myScore, props.wonFlag === WON_FLAG_WON)}</View>
           {amIReady ? (
-            <Icon icon={Check} color={isDark ? dimmedGreen : neonGreen} />
+            <Icon icon={Check} color={green} />
           ) : (
             <MenuButton title={'Play again'} onPressStart={handlePlayAgain} blurCount={2} />
           )}
@@ -172,7 +171,7 @@ function ResultsAndPlayAgain(props) {
           <NormalText>{props.opponentName}</NormalText>
           <DividerLine />
           <View style={styles.scoreValueContainer}>{renderScore(props.opponentScore, props.wonFlag === WON_FLAG_LOST)}</View>
-          {isOpponentReady ? <Icon icon={Check} color={isDark ? dimmedGreen : neonGreen} /> : <Icon icon={Question} color={middleGrey} />}
+          {isOpponentReady ? <Icon icon={Check} color={green} /> : <Icon icon={Question} color={grey} />}
         </View>
       </View>
     </View>
@@ -184,7 +183,6 @@ const styles = StyleSheet.create({
   waitingVeil: {
     ...FullScreenOverlay,
     zIndex: 10,
-    backgroundColor: white,
   },
   scoresContainer: {
     marginTop: spaceExtraLarge,

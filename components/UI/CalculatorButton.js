@@ -5,23 +5,20 @@ import {RoundBox} from '../../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {setAnswer} from '../../redux/UISlice'
 import {selectUserInput} from '../../redux/selectors'
-import {darkGrey, lightGrey, neonGreen, dimmedGreen, OPACITY_AMOUNT} from '../../styles/colors'
+import {OPACITY_AMOUNT} from '../../styles/colors'
 import UIText from '../UIText'
-import useDarkMode from '../../hooks/useDarkMode'
 import useAnimationStation from '../../hooks/useAnimationStation'
 import {SOUND_TAP} from '../../lib/SoundHelper'
 import useSoundPlayer from '../../hooks/useSoundPlayer'
+import useColorsControl from '../../hooks/useColorsControl'
 
 export const TINT_DURATION = 300
 export const DECIMAL = -1
 export const CLEAR = -2
 
-const getBackgroundColor = (isDark, isDisabled) => {
-  return isDisabled ? (isDark ? darkGrey : lightGrey) : 'transparent'
-}
-
 function CalculatorButton(props) {
-  const isDark = useDarkMode()
+  const {backgroundTint, green} = useColorsControl()
+
   const dispatch = useDispatch()
   const userInput = useSelector(selectUserInput)
   const {animation, isAnimating, animate} = useAnimationStation()
@@ -57,7 +54,7 @@ function CalculatorButton(props) {
   const isDisabled =
     (props.value === DECIMAL && userInput.includes('.')) || (typeof props.value === 'number' && props.value >= 0 && userInput === '0')
 
-  const bgColor = getBackgroundColor(isDark, isDisabled)
+  const bgColor = isDisabled ? backgroundTint : 'transparent'
 
   return (
     <Pressable style={[styles.pressable]} disabled={isDisabled || props.isDisabled} onPress={handlePress}>
@@ -69,7 +66,7 @@ function CalculatorButton(props) {
             backgroundColor: isAnimating
               ? animation.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [isDark ? dimmedGreen : neonGreen, bgColor],
+                  outputRange: [green, bgColor],
                 })
               : bgColor,
           },

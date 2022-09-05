@@ -3,8 +3,6 @@ import {Animated, View, StyleSheet, Pressable, ScrollView, useColorScheme} from 
 import TitleText from '../components/TitleText'
 import {spaceDefault, spaceExtraSmall, spaceLarge} from '../styles/layout'
 import {font2} from '../styles/typography'
-import {dimmedBlue, neonBlue, shadow, sunbeam} from '../styles/colors'
-import useDarkMode from '../hooks/useDarkMode'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
@@ -28,6 +26,7 @@ import useAnimationStation from '../hooks/useAnimationStation'
 import {FullScreenOverlay} from '../styles/elements'
 import {getBackgroundColor} from '../lib/utilities'
 import useBackAction from '../hooks/useBackAction'
+import useColorsControl from '../hooks/useColorsControl'
 
 const MAX_VALUE = 999999
 
@@ -40,7 +39,7 @@ const colorSchemeLabels = {
 const COLOR_SCHEME_CHANGE_DURATION = 1000
 
 function Settings() {
-  const isDark = useDarkMode()
+  const {blue, shadow} = useColorsControl()
   const dispatch = useDispatch()
 
   const [changingToScheme, setChangingToScheme] = useState(undefined)
@@ -99,7 +98,7 @@ function Settings() {
       <ScrollView>
         <View style={styles.innerWindow}>
           <Pressable onPress={backAction}>
-            <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
+            <Icon icon={ArrowLeft} color={shadow} />
           </Pressable>
           <TitleText>Settings</TitleText>
 
@@ -175,7 +174,7 @@ function Settings() {
 
           {haveSettingsChanged && (
             <Pressable onPress={handleResetToDefault}>
-              <UIText style={{fontSize: font2, color: isDark ? dimmedBlue : neonBlue}}>Reset to default</UIText>
+              <UIText style={{fontSize: font2, color: blue}}>Reset to default</UIText>
             </Pressable>
           )}
         </View>
