@@ -14,6 +14,8 @@ import {fadeColor, getFlashStylesForAnimation} from '../lib/utilities'
 import Svg, {Circle, Line} from 'react-native-svg'
 import useColorsControl from '../hooks/useColorsControl'
 import useAnimationStation from '../hooks/useAnimationStation'
+import useSoundPlayer from '../hooks/useSoundPlayer'
+import {SOUND_TAP} from '../lib/SoundHelper'
 
 /**
  * @param {*} e
@@ -120,6 +122,7 @@ function CrescendoInterface(props) {
   const firstTermPosition = useRef({})
   const gameSettings = useSelector(selectGameSettings)
   const {loop: loopPulse, cancel: cancelPulse, animation: pulseAnimation} = useAnimationStation()
+  const {playSound} = useSoundPlayer()
 
   const numbersAndOperators = Equation.getLeftSideInfixNotation(props.equation)
   const answer = Equation.getSolution(props.equation)
@@ -200,6 +203,8 @@ function CrescendoInterface(props) {
     if (selectedTerms[stepIndex] === termStr) {
       return
     }
+
+    playSound(SOUND_TAP).then()
 
     const newSelectedTerms = [...selectedTerms]
     newSelectedTerms[stepIndex] = termStr

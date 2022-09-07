@@ -21,6 +21,7 @@ import {faVolumeMute} from '@fortawesome/free-solid-svg-icons/faVolumeMute'
 import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus'
 import {faSubtract} from '@fortawesome/free-solid-svg-icons/faSubtract'
 import {faDivide} from '@fortawesome/free-solid-svg-icons/faDivide'
+import {faUpRightAndDownLeftFromCenter} from '@fortawesome/free-solid-svg-icons/faUpRightAndDownLeftFromCenter'
 import useColorsControl from '../hooks/useColorsControl'
 
 function Icon(props) {
@@ -44,6 +45,7 @@ export const Classic = faHourglassHalf
 export const Marathon = faRunning
 export const Estimate = faBullseye
 export const Versus = faFistRaised
+export const Expand = faUpRightAndDownLeftFromCenter
 export const Crescendo = faArrowUpRightDots
 export const Settings = faCog
 export const Loading = faSpinner

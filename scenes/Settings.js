@@ -7,7 +7,7 @@ import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
 import {
-  flushFromCache,
+  hydrateFromCache,
   setAutoSubmitCorrect,
   setColorScheme,
   setDecimalPlaces,
@@ -62,7 +62,7 @@ function Settings() {
   const haveSettingsChanged = JSON.stringify(settings) !== JSON.stringify(DefaultSettings)
 
   const handleResetToDefault = () => {
-    dispatch(flushFromCache(DefaultSettings))
+    dispatch(hydrateFromCache(DefaultSettings))
   }
 
   const handleChangeColorScheme = (nextScheme) => {

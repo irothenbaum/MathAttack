@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import {selectCurrentScene} from './redux/selectors'
 import {
@@ -25,6 +25,7 @@ import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
 import useDarkMode from './hooks/useDarkMode'
 import GameCrescendo from './scenes/GameCrescendo'
 import useColorsControl from './hooks/useColorsControl'
+import LoadingSplash from './components/LoadingSplash'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -38,6 +39,7 @@ const SceneMap = {
 }
 
 function MathAttack() {
+  const [isReady, setIsReady] = useState(false)
   const currentScene = useSelector(selectCurrentScene)
   const isTransitioningToScene = useSelector((state) => state.Navigation.isTransitioningToScene)
   const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
@@ -47,7 +49,7 @@ function MathAttack() {
   const {flush, hydrate} = useReduxPersist()
 
   useEffect(() => {
-    hydrate()
+    hydrate().then(() => setIsReady(true))
   }, [])
 
   useEffect(() => {
@@ -56,15 +58,19 @@ function MathAttack() {
     }
   }, [isTransitioningToScene])
 
-  // whenever the scene changes, we save our settings
+  // whenever the scene changes back to Menu, we save our persistent data
   useEffect(() => {
-    flush()
-  }, [currentScene])
+    if (!isReady || currentScene !== Scene_Menu) {
+      return
+    }
+    flush().then()
+  }, [currentScene, isReady])
 
-  let SceneComponent = SceneMap[currentScene]
+  let SceneComponent = isReady ? SceneMap[currentScene] : LoadingSplash
 
   if (!SceneComponent) {
-    throw new Error(`Scene missing "${currentScene}"`)
+    console.error(new Error(`Scene missing "${currentScene}"`))
+    SceneComponent = LoadingSplash
   }
 
   return (

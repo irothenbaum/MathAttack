@@ -8,6 +8,8 @@ export const selectCurrentQuestion = (state) => state.Game.currentQuestion
 export const selectGameSettings = (state) => state.Settings
 export const selectClassicGameResults = (state) => state.Game.questionResults
 export const selectLastGameTypePlayed = (state) => state.Global.currentGame
+export const selectHighScoresForGame = (state, game) => state.HighScores.highScores[game]
+export const selectHighScoresForLastGamePlayed = (state) => selectHighScoresForGame(state, selectLastGameTypePlayed(state))
 
 export const selectLastGameResults = (state) => {
   const lastGameType = selectLastGameTypePlayed(state)

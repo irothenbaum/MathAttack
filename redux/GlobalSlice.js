@@ -1,5 +1,4 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {Scene_Menu} from '../constants/scenes'
 
 const globalSlice = createSlice({
   name: 'Global',
@@ -13,7 +12,6 @@ const globalSlice = createSlice({
   },
 })
 
-export const setCurrentGame = game => dispatch =>
-  dispatch(globalSlice.actions.setCurrentGame(game))
+export const setCurrentGame = (game) => (dispatch) => dispatch(globalSlice.actions.setCurrentGame(game))
 
 export default globalSlice.reducer

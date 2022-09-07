@@ -10,7 +10,7 @@ import useSoundPlayer from '../hooks/useSoundPlayer'
 import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
 import {generateNewCrescendoQuestion, recordAnswer} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
-import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
+import {SOUND_BUTTON_CHIME, SOUND_WRONG} from '../lib/SoundHelper'
 import {setAnswer} from '../redux/UISlice'
 import CrescendoInterface, {getMaxFakesForRound} from '../components/CrescendoInterface'
 
@@ -39,16 +39,15 @@ function GameCrescendo(props) {
 
   const handleGuess = (userAnswer) => {
     let result = new QuestionResult(currentQuestion, userAnswer)
+    dispatch(recordAnswer(userAnswer))
     if (QuestionResult.isCorrect(result)) {
-      dispatch(recordAnswer(userAnswer))
       animateCorrect()
-      playSound(SOUND_CORRECT_DING).then()
+      playSound(SOUND_BUTTON_CHIME).then()
       handleNextQuestion()
       round.current = round.current + 1
     } else {
-      dispatch(recordAnswer(userAnswer))
-      playSound(SOUND_WRONG).then()
       animateIncorrect()
+      playSound(SOUND_WRONG).then()
       handleNextQuestion(true)
     }
 
