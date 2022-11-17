@@ -5,7 +5,7 @@ import NormalText from '../NormalText'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import React from 'react'
-import {spaceSmall} from '../../styles/layout'
+import {spaceDefault, spaceSmall} from '../../styles/layout'
 import Icon, {Expand} from '../Icon'
 import {font1} from '../../styles/typography'
 
@@ -26,7 +26,9 @@ function HighScoreEntry(props) {
         ]}
       >
         <NormalText style={[styles.recordText, {width: '10%', color: textColor}]}>{props.place}.</NormalText>
-        <NormalText style={[styles.recordText, {color: textColor}]}>{moment(props.result.dateCreated).format('YYYY-MM-DD')}</NormalText>
+        <NormalText style={[styles.recordText, {color: textColor}]}>
+          {moment(props.result.dateCreated).format('YYYY-MM-DD, h:mm a')}
+        </NormalText>
         <NormalText style={[styles.scoreText, {color: textColor}]}>{formatNumber(props.result.finalScore)}</NormalText>
         <Icon icon={Expand} color={blue} size={font1} style={styles.expandIcon} />
       </View>
@@ -39,8 +41,8 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: spaceSmall,
-    padding: spaceSmall,
+    paddingVertical: spaceDefault,
+    paddingHorizontal: spaceSmall,
   },
 
   recordText: {

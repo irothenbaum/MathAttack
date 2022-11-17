@@ -1,13 +1,8 @@
 import React, {useEffect, useState, useRef} from 'react'
 import {Animated, View, StyleSheet, Pressable, Easing} from 'react-native'
 import MenuButton from '../components/MenuButton'
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
-import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
-import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
-import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
-import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
-import {startNewGame as startNewCrescendoGame} from '../redux/GameSlice'
 import {
   Scene_GameClassic,
   Scene_GameCrescendo,
@@ -15,10 +10,9 @@ import {
   Scene_GameMarathon,
   Scene_GameVersus,
   Scene_Settings,
+  Scene_HighScores,
 } from '../constants/scenes'
-import {selectGameSettings} from '../redux/selectors'
 import {screenHeight, spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
-import {setCurrentGame} from '../redux/GlobalSlice'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
 import {font1} from '../styles/typography'
@@ -34,9 +28,10 @@ import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
 import useAnimationStation from '../hooks/useAnimationStation'
 import {SOUND_TAP} from '../lib/SoundHelper'
-import Icon, {Classic, Estimate, Marathon, Settings, Versus, Crescendo} from '../components/Icon'
+import Icon, {HighScores, Classic, Estimate, Marathon, Settings, Versus, Crescendo} from '../components/Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
+import usePlayGame from '../hooks/usePlayGame'
 
 const pjson = require('../package.json')
 
@@ -48,7 +43,6 @@ const startingPosition = screenHeight * 0.3
 
 function Menu() {
   const dispatch = useDispatch()
-  const settings = useSelector(selectGameSettings)
   const [isWaiting, setIsWaiting] = useState(true)
   const [isReady, setIsReady] = useState(false)
   const [topPosition, setTopPosition] = useState(0)
@@ -57,6 +51,8 @@ function Menu() {
   const {animate: animateLogo, animation: logoAnimation} = useAnimationStation()
   const {animate: animatePosition, animation: positionAnimation, isAnimating: isAnimatingPosition} = useAnimationStation()
   const {playSound} = useSoundPlayer()
+
+  const {play} = usePlayGame()
 
   useEffect(() => {
     dispatch(setAnswer(''))
@@ -97,51 +93,33 @@ function Menu() {
     return () => {}
   }, [])
 
-  const handlePlayClassic = () => {
-    dispatch(startNewClassicGame(settings))
-    dispatch(setCurrentGame(Scene_GameClassic))
-    dispatch(goToScene(Scene_GameClassic))
-  }
-
-  const handlePlayMarathon = () => {
-    dispatch(startNewMarathonGame(settings))
-    dispatch(setCurrentGame(Scene_GameMarathon))
-    dispatch(goToScene(Scene_GameMarathon))
-  }
-
-  const handlePlayEstimation = () => {
-    dispatch(startNewEstimateGame(settings))
-    dispatch(setCurrentGame(Scene_GameEstimate))
-    dispatch(goToScene(Scene_GameEstimate))
-  }
-
-  const handlePlayVersus = () => {
-    dispatch(startNewVersusGame(settings))
-    dispatch(setCurrentGame(Scene_GameVersus))
-    dispatch(goToScene(Scene_GameVersus))
-  }
-
-  const handlePlayCrescendo = () => {
-    dispatch(startNewCrescendoGame(settings))
-    dispatch(setCurrentGame(Scene_GameCrescendo))
-    dispatch(goToScene(Scene_GameCrescendo))
-  }
-
   return (
     <View style={styles.window}>
       <View style={[styles.innerContainer, {opacity: isReady ? 1 : 0}]}>
         <TitleTypeform style={{alignSelf: 'center', zIndex: 10}} ref={logoRef} />
         <View style={styles.gameButtonContainer}>
-          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_CLASSIC} onPress={handlePlayClassic} icon={Classic} blurCount={3} />
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_CLASSIC}
+            onPress={() => play(Scene_GameClassic)}
+            icon={Classic}
+            blurCount={3}
+          />
         </View>
         <View style={styles.gameButtonContainer}>
-          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_MARATHON} onPress={handlePlayMarathon} icon={Marathon} blurCount={3} />
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_MARATHON}
+            onPress={() => play(Scene_GameMarathon)}
+            icon={Marathon}
+            blurCount={3}
+          />
         </View>
         <View style={styles.gameButtonContainer}>
           <MenuButton
             size={MenuButton.SIZE_LARGE}
             title={GAME_LABEL_ESTIMATE}
-            onPress={handlePlayEstimation}
+            onPress={() => play(Scene_GameEstimate)}
             icon={Estimate}
             blurCount={3}
           />
@@ -150,25 +128,41 @@ function Menu() {
           <MenuButton
             size={MenuButton.SIZE_LARGE}
             title={GAME_LABEL_CRESCENDO}
-            onPress={handlePlayCrescendo}
+            onPress={() => play(Scene_GameCrescendo)}
             icon={Crescendo}
             blurCount={3}
           />
         </View>
         <View style={styles.gameButtonContainer}>
-          <MenuButton size={MenuButton.SIZE_LARGE} title={GAME_LABEL_VERSUS} onPress={handlePlayVersus} icon={Versus} blurCount={3} />
+          <MenuButton
+            size={MenuButton.SIZE_LARGE}
+            title={GAME_LABEL_VERSUS}
+            onPress={() => play(Scene_GameVersus)}
+            icon={Versus}
+            blurCount={3}
+          />
         </View>
 
         <View style={styles.footnoteContainer}>
           <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
-          <Pressable
-            onPress={() => {
-              playSound(SOUND_TAP).then()
-              dispatch(goToScene(Scene_Settings))
-            }}
-          >
-            <Icon icon={Settings} color={shadow} />
-          </Pressable>
+          <View style={styles.controlsContainer}>
+            <Pressable
+              onPress={() => {
+                playSound(SOUND_TAP).then()
+                dispatch(goToScene(Scene_HighScores))
+              }}
+            >
+              <Icon icon={HighScores} color={shadow} style={{marginRight: spaceDefault}} />
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                playSound(SOUND_TAP).then()
+                dispatch(goToScene(Scene_Settings))
+              }}
+            >
+              <Icon icon={Settings} color={shadow} />
+            </Pressable>
+          </View>
         </View>
       </View>
       {!isReady && (
@@ -231,6 +225,10 @@ const styles = StyleSheet.create({
   footnote: {
     opacity: 0.5,
     fontSize: font1,
+  },
+
+  controlsContainer: {
+    flexDirection: 'row',
   },
 
   animatedLogoStyles: {

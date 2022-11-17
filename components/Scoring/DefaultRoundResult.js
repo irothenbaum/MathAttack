@@ -18,22 +18,22 @@ function DefaultRoundResult({result, count}) {
 
   return (
     <View style={resultStyles.singleResultContainer}>
-      <View style={resultStyles.singleResultCount}>
-        <NormalText>{count}.</NormalText>
-      </View>
       <View style={resultStyles.singleResultEquation}>
-        <NormalText>{Equation.getLeftSide(result.question.equation)}</NormalText>
+        {Equation.getLeftSideInfixNotation(result.question.equation).map((str, index) => {
+          return <NormalText key={`${str}-${index}`}>{str}</NormalText>
+        })}
       </View>
       <NormalText style={resultStyles.singleResultEquals}>=</NormalText>
       <View style={resultStyles.singleResultAnswer}>
         <NormalText style={isCorrect ? null : resultStyles.wrongAnswer}>{isTimeout ? 'N/A' : userAnswer}</NormalText>
-      </View>
-      <View style={resultStyles.singleResultCanon}>
         {isCorrect ? (
           <Icon icon={Check} style={resultStyles.correctAnswerCheck} size={font2} color={green} />
         ) : (
-          <NormalText style={{color: red}}>{correctAnswer}</NormalText>
+          <NormalText style={[resultStyles.wrongAnswerCorrection, {color: red}]}>{correctAnswer}</NormalText>
         )}
+      </View>
+      <View style={resultStyles.singleResultScore}>
+        <NormalText>+{QuestionResult.scoreValue(result)}</NormalText>
       </View>
     </View>
   )

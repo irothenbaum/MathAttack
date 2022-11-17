@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Pressable, StyleSheet} from 'react-native'
+import {View, Pressable, StyleSheet} from 'react-native'
 import {spaceDefault} from '../styles/layout'
 import PropTypes from 'prop-types'
 import MenuButton from './MenuButton'
@@ -62,26 +62,28 @@ function InGameMenu(props) {
         <Icon icon={ArrowLeft} color={shadow} />
       </Pressable>
       <Modal onClose={handleResume} isOpen={isOpen}>
-        <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
-        <MenuButton
-          style={styles.button}
-          title={'Resume'}
-          onPressStart={() => {
-            setIsOpen(false)
-            if (typeof props.onResume === 'function') {
-              props.onResume()
-            }
-          }}
-          size={MenuButton.SIZE_SMALL}
-          blurCount={2}
-        />
-        <MenuButton
-          style={styles.button}
-          title={'End Game'}
-          variant={MenuButton.VARIANT_DESTRUCTIVE}
-          onPress={handleEndGame}
-          size={MenuButton.SIZE_SMALL}
-        />
+        <View style={{padding: spaceDefault}}>
+          <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
+          <MenuButton
+            style={styles.button}
+            title={'Resume'}
+            onPressStart={() => {
+              setIsOpen(false)
+              if (typeof props.onResume === 'function') {
+                props.onResume()
+              }
+            }}
+            size={MenuButton.SIZE_SMALL}
+            blurCount={2}
+          />
+          <MenuButton
+            style={styles.button}
+            title={'End Game'}
+            variant={MenuButton.VARIANT_DESTRUCTIVE}
+            onPress={handleEndGame}
+            size={MenuButton.SIZE_SMALL}
+          />
+        </View>
       </Modal>
     </React.Fragment>
   )

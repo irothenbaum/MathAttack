@@ -8,6 +8,7 @@ import {
   Scene_GameMarathon,
   Scene_GameResults,
   Scene_GameVersus,
+  Scene_HighScores,
   Scene_Menu,
   Scene_Settings,
 } from './constants/scenes'
@@ -24,6 +25,7 @@ import useReduxPersist from './hooks/useReduxPersist'
 import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
 import useDarkMode from './hooks/useDarkMode'
 import GameCrescendo from './scenes/GameCrescendo'
+import HighScores from './scenes/HighScores'
 import useColorsControl from './hooks/useColorsControl'
 import LoadingSplash from './components/LoadingSplash'
 
@@ -36,6 +38,7 @@ const SceneMap = {
   [Scene_GameEstimate]: GameEstimate,
   [Scene_GameCrescendo]: GameCrescendo,
   [Scene_GameVersus]: GameVersus,
+  [Scene_HighScores]: HighScores,
 }
 
 function MathAttack() {

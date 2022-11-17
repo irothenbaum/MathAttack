@@ -21,6 +21,7 @@ import {faVolumeMute} from '@fortawesome/free-solid-svg-icons/faVolumeMute'
 import {faPlus} from '@fortawesome/free-solid-svg-icons/faPlus'
 import {faSubtract} from '@fortawesome/free-solid-svg-icons/faSubtract'
 import {faDivide} from '@fortawesome/free-solid-svg-icons/faDivide'
+import {faListOl} from '@fortawesome/free-solid-svg-icons/faListOl'
 import {faUpRightAndDownLeftFromCenter} from '@fortawesome/free-solid-svg-icons/faUpRightAndDownLeftFromCenter'
 import useColorsControl from '../hooks/useColorsControl'
 
@@ -58,6 +59,7 @@ export const OperationMultiply = faTimes
 export const OperationAdd = faPlus
 export const OperationSubtract = faSubtract
 export const OperationDivide = faDivide
+export const HighScores = faListOl
 
 Icon.propTypes = {
   icon: PropTypes.any.isRequired,

@@ -1,35 +1,37 @@
 import {StyleSheet} from 'react-native'
-import {spaceSmall} from '../../styles/layout'
+import {spaceDefault, spaceSmall} from '../../styles/layout'
 import {font4} from '../../styles/typography'
 
 export default StyleSheet.create({
   singleResultContainer: {
     width: '100%',
     flexDirection: 'row',
-    marginVertical: spaceSmall,
-  },
-
-  singleResultCount: {
-    width: '15%',
-  },
-
-  singleResultEquals: {
-    width: '5%',
+    alignItems: 'center',
+    marginTop: spaceSmall,
+    borderBottomWidth: 1,
+    padding: spaceDefault,
   },
 
   singleResultEquation: {
-    width: '40%',
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  singleResultEquals: {
+    flex: 1,
+    textAlign: 'center',
   },
 
   singleResultAnswer: {
-    width: '20%',
-    alignItems: 'flex-end',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
 
-  singleResultCanon: {
-    width: '15%',
+  singleResultScore: {
+    flex: 1,
     alignItems: 'flex-end',
-    justifyContent: 'center',
   },
 
   wrongAnswer: {
@@ -37,7 +39,12 @@ export default StyleSheet.create({
     textDecorationStyle: 'solid',
   },
 
+  wrongAnswerCorrection: {
+    marginLeft: spaceSmall,
+  },
+
   correctAnswerCheck: {
     fontSize: font4,
+    marginLeft: spaceSmall,
   },
 })

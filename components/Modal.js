@@ -1,4 +1,4 @@
-import {Animated, Pressable, StyleSheet} from 'react-native'
+import {Animated, Pressable, StyleSheet, View} from 'react-native'
 import {font2} from '../styles/typography'
 import React, {useEffect, useState} from 'react'
 import {spaceDefault, spaceSmall} from '../styles/layout'
@@ -56,7 +56,7 @@ function Modal(props) {
                 : undefined,
             ]}
           >
-            <Pressable onPress={(e) => e.stopPropagation()} style={{padding: spaceDefault}}>
+            <Pressable onPress={(e) => e.stopPropagation()}>
               <Pressable style={styles.closeIcon} onPress={props.onClose}>
                 <Icon icon={X} color={shadow} size={font2} />
               </Pressable>
@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
 
   menuContainer: {
     width: '80%',
+    maxHeight: '80%',
     borderRadius: 4,
     ...BoxShadow,
   },
@@ -97,6 +98,7 @@ const styles = StyleSheet.create({
 })
 
 Modal.propTypes = {
+  isOpen: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
 }
 
