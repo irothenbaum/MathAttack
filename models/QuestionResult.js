@@ -53,8 +53,14 @@ class QuestionResult {
       return 0
     }
 
+    const complexity = QuestionResult.getQuestionComplexity(obj)
+
     return Math.floor(
-      QuestionResult.getQuestionComplexity(obj) / (Math.max(1, obj.timeToAnswerMS) / 1000), // boosted by the inverse number of seconds
+      complexity + complexity / (Math.max(1, obj.timeToAnswerMS) / 1000), // boosted by the inverse number of seconds
+      // If you answer a question in 0.5 seconds, you get 3x the complexity
+      // if you answer in 1 second, you get 2x the complexity.
+      // if you answer it in 2 seconds you get 1.5x the complexity
+      // if you answer it in 10 seconds you get 1.1x the complexity
     )
   }
 }
