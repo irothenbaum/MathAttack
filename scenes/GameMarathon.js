@@ -41,12 +41,12 @@ function GameMarathon() {
   const [hasAnsweredQuestion, setHasAnsweredQuestion] = useState(false)
 
   const handleGuess = () => {
-    setHasAnsweredQuestion(true)
     dispatch(recordAnswer(userAnswer))
 
     let result = new QuestionResult(currentQuestion, userAnswer)
     let correctAnswer = Equation.getSolution(currentQuestion.equation)
     if (QuestionResult.isCorrect(result)) {
+      setHasAnsweredQuestion(true)
       animateCorrect()
       playSound(SOUND_CORRECT_DING).then()
       dispatch(setAnswer(''))
