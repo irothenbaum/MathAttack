@@ -1,19 +1,19 @@
 import React from 'react'
-import {Animated, StyleSheet, Pressable, View, TouchableWithoutFeedback} from 'react-native'
+import {Animated, StyleSheet, View, TouchableWithoutFeedback} from 'react-native'
 import EquationBox from '../EquationBox'
 import {formatNumber, getVibrateStylesForAnimation} from '../../lib/utilities'
 import TitleText from '../TitleText'
-import {dimmedGreen, dimmedRed, neonGreen, neonRed, sunbeam, shadow} from '../../styles/colors'
 import Equation from '../../models/Equation'
 import PropTypes from 'prop-types'
 import {useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectUserInput} from '../../redux/selectors'
-import useDarkMode from '../../hooks/useDarkMode'
 import {RoundBox} from '../../styles/elements'
 import {spaceLarge} from '../../styles/layout'
+import useColorsControl from '../../hooks/useColorsControl'
+import ClickHereTip from './ClickHereTip'
 
 function EquationAndAnswerInterface(props) {
-  const isDark = useDarkMode()
+  const {shadow, getResultColor} = useColorsControl()
   const currentQuestion = useSelector(selectCurrentQuestion)
   const userInput = useSelector(selectUserInput)
 
@@ -69,14 +69,17 @@ function EquationAndAnswerInterface(props) {
               },
           ]}
         >
+          {typeof props.showTipAfterMS === 'number' && !!userInput && (
+            <ClickHereTip style={{transform: [{translateX: 50}]}} pauseDuration={props.showTipAfterMS} show={true} />
+          )}
           <TitleText
             style={[
               styles.answerText,
               userInput.length === 0 && {
-                color: isDark ? sunbeam : shadow,
+                color: shadow,
               },
               props.isAnimatingNextQuestion && {
-                color: props.isAnimatingForCorrect ? (isDark ? dimmedGreen : neonGreen) : isDark ? dimmedRed : neonRed,
+                color: getResultColor(props.isAnimatingForCorrect),
               },
             ]}
           >
@@ -112,6 +115,7 @@ EquationAndAnswerInterface.propTypes = {
   nextQuestionAnimation: PropTypes.any,
   answerReactionAnimation: PropTypes.any,
   isAnimatingForCorrect: PropTypes.bool,
+  showTipAfterMS: PropTypes.number,
 }
 
 export default EquationAndAnswerInterface

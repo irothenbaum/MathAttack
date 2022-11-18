@@ -5,7 +5,9 @@ import store from './redux/store'
 import MathAttack from './MathAttack'
 
 // just to speed up dev time
-// global.hasAnimated = true
+global.skipOnDev = true
+
+global.hasAnimated = global.skipOnDev || false
 
 function App() {
   const isDark = useColorScheme() === 'dark'

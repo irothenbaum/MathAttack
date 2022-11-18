@@ -45,6 +45,30 @@ function useAnimationStation() {
     })
   }
 
+  /**
+   * @param {number} duration
+   * @param {func?} easing
+   * @param {number?} startValue -- between [0-1)
+   */
+  const loop = (duration, easing, startValue = 0) => {
+    if (typeof startValue === 'number' && startValue >= 1) {
+      console.error('Start value must be less than 1, received: ' + startValue)
+      return
+    }
+
+    setIsAnimating(true)
+    animation.current.setValue(startValue)
+    Animated.loop(
+      Animated.timing(animation.current, {
+        toValue: 1,
+        duration: duration,
+        easing: easing || Easing.in(Easing.linear),
+        useNativeDriver: false,
+      }),
+      {resetBeforeIteration: true, iterations: Number.MAX_SAFE_INTEGER},
+    ).start()
+  }
+
   const cancel = () => {
     setIsAnimating(false)
     Animated.timing(animation.current, undefined).stop()
@@ -52,6 +76,7 @@ function useAnimationStation() {
 
   return {
     animate,
+    loop,
     cancel,
     isAnimating,
     animation: animation.current,

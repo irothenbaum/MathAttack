@@ -1,4 +1,5 @@
 import Equation from './Equation'
+import {OPERATION_ADD, OPERATION_SUBTRACT} from './Phrase'
 
 class GameQuestion {
   /**
@@ -13,22 +14,35 @@ class GameQuestion {
   }
 
   /**
-   * @param {GameSettings} GameSettings
+   * @param {GameSettings} gameSettings
    * @param {number?} term1
    * @returns {GameQuestion}
    */
-  static getRandomFromSettings(GameSettings, term1) {
-    return new GameQuestion(Equation.getRandomFromSettings(GameSettings, term1, 2), Date.now(), Date.now() + GameSettings.equationDuration)
+  static getRandomFromSettings(gameSettings, term1) {
+    return new GameQuestion(Equation.getRandomFromSettings(gameSettings, term1, 2), Date.now(), Date.now() + gameSettings.equationDuration)
   }
 
   /**
-   * @param {GameSettings} GameSettings
+   * @param {GameSettings} gameSettings
    */
-  static getRandomEstimateQuestionFromSettings(GameSettings) {
+  static getRandomEstimateQuestionFromSettings(gameSettings) {
     return new GameQuestion(
-      Equation.getRandomFromSettings(GameSettings, undefined, GameSettings.estimateItems),
+      Equation.getRandomFromSettings(gameSettings, undefined, gameSettings.estimateItems, [OPERATION_ADD, OPERATION_SUBTRACT]),
       Date.now(),
-      Date.now() + GameSettings.equationDuration,
+      Date.now() + gameSettings.equationDuration,
+    )
+  }
+
+  /**
+   * @param {GameSettings} gameSettings
+   * @param {number} terms
+   * @returns {GameQuestion}
+   */
+  static getRandomCrescendoQuestionFromSettings(gameSettings, terms) {
+    return new GameQuestion(
+      Equation.getRandomFromSettings(gameSettings, undefined, terms),
+      Date.now(),
+      Date.now() + gameSettings.crescendoRoundDuration,
     )
   }
 

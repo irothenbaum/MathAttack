@@ -1,20 +1,18 @@
-import {shadow, sunbeam} from '../styles/colors'
-import {Animated, Pressable, StyleSheet} from 'react-native'
-import {getBackgroundColor} from '../lib/utilities'
+import {Animated, Pressable, StyleSheet, View} from 'react-native'
 import {font2} from '../styles/typography'
 import React, {useEffect, useState} from 'react'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import {BoxShadow, FullScreenOverlay} from '../styles/elements'
 import PropTypes from 'prop-types'
-import useDarkMode from '../hooks/useDarkMode'
 import useAnimationStation from '../hooks/useAnimationStation'
 import Icon, {X} from './Icon'
+import useColorsControl from '../hooks/useColorsControl'
 
 const OPEN_TIME = 200
 const CLOSE_TIME = OPEN_TIME
 
 function Modal(props) {
-  const isDark = useDarkMode()
+  const {shadow, background} = useColorsControl()
   const {animate, animation, isAnimating} = useAnimationStation()
   const [isVisible, setIsVisible] = useState(false)
 
@@ -32,7 +30,7 @@ function Modal(props) {
       <Animated.View
         style={[
           styles.overlay,
-          {backgroundColor: isDark ? sunbeam : shadow},
+          {backgroundColor: shadow},
           isAnimating
             ? {
                 opacity: animation.interpolate({
@@ -47,7 +45,7 @@ function Modal(props) {
           <Animated.View
             style={[
               styles.menuContainer,
-              {backgroundColor: getBackgroundColor(isDark)},
+              {backgroundColor: background},
               isAnimating
                 ? {
                     marginTop: animation.interpolate({
@@ -58,9 +56,9 @@ function Modal(props) {
                 : undefined,
             ]}
           >
-            <Pressable onPress={(e) => e.stopPropagation()} style={{padding: spaceDefault}}>
+            <Pressable onPress={(e) => e.stopPropagation()}>
               <Pressable style={styles.closeIcon} onPress={props.onClose}>
-                <Icon icon={X} color={isDark ? sunbeam : shadow} size={font2} />
+                <Icon icon={X} color={shadow} size={font2} />
               </Pressable>
               {props.children}
             </Pressable>
@@ -86,6 +84,7 @@ const styles = StyleSheet.create({
 
   menuContainer: {
     width: '80%',
+    maxHeight: '80%',
     borderRadius: 4,
     ...BoxShadow,
   },
@@ -99,6 +98,7 @@ const styles = StyleSheet.create({
 })
 
 Modal.propTypes = {
+  isOpen: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
 }
 

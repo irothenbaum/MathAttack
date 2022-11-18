@@ -2,18 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {font1} from '../../styles/typography'
 import {StyleSheet, View} from 'react-native'
-import {spaceDefault, spaceSmall} from '../../styles/layout'
-import useDarkMode from '../../hooks/useDarkMode'
-import {sunbeam, shadow, dimmedRed, neonRed} from '../../styles/colors'
-import {getUIColor} from '../../lib/utilities'
+import {spaceDefault} from '../../styles/layout'
 import Icon, {CircleActive, CircleInactive} from '../Icon'
+import useColorsControl from '../../hooks/useColorsControl'
 
 function RoundsRemainingUI(props) {
   const arr = [...new Array(props.total)].map((e, i) => i)
-  const isDark = useDarkMode()
+  const {foreground, shadow, red} = useColorsControl()
 
   const getColorForDot = (isActive, isPast) => {
-    return isActive ? (isDark ? dimmedRed : neonRed) : isPast ? (isDark ? sunbeam : shadow) : getUIColor(isDark)
+    return isActive ? red : isPast ? shadow : foreground
   }
 
   const numberCompleted = props.total - props.remaining

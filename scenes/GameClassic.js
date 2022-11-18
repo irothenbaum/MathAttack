@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {View, StyleSheet} from 'react-native'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectUserAnswer, selectCurrentQuestion, selectGameSettings} from '../redux/selectors'
@@ -36,9 +36,12 @@ function GameClassic() {
     questionsRemaining,
   } = useClassicAnswerSystem(gameSettings.equationDuration, gameSettings.classicNumberOfRounds, generateNewQuestion)
 
+  const [hasAnsweredQuestion, setHasAnsweredQuestion] = useState(false)
+
   const handleGuess = () => {
     let result = new QuestionResult(currentQuestion, userAnswer)
     if (QuestionResult.isCorrect(result)) {
+      setHasAnsweredQuestion(true)
       dispatch(recordAnswer(userAnswer))
       animateCorrect()
       playSound(SOUND_CORRECT_DING).then()
@@ -58,6 +61,9 @@ function GameClassic() {
     animateCorrect()
   }
 
+  // only show the tip if auto submit is off and this is the first question
+  const shouldShowTip = !gameSettings.autoSubmit && !hasAnsweredQuestion
+
   return (
     <View style={styles.window}>
       <InGameMenu />
@@ -65,13 +71,16 @@ function GameClassic() {
       <GameBackground animation={animation} isAnimatingForCorrect={isAnimatingForCorrect} />
       <RoundsRemainingUI remaining={questionsRemaining} total={gameSettings.classicNumberOfRounds} />
 
-      <EquationAndAnswerInterface
-        onGuess={handleGuess}
-        equationTimer={equationTimer}
-        isAnimatingNextQuestion={isShowingAnswer}
-        isAnimatingForCorrect={isAnimatingForCorrect}
-        answerReactionAnimation={animation}
-      />
+      <View style={styles.equationContainer}>
+        <EquationAndAnswerInterface
+          onGuess={handleGuess}
+          equationTimer={equationTimer}
+          isAnimatingNextQuestion={isShowingAnswer}
+          isAnimatingForCorrect={isAnimatingForCorrect}
+          answerReactionAnimation={animation}
+          showTipAfterMS={shouldShowTip ? 0 : undefined}
+        />
+      </View>
 
       <View style={styles.calculatorContainer}>
         <CalculatorInput isDisabled={isShowingAnswer} />

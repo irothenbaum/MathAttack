@@ -4,23 +4,21 @@ import {useDispatch, useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectGameSettings, selectUserAnswer} from '../../redux/selectors'
 import UIText from '../UIText'
 import {font2, font3, font1} from '../../styles/typography'
-import {spaceDefault, spaceSmall} from '../../styles/layout'
-import useDarkMode from '../../hooks/useDarkMode'
-import {getUIColor} from '../../lib/utilities'
+import {spaceDefault} from '../../styles/layout'
 import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
 import PropTypes from 'prop-types'
-import {dimmedBlue, dimmedRed, dimmedGreen, neonGreen, neonBlue, neonRed} from '../../styles/colors'
 import Icon, {ArrowLeft} from '../Icon'
+import useColorsControl from '../../hooks/useColorsControl'
 
 const numberOfSteps = 10
 
 // ----------------------------------------------------------------------------------------
 
 function RulerNotch(props) {
-  const isDark = useDarkMode()
+  const {foreground} = useColorsControl()
   const showMinorNotches = props.value !== 0
-  const colorStyle = {backgroundColor: getUIColor(isDark)}
+  const colorStyle = {backgroundColor: foreground}
   const minorNotchColorStyle = {backgroundColor: showMinorNotches ? colorStyle.backgroundColor : 'transparent'}
 
   return (
@@ -38,7 +36,7 @@ function RulerNotch(props) {
 // ----------------------------------------------------------------------------------------
 
 function EstimationInterface(props) {
-  const isDark = useDarkMode()
+  const {foreground, red} = useColorsControl()
   const [containerBottomPosition, setContainerBottomPosition] = useState(0)
   const [topNotchTopPosition, setTopNotchTopPosition] = useState(1)
   const [bottomNotchTopPosition, setBottomNotchTopPosition] = useState(1)
@@ -59,7 +57,7 @@ function EstimationInterface(props) {
     <View
       style={styles.container}
       onLayout={(ev) => {
-        const {x, y, height, width} = ev.nativeEvent.layout
+        const {y, height} = ev.nativeEvent.layout
         setContainerBottomPosition(y + height)
       }}
     >
@@ -76,7 +74,7 @@ function EstimationInterface(props) {
           style={[
             styles.timerBar,
             {
-              backgroundColor: getUIColor(isDark),
+              backgroundColor: foreground,
               left: -8,
             },
           ]}
@@ -86,7 +84,7 @@ function EstimationInterface(props) {
               style={[
                 styles.timerBar,
                 {
-                  backgroundColor: isDark ? dimmedRed : neonRed,
+                  backgroundColor: red,
                   height: props.equationTimer.interpolate({
                     inputRange: [0, 1],
                     outputRange: ['0%', '100%'],
@@ -250,7 +248,7 @@ export default EstimationInterface
  */
 
 function Slider(props) {
-  const isDark = useDarkMode()
+  const {green, blue} = useColorsControl()
   const [containerHeight, setContainerHeight] = useState(undefined)
   const [tempValue, setTempValue] = useState(0)
   const settings = useSelector(selectGameSettings)
@@ -325,10 +323,8 @@ function Slider(props) {
             {
               top: correctAnswerDetails.markerTop,
               height: correctAnswerDetails.markerHeight,
-              backgroundColor: isDark ? dimmedBlue : neonBlue,
-              ...(correctAnswerDetails.answer > correctAnswerDetails.guess
-                ? {borderTopColor: isDark ? dimmedGreen : neonGreen}
-                : {borderBottomColor: isDark ? dimmedGreen : neonGreen}),
+              backgroundColor: blue,
+              ...(correctAnswerDetails.answer > correctAnswerDetails.guess ? {borderTopColor: green} : {borderBottomColor: green}),
             },
           ]}
         />

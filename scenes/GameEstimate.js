@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import {Animated, View, StyleSheet, Pressable} from 'react-native'
 import InGameMenu from '../components/InGameMenu'
 import {ScreenContainer} from '../styles/elements'
@@ -10,23 +10,22 @@ import EstimationInterface from '../components/UI/EstimationInterface'
 import ComplexEquationComponent from '../components/ComplexEquationComponent'
 import {spaceDefault, spaceLarge} from '../styles/layout'
 import UIText from '../components/UIText'
-import {dimmedGreen, dimmedRed, neonGreen, neonRed, shadow, shadowStrong, sunbeam, sunbeamStrong} from '../styles/colors'
-import useDarkMode from '../hooks/useDarkMode'
 import {font4} from '../styles/typography'
 import GameBackground from '../components/FX/GameBackground'
 import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
 import {setAnswer} from '../redux/UISlice'
-import {getUIColor, getVibrateStylesForAnimation} from '../lib/utilities'
+import {getVibrateStylesForAnimation} from '../lib/utilities'
 import Equation from '../models/Equation'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
 import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
 import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
+import useColorsControl from '../hooks/useColorsControl'
 
 function GameEstimate() {
   const gameSettings = useSelector(selectGameSettings)
-  const isDark = useDarkMode()
+  const {shadow, shadowStrong, foreground, getResultColor} = useColorsControl()
   const currentQuestion = useSelector(selectCurrentQuestion)
   const answer = useSelector(selectUserAnswer)
   const dispatch = useDispatch()
@@ -78,15 +77,7 @@ function GameEstimate() {
   //   handleGameStart()
   // }, [])
 
-  const answerColor = isShowingAnswer
-    ? isAnimatingForCorrect
-      ? isDark
-        ? dimmedGreen
-        : neonGreen
-      : isDark
-      ? dimmedRed
-      : neonRed
-    : getUIColor(isDark)
+  const answerColor = isShowingAnswer ? getResultColor(isAnimatingForCorrect) : foreground
 
   return (
     <View style={styles.window}>
@@ -99,7 +90,7 @@ function GameEstimate() {
           style={[
             styles.perfectAnswer,
             {
-              backgroundColor: isDark ? shadowStrong : sunbeamStrong,
+              backgroundColor: shadowStrong,
               opacity: animation
                 ? animation.interpolate({
                     inputRange: [0, 0.1],
@@ -126,7 +117,7 @@ function GameEstimate() {
             {currentQuestion && <ComplexEquationComponent equation={currentQuestion.equation} />}
           </View>
           <Pressable onPress={handleGuess} style={{width: '100%'}}>
-            <View style={[styles.answerContainer, {borderColor: isDark ? sunbeam : shadow}]}>
+            <View style={[styles.answerContainer, {borderColor: shadow}]}>
               <UIText style={[styles.answerText, {color: answerColor}]}>
                 {isShowingAnswer ? Equation.getSolution(currentQuestion.equation) : answer || tempAnswer}
               </UIText>

@@ -2,16 +2,15 @@ import React from 'react'
 import {Animated, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import {RoundBox} from '../styles/elements'
-import {dimmedRed, neonRed} from '../styles/colors'
 import {font4} from '../styles/typography'
 import {spaceDefault, spaceLarge} from '../styles/layout'
 import TitleText from './TitleText'
-import {formatNumber, getUIColor} from '../lib/utilities'
-import useDarkMode from '../hooks/useDarkMode'
+import {formatNumber} from '../lib/utilities'
 import Phrase from '../models/Phrase'
+import useColorsControl from '../hooks/useColorsControl'
 
 function EquationBox(props) {
-  const isDark = useDarkMode()
+  const {red, foreground} = useColorsControl()
   const textComponent = props.equation ? (
     <View style={styles.longFormContainer}>
       <TitleText style={styles.operationText}>{props.equation.phrase.operation}</TitleText>
@@ -25,13 +24,13 @@ function EquationBox(props) {
   return (
     <Animated.View style={[styles.box, props.style]}>
       {textComponent}
-      <View style={[styles.equalBar, {backgroundColor: getUIColor(isDark)}]} />
+      <View style={[styles.equalBar, {backgroundColor: foreground}]} />
       {!!props.timerAnimation && (
         <Animated.View
           style={[
             styles.equalBar,
             {
-              backgroundColor: isDark ? dimmedRed : neonRed,
+              backgroundColor: red,
               width: props.timerAnimation.interpolate({
                 inputRange: [0, 1],
                 outputRange: ['0%', '100%'],

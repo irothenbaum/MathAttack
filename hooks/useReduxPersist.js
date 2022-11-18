@@ -1,22 +1,29 @@
 import store from '../redux/store'
 import AsyncStore from '@react-native-async-storage/async-storage'
-import {flushFromCache} from '../redux/SettingsSlice'
+import {hydrateFromCache as hydrateSettings} from '../redux/SettingsSlice'
+import {hydrateFromCache as hydrateScores} from '../redux/HighScoresSlice'
 
 const CACHE_KEY = 'math-attack-app-state'
 
 function useReduxPersist() {
   return {
-    hydrate: () => {
-      AsyncStore.getItem(CACHE_KEY).then((data) => {
-        if (data) {
-          const dataParsed = JSON.parse(data)
-          store.dispatch(flushFromCache(dataParsed.Settings))
-        }
-      })
+    hydrate: async () => {
+      const data = await AsyncStore.getItem(CACHE_KEY)
+      if (data) {
+        const dataParsed = JSON.parse(data)
+        store.dispatch(hydrateSettings(dataParsed.Settings))
+        store.dispatch(hydrateScores(dataParsed.HighScores))
+      }
     },
-    flush: () => {
+    flush: async () => {
       const state = store.getState()
-      AsyncStore.setItem(CACHE_KEY, JSON.stringify(state)).then()
+      await AsyncStore.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          Settings: state.Settings,
+          HighScores: state.HighScores,
+        }),
+      )
     },
   }
 }

@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {selectUserAnswer, selectCurrentQuestion, selectUserInput, selectGameSettings} from '../redux/selectors'
+import {selectUserAnswer, selectCurrentQuestion, selectGameSettings} from '../redux/selectors'
 import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {setAnswer} from '../redux/UISlice'
@@ -10,12 +10,10 @@ import {Scene_GameResults} from '../constants/scenes'
 import {StyleSheet, View, Easing} from 'react-native'
 import GameStartTimer from '../components/GameStartTimer'
 import GameBackground from '../components/FX/GameBackground'
-import {dimmedRed, neonRed, shadow, sunbeam} from '../styles/colors'
 import Equation from '../models/Equation'
 import CalculatorInput from '../components/UI/CalculatorInput'
 import {RoundBox, ScreenContainer} from '../styles/elements'
 import {spaceLarge, spaceSmall} from '../styles/layout'
-import useDarkMode from '../hooks/useDarkMode'
 import {font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
 import InGameMenu from '../components/InGameMenu'
@@ -23,12 +21,13 @@ import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterf
 import Icon, {X} from '../components/Icon'
 import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
+import useColorsControl from '../hooks/useColorsControl'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
 
 function GameMarathon() {
-  const isDark = useDarkMode()
+  const {shadow, red} = useColorsControl()
   const dispatch = useDispatch()
   const {isAnimatingForCorrect, animation: answerReactionAnimation, animateCorrect, animateIncorrect} = useAnswerReactionResults()
 
@@ -39,6 +38,7 @@ function GameMarathon() {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const settings = useSelector(selectGameSettings)
   const [strikes, setStrikes] = useState(settings.numberOfStrikes)
+  const [hasAnsweredQuestion, setHasAnsweredQuestion] = useState(false)
 
   const handleGuess = () => {
     dispatch(recordAnswer(userAnswer))
@@ -46,6 +46,7 @@ function GameMarathon() {
     let result = new QuestionResult(currentQuestion, userAnswer)
     let correctAnswer = Equation.getSolution(currentQuestion.equation)
     if (QuestionResult.isCorrect(result)) {
+      setHasAnsweredQuestion(true)
       animateCorrect()
       playSound(SOUND_CORRECT_DING).then()
       dispatch(setAnswer(''))
@@ -86,7 +87,7 @@ function GameMarathon() {
   }
 
   const getColorForStrike = (isActive) => {
-    return isActive ? (isDark ? dimmedRed : neonRed) : isDark ? sunbeam : shadow
+    return isActive ? red : shadow
   }
 
   return (
@@ -99,13 +100,16 @@ function GameMarathon() {
         <Icon icon={X} size={font4} color={getColorForStrike(strikes < 2)} />
         <Icon icon={X} size={font4} color={getColorForStrike(strikes < 1)} />
       </View>
-      <EquationAndAnswerInterface
-        onGuess={handleGuess}
-        isAnimatingForCorrect={isAnimatingForCorrect}
-        isAnimatingNextQuestion={isAnimatingNextQuestion}
-        nextQuestionAnimation={nextQuestionAnimation}
-        answerReactionAnimation={answerReactionAnimation}
-      />
+      <View style={styles.equationContainer}>
+        <EquationAndAnswerInterface
+          onGuess={handleGuess}
+          isAnimatingForCorrect={isAnimatingForCorrect}
+          isAnimatingNextQuestion={isAnimatingNextQuestion}
+          nextQuestionAnimation={nextQuestionAnimation}
+          answerReactionAnimation={answerReactionAnimation}
+          showTipAfterMS={!hasAnsweredQuestion ? 2000 : undefined}
+        />
+      </View>
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
       </View>

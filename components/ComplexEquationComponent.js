@@ -4,12 +4,11 @@ import Equation from '../models/Equation'
 import UIText from './UIText'
 import {spaceSmall} from '../styles/layout'
 import {font4} from '../styles/typography'
-import {dimmedRed, neonRed} from '../styles/colors'
-import useDarkMode from '../hooks/useDarkMode'
+import useColorsControl from '../hooks/useColorsControl'
 
 function OperationTerm(props) {
-  const isDark = useDarkMode()
-  return <UIText style={[styles.operationTerm, {color: isDark ? dimmedRed : neonRed}]}>{props.operator}</UIText>
+  const {red} = useColorsControl()
+  return <UIText style={[styles.operationTerm, {color: red}]}>{props.operator}</UIText>
 }
 
 // ---------------------------------------------------------------------

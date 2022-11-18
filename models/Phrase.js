@@ -1,5 +1,7 @@
 export const OPERATION_ADD = '+'
 export const OPERATION_SUBTRACT = '-'
+export const OPERATION_MULTIPLY = '*'
+export const OPERATION_DIVIDE = '/'
 
 class Phrase {
   /**
@@ -43,17 +45,34 @@ class Phrase {
 
   /**
    * @param {Phrase} obj
+   * @return {number}
    */
   static getSolution(obj) {
     let t1Solved = Phrase.defineTerm(obj.term1)
     let t2Solved = Phrase.defineTerm(obj.term2)
 
-    switch (obj.operation) {
+    return Phrase.performOperation(t1Solved, obj.operation, t2Solved)
+  }
+
+  /**
+   * @param {number} term1
+   * @param {string} operation
+   * @param {number} term2
+   * @returns {number|*}
+   */
+  static performOperation(term1, operation, term2) {
+    switch (operation) {
       case OPERATION_ADD:
-        return t1Solved + t2Solved
+        return term1 + term2
 
       case OPERATION_SUBTRACT:
-        return t1Solved - t2Solved
+        return term1 - term2
+
+      case OPERATION_MULTIPLY:
+        return term1 * term2
+
+      case OPERATION_DIVIDE:
+        return term1 / term2
 
       default:
         throw new Error('Unrecognized operation ' + obj.operation)

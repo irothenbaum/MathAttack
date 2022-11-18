@@ -1,10 +1,8 @@
 import React, {useEffect, useRef} from 'react'
 import {Animated, Pressable, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
-import {spaceDefault, spaceSmall} from '../styles/layout'
-import {dimmedRed, neonRed, darkGrey, grey, black, white} from '../styles/colors'
-import {getFlashStylesForAnimation, getOutOfFocusStylesForAnimation, getRandomString, getUIColor} from '../lib/utilities'
-import useDarkMode from '../hooks/useDarkMode'
+import {spaceDefault, spaceExtraSmall, spaceSmall} from '../styles/layout'
+import {getFlashStylesForAnimation, getOutOfFocusStylesForAnimation, getRandomString} from '../lib/utilities'
 import UIText from './UIText'
 import {font1, font2, font3, font4} from '../styles/typography'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -12,6 +10,7 @@ import useDoOnceTimer from '../hooks/useDoOnceTimer'
 import {SOUND_BUTTON_BEEP, SOUND_BUTTON_CHIME} from '../lib/SoundHelper'
 import Icon, {Loading} from './Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
+import useColorsControl from '../hooks/useColorsControl'
 
 function ButtonShadow(props) {
   return (
@@ -39,7 +38,7 @@ function MenuButton(props) {
   const {animate, animation, cancel} = useAnimationStation()
   const {setTimer} = useDoOnceTimer()
   const blurKey = useRef(getRandomString())
-  const isDark = useDarkMode()
+  const {backgroundTint, grey, background, red, foreground} = useColorsControl()
   const contentRef = useRef()
   const {playSound} = useSoundPlayer()
   const {animate: animatePress, animation: pressingAnimation, isAnimating: isAnimatingPress} = useAnimationStation()
@@ -50,19 +49,19 @@ function MenuButton(props) {
   let bgColor
   let textColor
   if (props.isDisabled) {
-    bgColor = isDark ? darkGrey : grey
-    textColor = isDark ? grey : darkGrey
+    bgColor = backgroundTint
+    textColor = grey
   } else {
     switch (variant) {
       case MenuButton.VARIANT_DESTRUCTIVE:
-        bgColor = isDark ? dimmedRed : neonRed
-        textColor = isDark ? white : black
+        bgColor = red
+        textColor = foreground
         break
 
       case MenuButton.VARIANT_DEFAULT:
       default:
-        bgColor = isDark ? black : white
-        textColor = isDark ? dimmedRed : neonRed
+        bgColor = background
+        textColor = red
         break
     }
   }
@@ -152,7 +151,7 @@ function MenuButton(props) {
         ) : (
           <React.Fragment>
             {props.icon && <Icon color={textColor} icon={props.icon} style={styles.icon} size={size} />}
-            <UIText style={{color: getUIColor(isDark), fontSize: size}}>{props.title}</UIText>
+            <UIText style={{color: foreground, fontSize: size}}>{props.title}</UIText>
           </React.Fragment>
         )}
       </Pressable>
@@ -172,13 +171,12 @@ const styles = StyleSheet.create({
     zIndex: 12,
   },
   primary: {
-    padding: spaceSmall,
+    padding: spaceExtraSmall,
     paddingHorizontal: spaceDefault,
     borderRadius: 4,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: neonRed,
     borderStyle: 'solid',
   },
   icon: {

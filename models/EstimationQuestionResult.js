@@ -9,7 +9,9 @@ class EstimationQuestionResult extends QuestionResult {
    * @returns {boolean}
    */
   static isCorrect(obj) {
-    return EstimationQuestionResult.getAccuracy(obj) <= EstimationQuestionResult.getCloseEnoughThreshold(obj)
+    return (
+      !QuestionResult.isTimeout(obj) && EstimationQuestionResult.getAccuracy(obj) <= EstimationQuestionResult.getCloseEnoughThreshold(obj)
+    )
   }
 
   /**

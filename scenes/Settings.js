@@ -1,15 +1,13 @@
 import React, {useState} from 'react'
-import {Animated, View, StyleSheet, Pressable, ScrollView, useColorScheme} from 'react-native'
+import {Alert, Animated, View, StyleSheet, Pressable, ScrollView, useColorScheme} from 'react-native'
 import TitleText from '../components/TitleText'
-import {spaceDefault, spaceExtraSmall, spaceLarge} from '../styles/layout'
+import {spaceDefault, spaceExtraLarge, spaceExtraSmall, spaceLarge} from '../styles/layout'
 import {font2} from '../styles/typography'
-import {dimmedBlue, grey, neonBlue, shadow, sunbeam} from '../styles/colors'
-import useDarkMode from '../hooks/useDarkMode'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
 import {
-  flushFromCache,
+  hydrateFromCache,
   setAutoSubmitCorrect,
   setColorScheme,
   setDecimalPlaces,
@@ -23,10 +21,13 @@ import DefaultSettings from '../models/GameSettings'
 import UIText from '../components/UIText'
 import Icon, {ArrowLeft, VolumeOff, VolumeOn} from '../components/Icon'
 import MenuButton from '../components/MenuButton'
-import {COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM} from '../constants/game'
+import {ALL_GAMES, COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM} from '../constants/game'
 import useAnimationStation from '../hooks/useAnimationStation'
 import {FullScreenOverlay} from '../styles/elements'
 import {getBackgroundColor} from '../lib/utilities'
+import useBackAction from '../hooks/useBackAction'
+import useColorsControl from '../hooks/useColorsControl'
+import {clearHighScores} from '../redux/HighScoresSlice'
 
 const MAX_VALUE = 999999
 
@@ -39,7 +40,7 @@ const colorSchemeLabels = {
 const COLOR_SCHEME_CHANGE_DURATION = 1000
 
 function Settings() {
-  const isDark = useDarkMode()
+  const {blue, shadow, red, background} = useColorsControl()
   const dispatch = useDispatch()
 
   const [changingToScheme, setChangingToScheme] = useState(undefined)
@@ -50,12 +51,41 @@ function Settings() {
     [COLOR_SCHEME_LIGHT]: getBackgroundColor(false),
   }
 
+  // setting up the Android Back Behavior
+  const backAction = () => {
+    dispatch(goToScene(Scene_Menu))
+    return true
+  }
+  useBackAction(backAction)
+
   const settings = useSelector(selectGameSettings)
 
   const haveSettingsChanged = JSON.stringify(settings) !== JSON.stringify(DefaultSettings)
 
   const handleResetToDefault = () => {
-    dispatch(flushFromCache(DefaultSettings))
+    dispatch(hydrateFromCache(DefaultSettings))
+  }
+
+  const handleResetHighScores = (force) => {
+    if (!force) {
+      Alert.alert('Are you sure?', 'This will erase all high scores saved on this device.', [
+        {
+          text: 'Yes, clear scores',
+          onPress: () => handleResetHighScores(true),
+        },
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+      ])
+
+      return
+    }
+
+    ALL_GAMES.forEach((game) => dispatch(clearHighScores(game)))
+
+    Alert.alert(null, 'High scores cleared!')
   }
 
   const handleChangeColorScheme = (nextScheme) => {
@@ -90,12 +120,8 @@ function Settings() {
 
       <ScrollView>
         <View style={styles.innerWindow}>
-          <Pressable
-            onPress={() => {
-              dispatch(goToScene(Scene_Menu))
-            }}
-          >
-            <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
+          <Pressable onPress={backAction}>
+            <Icon icon={ArrowLeft} color={shadow} />
           </Pressable>
           <TitleText>Settings</TitleText>
 
@@ -171,10 +197,15 @@ function Settings() {
 
           {haveSettingsChanged && (
             <Pressable onPress={handleResetToDefault}>
-              <UIText style={{fontSize: font2, color: isDark ? dimmedBlue : neonBlue}}>Reset to default</UIText>
+              <UIText style={{fontSize: font2, color: blue}}>Reset to default</UIText>
             </Pressable>
           )}
         </View>
+        <Pressable onPress={() => handleResetHighScores()}>
+          <View style={[styles.destructiveContainer, {backgroundColor: red}]}>
+            <UIText style={{fontSize: font2, color: background}}>Clear high scores</UIText>
+          </View>
+        </Pressable>
       </ScrollView>
     </View>
   )
@@ -209,6 +240,11 @@ const styles = StyleSheet.create({
   changeColorSchemeOverlay: {
     ...FullScreenOverlay,
     zIndex: 1000,
+  },
+
+  destructiveContainer: {
+    marginTop: spaceExtraLarge,
+    padding: spaceDefault,
   },
 })
 

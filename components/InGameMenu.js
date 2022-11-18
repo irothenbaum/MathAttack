@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {BackHandler, Pressable, StyleSheet} from 'react-native'
-import {shadow, sunbeam} from '../styles/colors'
-import useDarkMode from '../hooks/useDarkMode'
+import React, {useState} from 'react'
+import {View, Pressable, StyleSheet} from 'react-native'
 import {spaceDefault} from '../styles/layout'
 import PropTypes from 'prop-types'
 import MenuButton from './MenuButton'
@@ -15,27 +13,22 @@ import Modal from './Modal'
 import Icon, {ArrowLeft} from './Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import {SOUND_SLAM} from '../lib/SoundHelper'
+import useBackAction from '../hooks/useBackAction'
+import useColorsControl from '../hooks/useColorsControl'
 
 function InGameMenu(props) {
   const dispatch = useDispatch()
-  const isDark = useDarkMode()
+  const {shadow} = useColorsControl()
   const [isOpen, setIsOpen] = useState(false)
   const {playSound} = useSoundPlayer()
   const currentGame = useSelector(selectCurrentScene)
   const results = useSelector(selectLastGameResults)
 
-  useEffect(() => {
-    const backAction = () => {
-      setIsOpen((o) => !o)
-      return true
-    }
-
-    BackHandler.addEventListener('hardwareBackPress', backAction)
-
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', backAction)
-    }
-  }, [])
+  const backAction = () => {
+    setIsOpen((o) => !o)
+    return true
+  }
+  useBackAction(backAction)
 
   const handleEndGame = async () => {
     // give the screen a chance to cleanup
@@ -66,29 +59,31 @@ function InGameMenu(props) {
           setIsOpen(true)
         }}
       >
-        <Icon icon={ArrowLeft} color={isDark ? sunbeam : shadow} />
+        <Icon icon={ArrowLeft} color={shadow} />
       </Pressable>
       <Modal onClose={handleResume} isOpen={isOpen}>
-        <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
-        <MenuButton
-          style={styles.button}
-          title={'Resume'}
-          onPressStart={() => {
-            setIsOpen(false)
-            if (typeof props.onResume === 'function') {
-              props.onResume()
-            }
-          }}
-          size={MenuButton.SIZE_SMALL}
-          blurCount={2}
-        />
-        <MenuButton
-          style={styles.button}
-          title={'End Game'}
-          variant={MenuButton.VARIANT_DESTRUCTIVE}
-          onPress={handleEndGame}
-          size={MenuButton.SIZE_SMALL}
-        />
+        <View style={{padding: spaceDefault}}>
+          <UIText>{SCENE_TO_LABEL[currentGame]}</UIText>
+          <MenuButton
+            style={styles.button}
+            title={'Resume'}
+            onPressStart={() => {
+              setIsOpen(false)
+              if (typeof props.onResume === 'function') {
+                props.onResume()
+              }
+            }}
+            size={MenuButton.SIZE_SMALL}
+            blurCount={2}
+          />
+          <MenuButton
+            style={styles.button}
+            title={'End Game'}
+            variant={MenuButton.VARIANT_DESTRUCTIVE}
+            onPress={handleEndGame}
+            size={MenuButton.SIZE_SMALL}
+          />
+        </View>
       </Modal>
     </React.Fragment>
   )

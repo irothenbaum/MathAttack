@@ -24,7 +24,7 @@ const settingsSlice = createSlice({
     setColorScheme: (state, {payload}) => {
       state.colorScheme = payload
     },
-    flushFromCache: (state, {payload}) => {
+    hydrateFromCache: (state, {payload}) => {
       return {...state, ...payload}
     },
   },
@@ -35,7 +35,7 @@ export const setDecimalPlaces = (places) => (dispatch) => dispatch(settingsSlice
 export const setEquationDuration = (durationMS) => (dispatch) => dispatch(settingsSlice.actions.setEquationDuration(durationMS))
 export const setAutoSubmitCorrect = (isActive) => (dispatch) => dispatch(settingsSlice.actions.setAutoSubmitCorrect(isActive))
 export const setMuteSounds = (isMuted) => (dispatch) => dispatch(settingsSlice.actions.setMuteSounds(isMuted))
-export const flushFromCache = (payload) => (dispatch) => dispatch(settingsSlice.actions.flushFromCache(payload))
+export const hydrateFromCache = (payload) => (dispatch) => dispatch(settingsSlice.actions.hydrateFromCache(payload))
 export const setColorScheme = (payload) => (dispatch) => dispatch(settingsSlice.actions.setColorScheme(payload))
 
 export default settingsSlice.reducer

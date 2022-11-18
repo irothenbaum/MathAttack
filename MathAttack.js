@@ -1,12 +1,14 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
+  Scene_GameCrescendo,
   Scene_GameEstimate,
   Scene_GameMarathon,
   Scene_GameResults,
   Scene_GameVersus,
+  Scene_HighScores,
   Scene_Menu,
   Scene_Settings,
 } from './constants/scenes'
@@ -22,7 +24,10 @@ import {StyleSheet, Animated, View} from 'react-native'
 import useReduxPersist from './hooks/useReduxPersist'
 import {SCENE_CHANGE_TRANSITION_DURATION} from './constants/game'
 import useDarkMode from './hooks/useDarkMode'
-import {getBackgroundColor} from './lib/utilities'
+import GameCrescendo from './scenes/GameCrescendo'
+import HighScores from './scenes/HighScores'
+import useColorsControl from './hooks/useColorsControl'
+import LoadingSplash from './components/LoadingSplash'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -31,19 +36,23 @@ const SceneMap = {
   [Scene_GameMarathon]: GameMarathon,
   [Scene_GameResults]: GameResults,
   [Scene_GameEstimate]: GameEstimate,
+  [Scene_GameCrescendo]: GameCrescendo,
   [Scene_GameVersus]: GameVersus,
+  [Scene_HighScores]: HighScores,
 }
 
 function MathAttack() {
+  const [isReady, setIsReady] = useState(false)
   const currentScene = useSelector(selectCurrentScene)
   const isTransitioningToScene = useSelector((state) => state.Navigation.isTransitioningToScene)
   const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
   const isDark = useDarkMode()
+  const {background} = useColorsControl()
 
   const {flush, hydrate} = useReduxPersist()
 
   useEffect(() => {
-    hydrate()
+    hydrate().then(() => setIsReady(true))
   }, [])
 
   useEffect(() => {
@@ -52,25 +61,43 @@ function MathAttack() {
     }
   }, [isTransitioningToScene])
 
-  // whenever the scene changes, we save our settings
+  // whenever the scene changes back to Menu, we save our persistent data
   useEffect(() => {
-    flush()
-  }, [currentScene])
+    if (!isReady || currentScene !== Scene_Menu) {
+      return
+    }
+    flush().then()
+  }, [currentScene, isReady])
 
-  let SceneComponent = SceneMap[currentScene]
+  let SceneComponent = isReady ? SceneMap[currentScene] : LoadingSplash
 
   if (!SceneComponent) {
-    throw new Error(`Scene missing "${currentScene}"`)
+    console.error(new Error(`Scene missing "${currentScene}"`))
+    SceneComponent = LoadingSplash
   }
 
   return (
-    <View style={[styles.sceneWrapper, {backgroundColor: getBackgroundColor(isDark)}]}>
+    <View style={[styles.sceneWrapper, {backgroundColor: background}]}>
       {isChangingScreens && (
-        <View style={styles.sceneTransitionContainer}>
+        <Animated.View
+          style={[
+            styles.sceneTransitionContainer,
+            {
+              width: '100%',
+              height: '100%',
+              backgroundColor: screenChangeAnimation.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: isDark
+                  ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0)']
+                  : ['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0)'],
+              }),
+            },
+          ]}
+        >
           <Animated.View
             style={{
               width: '100%',
-              backgroundColor: getBackgroundColor(isDark),
+              backgroundColor: background,
               height: screenChangeAnimation.interpolate({
                 inputRange: [0, 0.5, 1],
                 outputRange: ['0%', '50%', '0%'],
@@ -90,14 +117,14 @@ function MathAttack() {
           <Animated.View
             style={{
               width: '100%',
-              backgroundColor: getBackgroundColor(isDark),
+              backgroundColor: background,
               height: screenChangeAnimation.interpolate({
                 inputRange: [0, 0.5, 1],
                 outputRange: ['0%', '50%', '0%'],
               }),
             }}
           />
-        </View>
+        </Animated.View>
       )}
       <SceneComponent />
     </View>
