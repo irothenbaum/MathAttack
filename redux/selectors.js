@@ -10,6 +10,7 @@ export const selectClassicGameResults = (state) => state.Game.questionResults
 export const selectLastGameTypePlayed = (state) => state.Global.currentGame
 export const selectHighScoresForGame = (state, game) => state.HighScores.highScores[game]
 export const selectHighScoresForLastGamePlayed = (state) => selectHighScoresForGame(state, selectLastGameTypePlayed(state))
+export const selectViewingGameResult = (state) => state.HighScores.viewingGameResult
 
 export const selectLastGameResults = (state) => {
   const lastGameType = selectLastGameTypePlayed(state)

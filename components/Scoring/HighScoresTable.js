@@ -1,27 +1,21 @@
-import React, {useState} from 'react'
-import {FlatList, ScrollView, StyleSheet, View} from 'react-native'
-import {useSelector} from 'react-redux'
+import React from 'react'
+import {FlatList, StyleSheet, View} from 'react-native'
+import {useDispatch, useSelector} from 'react-redux'
 import {selectHighScoresForGame} from '../../redux/selectors'
 import PropTypes from 'prop-types'
-import {Scene_GameEstimate} from '../../constants/scenes'
 import {SCENE_TO_LABEL} from '../../constants/game'
-import EstimationRoundResult from './EstimationRoundResult'
-import DefaultRoundResult from './DefaultRoundResult'
 import HighScoreEntry from './HighScoreEntry'
 import NormalText from '../NormalText'
 import MenuButton from '../MenuButton'
 import {spaceDefault, spaceExtraLarge} from '../../styles/layout'
 import usePlayGame from '../../hooks/usePlayGame'
-import DefaultResultsHeader from './DefaultResultsHeader'
-import {FullScreenOverlay, height, width} from '../../styles/elements'
-import BottomPanel from '../BottomPanel'
+import {setViewingGameResult} from '../../redux/HighScoresSlice'
 
 // ----------------------------------------------------------------------------------------------------------
 
 function HighScoresTable(props) {
-  const [viewingScore, setViewingScore] = useState(null)
+  const dispatch = useDispatch()
   const highScores = useSelector((state) => selectHighScoresForGame(state, props.game))
-  const selectedScore = highScores.find((o) => o.id === viewingScore)
   const {play} = usePlayGame()
 
   return (
@@ -35,7 +29,7 @@ function HighScoresTable(props) {
                 place={index + 1}
                 result={item}
                 isHighlighted={item.id === props.highlightScoreId}
-                onPress={() => setViewingScore(item.id)}
+                onPress={() => dispatch(setViewingGameResult(props.game, item.id))}
               />
             )}
           />
@@ -51,23 +45,6 @@ function HighScoresTable(props) {
           />
         </View>
       )}
-
-      <BottomPanel isOpen={!!selectedScore} onClose={() => setViewingScore(null)}>
-        <DefaultResultsHeader />
-        {selectedScore ? (
-          <FlatList
-            data={selectedScore.questionResults}
-            keyExtractor={(item) => item.id}
-            renderItem={({item, index}) =>
-              props.game === Scene_GameEstimate ? (
-                <EstimationRoundResult count={index + 1} result={item} />
-              ) : (
-                <DefaultRoundResult count={index + 1} result={item} />
-              )
-            }
-          />
-        ) : null}
-      </BottomPanel>
     </View>
   )
 }

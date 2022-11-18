@@ -29,6 +29,7 @@ import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import {recordHighScore} from '../redux/HighScoresSlice'
 import useReduxPersist from '../hooks/useReduxPersist'
 import HighScoresTable from '../components/Scoring/HighScoresTable'
+import SingleGameResultBottomPanel from '../components/Scoring/SingleGameResultBottomPanel'
 
 function GameResults() {
   const dispatch = useDispatch()
@@ -108,6 +109,8 @@ function GameResults() {
         <MenuButton variant={MenuButton.VARIANT_DESTRUCTIVE} title={'Menu'} onPress={handleMenu} />
         <MenuButton title={'Play again'} onPress={handlePlayAgain} blurCount={2} />
       </View>
+
+      <SingleGameResultBottomPanel />
     </View>
   )
 }

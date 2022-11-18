@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
-import {StyleSheet, View, Pressable, ScrollView} from 'react-native'
+import {StyleSheet, View, Pressable} from 'react-native'
 import TitleText from '../components/TitleText'
-import {spaceDefault, spaceExtraSmall, spaceLarge, spaceSmall} from '../styles/layout'
+import {spaceDefault, spaceExtraSmall, spaceSmall} from '../styles/layout'
 import {Scene_GameClassic, Scene_GameCrescendo, Scene_GameEstimate, Scene_GameMarathon, Scene_Menu} from '../constants/scenes'
 import {SCENE_TO_LABEL} from '../constants/game'
 import HighScoresTable from '../components/Scoring/HighScoresTable'
@@ -11,9 +11,8 @@ import {goToScene} from '../redux/NavigationSlice'
 import useBackAction from '../hooks/useBackAction'
 import useColorsControl from '../hooks/useColorsControl'
 import {useDispatch} from 'react-redux'
-import {LinearGradient} from 'react-native-svg'
 import TopShadow from '../components/TopShadow'
-import {shadowStrong} from '../styles/colors'
+import SingleGameResultBottomPanel from '../components/Scoring/SingleGameResultBottomPanel'
 
 const GamesMap = {
   [Scene_GameClassic]: Classic,
@@ -56,6 +55,8 @@ function HighScores() {
         <TopShadow style={styles.shadow} />
         <HighScoresTable game={game} />
       </View>
+
+      <SingleGameResultBottomPanel />
     </View>
   )
 }

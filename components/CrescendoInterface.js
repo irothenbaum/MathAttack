@@ -9,28 +9,13 @@ import PropTypes from 'prop-types'
 import {selectGameSettings} from '../redux/selectors'
 import {useSelector} from 'react-redux'
 import {ANSWER_TIMEOUT} from '../constants/game'
-import {RoundBox} from '../styles/elements'
-import {fadeColor, getFlashStylesForAnimation} from '../lib/utilities'
-import Svg, {Circle, Line} from 'react-native-svg'
+import {fadeColor, getScreenPositionFromLayoutEvent, termStrToTerm} from '../lib/utilities'
+import Svg, {Line} from 'react-native-svg'
 import useColorsControl from '../hooks/useColorsControl'
 import useAnimationStation from '../hooks/useAnimationStation'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import {SOUND_TAP} from '../lib/SoundHelper'
-
-/**
- * @param {*} e
- * @returns {Promise<{x: number, y: number}>}
- */
-function getScreenPositionFromLayoutEvent(e) {
-  return new Promise((resolve, reject) => {
-    e.target.measure((x, y, width, height, pageX, pageY) => {
-      resolve({
-        x: x + pageX + width / 2,
-        y: y + pageY + height / 2,
-      })
-    })
-  })
-}
+import CrescendoRow from './CrescendoRow'
 
 /**
  * @param {{term: number, operation: string}} t
@@ -38,15 +23,6 @@ function getScreenPositionFromLayoutEvent(e) {
  */
 function termToStr(t) {
   return `${t.operation}:${t.term}`
-}
-
-/**
- * @param {string} str
- * @returns {{term: number, operation: string}}
- */
-function termStrToTerm(str) {
-  const parts = str.split(':')
-  return {operation: parts[0], term: parseFloat(parts[1])}
 }
 
 // ---------------------------------------------------------------------
@@ -284,34 +260,19 @@ function CrescendoInterface(props) {
       </View>
       <View style={styles.pathsContainer}>
         {stepsToRender.map((termsArr, stepIndex) => (
-          <View style={styles.termsRow} key={`terms-row-${stepIndex}-${termsArr.join()}`}>
-            {termsArr.map((t, termIndex) => {
-              const shouldFlash = props.isShowingResult && props.resultAnimation && correctTerms.includes(t)
-              return (
-                <Term
-                  termStr={t}
-                  key={`${stepIndex}-${termIndex}-${t}`}
-                  isSelected={selectedTerms[stepIndex] === t || shouldFlash}
-                  selectedColor={shouldFlash && !props.isResultCorrect ? red : green}
-                  onRendered={(screenPos) => (termPositions.current[termPositionKey(t, stepIndex)] = screenPos)}
-                  onPress={() => handleClickTerm(stepIndex, t)}
-                  isDisabled={stepIndex !== selectedTerms.length}
-                >
-                  {shouldFlash && (
-                    <Animated.View
-                      style={[
-                        styles.resultFlashOverlay,
-                        {
-                          backgroundColor: background,
-                          ...getFlashStylesForAnimation(props.resultAnimation),
-                        },
-                      ]}
-                    />
-                  )}
-                </Term>
-              )
-            })}
-          </View>
+          <CrescendoRow
+            correctTerms={correctTerms}
+            termsArr={termsArr}
+            key={`terms-row-${stepIndex}-${termsArr.join()}`}
+            isTermSelected={(term) => selectedTerms[stepIndex] === term}
+            onRenderedTerm={(screenPos, term) => (termPositions.current[termPositionKey(term, stepIndex)] = screenPos)}
+            onPressTerm={(term) => handleClickTerm(stepIndex, term)}
+            showTip={stepIndex === selectedTerms.length}
+            isDisabled={stepIndex !== selectedTerms.length}
+            resultAnimation={props.resultAnimation}
+            isShowingResult={props.isShowingResult}
+            isResultCorrect={props.isResultCorrect}
+          />
         ))}
       </View>
       <View style={styles.answerContainer}>
@@ -340,11 +301,6 @@ function CrescendoInterface(props) {
   )
 }
 
-const boxStyle = {
-  ...RoundBox,
-  padding: spaceSmall,
-}
-
 const centerFlex = {
   flex: 1,
   justifyContent: 'center',
@@ -371,19 +327,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
 
-  termsRow: {
-    flex: 1,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    flexDirection: 'row',
-    paddingVertical: spaceSmall,
-  },
-
-  singleTermContainer: {
-    ...boxStyle,
-  },
-
   answerContainer: {
     ...centerFlex,
     flex: 0,
@@ -407,15 +350,6 @@ const styles = StyleSheet.create({
     borderWidth: 8,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  resultFlashOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: spaceSmall,
   },
 })
 

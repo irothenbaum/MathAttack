@@ -17,6 +17,7 @@ const highScoresSlice = createSlice({
       [Scene_GameMarathon]: [],
       [Scene_GameCrescendo]: [],
     },
+    viewingGameResult: null,
   },
   reducers: {
     clearHighScores: (state, {payload}) => {
@@ -44,6 +45,15 @@ const highScoresSlice = createSlice({
       }
       return state
     },
+
+    setViewingGameResult: (state, {payload}) => {
+      if (payload.game && payload.resultId) {
+        state.viewingGameResult = state.highScores[payload.game].find((g) => g.id === payload.resultId)
+      } else {
+        state.viewingGameResult = null
+      }
+      return state
+    },
   },
 })
 
@@ -52,5 +62,13 @@ export const recordHighScore = (result) => (dispatch) => dispatch(highScoresSlic
 
 export const clearHighScores = (game) => (dispatch) => dispatch(highScoresSlice.actions.clearHighScores(game))
 export const hydrateFromCache = (payload) => (dispatch) => dispatch(highScoresSlice.actions.hydrateFromCache(payload))
+
+/**
+ * @param {string?} game
+ * @param {string?} resultId
+ * @returns {function(*): *}
+ */
+export const setViewingGameResult = (game, resultId) => (dispatch) =>
+  dispatch(highScoresSlice.actions.setViewingGameResult({game: game, resultId: resultId}))
 
 export default highScoresSlice.reducer
