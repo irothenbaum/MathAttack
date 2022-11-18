@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {StyleSheet, View, Pressable, ScrollView} from 'react-native'
 import TitleText from '../components/TitleText'
-import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
+import {spaceDefault, spaceExtraSmall, spaceLarge, spaceSmall} from '../styles/layout'
 import {Scene_GameClassic, Scene_GameCrescendo, Scene_GameEstimate, Scene_GameMarathon, Scene_Menu} from '../constants/scenes'
 import {SCENE_TO_LABEL} from '../constants/game'
 import HighScoresTable from '../components/Scoring/HighScoresTable'
@@ -11,6 +11,9 @@ import {goToScene} from '../redux/NavigationSlice'
 import useBackAction from '../hooks/useBackAction'
 import useColorsControl from '../hooks/useColorsControl'
 import {useDispatch} from 'react-redux'
+import {LinearGradient} from 'react-native-svg'
+import TopShadow from '../components/TopShadow'
+import {shadowStrong} from '../styles/colors'
 
 const GamesMap = {
   [Scene_GameClassic]: Classic,
@@ -37,8 +40,10 @@ function HighScores() {
         <Pressable onPress={backAction}>
           <Icon icon={ArrowLeft} color={shadow} />
         </Pressable>
-        <SubTitleText>High Scores</SubTitleText>
-        <TitleText>{SCENE_TO_LABEL[game]}</TitleText>
+        <SubTitleText style={{marginTop: spaceSmall}}>High Scores</SubTitleText>
+      </View>
+      <View style={{paddingLeft: spaceDefault, paddingBottom: spaceExtraSmall, backgroundColor: red}}>
+        <TitleText style={{color: background}}>{SCENE_TO_LABEL[game]}</TitleText>
       </View>
       <View style={[styles.gamesContainer, {borderColor: shadow}]}>
         {Object.keys(GamesMap).map((key) => (
@@ -47,7 +52,8 @@ function HighScores() {
           </Pressable>
         ))}
       </View>
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, zIndex: 10}}>
+        <TopShadow style={styles.shadow} />
         <HighScoresTable game={game} />
       </View>
     </View>
@@ -57,6 +63,14 @@ function HighScores() {
 const styles = StyleSheet.create({
   window: {
     height: '100%',
+    width: '100%',
+  },
+
+  shadow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: 6,
     width: '100%',
   },
 
@@ -72,8 +86,6 @@ const styles = StyleSheet.create({
   },
 
   gamesContainer: {
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-evenly',

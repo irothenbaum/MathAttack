@@ -24,8 +24,6 @@ function HighScoresTable(props) {
   const selectedScore = highScores.find((o) => o.id === viewingScore)
   const {play} = usePlayGame()
 
-  console.log(selectedScore ? selectedScore.questionResults.length : 'n/a')
-
   return (
     <View style={{height: '100%', width: '100%'}}>
       {highScores.length > 0 ? (
@@ -75,20 +73,6 @@ function HighScoresTable(props) {
 }
 
 const styles = StyleSheet.create({
-  singleScoresOverlay: {
-    ...FullScreenOverlay,
-    zIndex: 10,
-  },
-  singleScoreContainer: {
-    height: '90%',
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
   noScoresContainer: {
     margin: spaceDefault,
     padding: spaceDefault,

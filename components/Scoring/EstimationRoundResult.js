@@ -3,10 +3,11 @@ import Equation from '../../models/Equation'
 import EstimationQuestionResult from '../../models/EstimationQuestionResult'
 import {View} from 'react-native'
 import NormalText from '../NormalText'
-import Icon, {Check, Star} from '../Icon'
+import Icon, {Check, Star, X} from '../Icon'
 import {font2} from '../../styles/typography'
 import React from 'react'
 import resultStyles from './sharedStyles'
+import sharedStyles from './sharedStyles'
 
 function EstimationRoundResult({result, count}) {
   const {yellow, green, red} = useColorsControl()
@@ -14,32 +15,39 @@ function EstimationRoundResult({result, count}) {
   const userAnswer = result.answer
   const accuracy = EstimationQuestionResult.getAccuracy(result)
 
-  let isTimeout = EstimationQuestionResult.isTimeout(result)
-  let isExact = accuracy === 0
-  let isCorrect = EstimationQuestionResult.isCorrect(result)
+  const isTimeout = EstimationQuestionResult.isTimeout(result)
+  const isExact = accuracy === 0
+  const score = EstimationQuestionResult.scoreValue(result)
+  const isCorrect = EstimationQuestionResult.isCorrect(result)
 
   return (
     <View style={resultStyles.singleResultContainer}>
-      <View style={resultStyles.singleResultCount}>
-        <NormalText>{count}.</NormalText>
-      </View>
       <View style={resultStyles.singleResultEquation}>
-        <NormalText>
-          {correctAnswer} {' \u2022 '} {isTimeout ? 'N/A' : userAnswer}
-        </NormalText>
+        {Equation.getLeftSideInfixNotation(result.question.equation).map((str, index) => {
+          return <NormalText key={`${str}-${index}`}>{str}</NormalText>
+        })}
       </View>
-      <NormalText style={resultStyles.singleResultEquals}>~</NormalText>
+      <NormalText style={resultStyles.singleResultEquals}>{isExact ? '=' : '~'}</NormalText>
       <View style={resultStyles.singleResultAnswer}>
-        <NormalText style={isExact ? {fontWeight: 'bold'} : isCorrect ? null : resultStyles.wrongAnswer}>
-          {isTimeout ? 'N/A' : accuracy}
-        </NormalText>
-      </View>
-      <View style={resultStyles.singleResultCanon}>
-        {isCorrect ? (
-          <Icon icon={isExact ? Star : Check} style={resultStyles.correctAnswerCheck} size={font2} color={isExact ? yellow : green} />
+        {isExact ? (
+          <NormalText style={[sharedStyles.correctAnswerText, {color: green}]}>{correctAnswer}</NormalText>
+        ) : isTimeout ? (
+          <NormalText style={[sharedStyles.wrongAnswerCorrection, {color: red}]}>N/A</NormalText>
+        ) : isCorrect ? (
+          <React.Fragment>
+            <NormalText>{correctAnswer}</NormalText>
+            <NormalText style={[sharedStyles.wrongAnswerCorrection]}>({userAnswer})</NormalText>
+          </React.Fragment>
         ) : (
-          <NormalText style={{color: red}}>{correctAnswer}</NormalText>
+          <React.Fragment>
+            <NormalText style={resultStyles.wrongAnswer}>{userAnswer}</NormalText>
+            <NormalText style={[resultStyles.wrongAnswerCorrection, {color: red}]}>{correctAnswer}</NormalText>
+          </React.Fragment>
         )}
+      </View>
+      <View style={resultStyles.singleResultScore}>
+        <NormalText>+{score}</NormalText>
+        {isExact ? <Icon icon={Star} style={resultStyles.correctAnswerCheck} size={font2} color={yellow} /> : null}
       </View>
     </View>
   )

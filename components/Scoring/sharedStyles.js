@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native'
-import {spaceDefault, spaceSmall} from '../../styles/layout'
+import {spaceDefault, spaceExtraLarge, spaceSmall} from '../../styles/layout'
 import {font4} from '../../styles/typography'
 
 export default StyleSheet.create({
@@ -18,7 +18,7 @@ export default StyleSheet.create({
   },
 
   singleResultEquals: {
-    flex: 1,
+    width: spaceDefault,
     textAlign: 'center',
   },
 
@@ -30,8 +30,8 @@ export default StyleSheet.create({
   },
 
   singleResultScore: {
-    flex: 1,
-    alignItems: 'flex-end',
+    width: spaceExtraLarge,
+    alignItems: 'center',
   },
 
   wrongAnswer: {
@@ -40,11 +40,17 @@ export default StyleSheet.create({
   },
 
   wrongAnswerCorrection: {
+    fontWeight: 'bold',
     marginLeft: spaceSmall,
   },
 
   correctAnswerCheck: {
     fontSize: font4,
     marginLeft: spaceSmall,
+  },
+
+  correctAnswerText: {
+    fontSize: font4,
+    fontWeight: 'bold',
   },
 })
