@@ -38,8 +38,10 @@ function GameMarathon() {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const settings = useSelector(selectGameSettings)
   const [strikes, setStrikes] = useState(settings.numberOfStrikes)
+  const [hasAnsweredQuestion, setHasAnsweredQuestion] = useState(false)
 
   const handleGuess = () => {
+    setHasAnsweredQuestion(true)
     dispatch(recordAnswer(userAnswer))
 
     let result = new QuestionResult(currentQuestion, userAnswer)
@@ -98,13 +100,16 @@ function GameMarathon() {
         <Icon icon={X} size={font4} color={getColorForStrike(strikes < 2)} />
         <Icon icon={X} size={font4} color={getColorForStrike(strikes < 1)} />
       </View>
-      <EquationAndAnswerInterface
-        onGuess={handleGuess}
-        isAnimatingForCorrect={isAnimatingForCorrect}
-        isAnimatingNextQuestion={isAnimatingNextQuestion}
-        nextQuestionAnimation={nextQuestionAnimation}
-        answerReactionAnimation={answerReactionAnimation}
-      />
+      <View style={styles.equationContainer}>
+        <EquationAndAnswerInterface
+          onGuess={handleGuess}
+          isAnimatingForCorrect={isAnimatingForCorrect}
+          isAnimatingNextQuestion={isAnimatingNextQuestion}
+          nextQuestionAnimation={nextQuestionAnimation}
+          answerReactionAnimation={answerReactionAnimation}
+          showTipAfterMS={!hasAnsweredQuestion ? 2000 : undefined}
+        />
+      </View>
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
       </View>

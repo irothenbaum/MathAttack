@@ -10,6 +10,7 @@ import {selectCurrentQuestion, selectUserInput} from '../../redux/selectors'
 import {RoundBox} from '../../styles/elements'
 import {spaceLarge} from '../../styles/layout'
 import useColorsControl from '../../hooks/useColorsControl'
+import ClickHereTip from './ClickHereTip'
 
 function EquationAndAnswerInterface(props) {
   const {shadow, getResultColor} = useColorsControl()
@@ -68,6 +69,9 @@ function EquationAndAnswerInterface(props) {
               },
           ]}
         >
+          {typeof props.showTipAfterMS === 'number' && !!userInput && (
+            <ClickHereTip style={{transform: [{translateX: 50}]}} pauseDuration={props.showTipAfterMS} show={true} />
+          )}
           <TitleText
             style={[
               styles.answerText,
@@ -111,6 +115,7 @@ EquationAndAnswerInterface.propTypes = {
   nextQuestionAnimation: PropTypes.any,
   answerReactionAnimation: PropTypes.any,
   isAnimatingForCorrect: PropTypes.bool,
+  showTipAfterMS: PropTypes.number,
 }
 
 export default EquationAndAnswerInterface

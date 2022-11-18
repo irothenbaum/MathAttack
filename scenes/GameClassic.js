@@ -58,6 +58,9 @@ function GameClassic() {
     animateCorrect()
   }
 
+  // only show the tip if auto submit is off and this is the first question
+  const shouldShowTip = !gameSettings.autoSubmit && questionsRemaining === gameSettings.classicNumberOfRounds
+
   return (
     <View style={styles.window}>
       <InGameMenu />
@@ -65,13 +68,16 @@ function GameClassic() {
       <GameBackground animation={animation} isAnimatingForCorrect={isAnimatingForCorrect} />
       <RoundsRemainingUI remaining={questionsRemaining} total={gameSettings.classicNumberOfRounds} />
 
-      <EquationAndAnswerInterface
-        onGuess={handleGuess}
-        equationTimer={equationTimer}
-        isAnimatingNextQuestion={isShowingAnswer}
-        isAnimatingForCorrect={isAnimatingForCorrect}
-        answerReactionAnimation={animation}
-      />
+      <View style={styles.equationContainer}>
+        <EquationAndAnswerInterface
+          onGuess={handleGuess}
+          equationTimer={equationTimer}
+          isAnimatingNextQuestion={isShowingAnswer}
+          isAnimatingForCorrect={isAnimatingForCorrect}
+          answerReactionAnimation={animation}
+          showTipAfterMS={shouldShowTip ? 0 : undefined}
+        />
+      </View>
 
       <View style={styles.calculatorContainer}>
         <CalculatorInput isDisabled={isShowingAnswer} />

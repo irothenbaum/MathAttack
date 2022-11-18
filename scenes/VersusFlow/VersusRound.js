@@ -104,7 +104,7 @@ function VersusRound(props) {
         />
       )}
 
-      <EquationAndAnswerInterface onGuess={handleGuess} />
+      <EquationAndAnswerInterface onGuess={handleGuess} showTipAfterMS={3000} />
 
       <View style={styles.calculatorContainer}>
         <CalculatorInput />
