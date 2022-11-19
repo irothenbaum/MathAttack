@@ -209,14 +209,15 @@ function CrescendoInterface(props) {
           )}
         </Svg>
       </View>
-      <View style={styles.firstTermContainer}>
+      <View style={styles.firstTermContainer}
+            onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}>
         <View
           style={[
             styles.staticTermCircle,
             {borderColor: props.isResultCorrect ? getResultColor(props.isResultCorrect) : green, backgroundColor: background},
           ]}
         >
-          <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}>
+          <UIText>
             {firstTerm}
           </UIText>
         </View>
@@ -255,8 +256,9 @@ function CrescendoInterface(props) {
                 backgroundColor: background,
               },
             ]}
+            onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (answerPosition.current = pos))}
           >
-            <UIText onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (answerPosition.current = pos))}>{answer}</UIText>
+            <UIText>{answer}</UIText>
           </Animated.View>
         </Pressable>
       </View>
@@ -278,7 +280,6 @@ const styles = StyleSheet.create({
   },
 
   effectsContainer: {
-    backgroundColor: 'green',
     position: 'absolute',
     top: 0,
     left: 0,
