@@ -25,43 +25,6 @@ function termToStr(t) {
   return `${t.operation}:${t.term}`
 }
 
-// ---------------------------------------------------------------------
-
-function Term(props) {
-  const {operation, term} = termStrToTerm(props.termStr)
-  const {green, foreground, background} = useColorsControl()
-
-  const handleLayout = (e) => getScreenPositionFromLayoutEvent(e).then(props.onRendered)
-
-  return (
-    <Pressable onPress={props.onPress}>
-      <View
-        style={[
-          styles.singleTermContainer,
-          {
-            backgroundColor: props.isSelected ? props.selectedColor || green : 'transparent',
-          },
-        ]}
-        onLayout={handleLayout}
-      >
-        {props.children}
-        <UIText style={{zIndex: 2, color: props.isSelected ? background : foreground}}>
-          {operation} {term}
-        </UIText>
-      </View>
-    </Pressable>
-  )
-}
-
-Term.propTypes = {
-  termStr: PropTypes.string.isRequired,
-  isSelected: PropTypes.bool,
-  selectedColor: PropTypes.string,
-  onPress: PropTypes.func.isRequired,
-  onRendered: PropTypes.func,
-  isDisabled: PropTypes.bool,
-}
-
 /**
  * @param {Array<*>} comps
  * @returns {Array<*>}
@@ -315,6 +278,7 @@ const styles = StyleSheet.create({
   },
 
   effectsContainer: {
+    backgroundColor: 'green',
     position: 'absolute',
     top: 0,
     left: 0,

@@ -1,8 +1,9 @@
 import React from 'react'
-import {SafeAreaView, View, StatusBar, useColorScheme} from 'react-native'
+import {View, StatusBar, useColorScheme} from 'react-native'
 import {Provider} from 'react-redux'
 import store from './redux/store'
 import MathAttack from './MathAttack'
+import {SafeAreaProvider} from 'react-native-safe-area-context'
 
 // just to speed up dev time
 global.skipOnDev = true
@@ -17,12 +18,12 @@ function App() {
   }
 
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaProvider style={backgroundStyle}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <Provider store={store}>
         <MathAttack />
       </Provider>
-    </SafeAreaView>
+    </SafeAreaProvider>
   )
 }
 
