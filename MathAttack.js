@@ -28,6 +28,7 @@ import GameCrescendo from './scenes/GameCrescendo'
 import HighScores from './scenes/HighScores'
 import useColorsControl from './hooks/useColorsControl'
 import LoadingSplash from './components/LoadingSplash'
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -48,6 +49,13 @@ function MathAttack() {
   const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
   const isDark = useDarkMode()
   const {background} = useColorsControl()
+
+  const insets = useSafeAreaInsets()
+  useEffect(() => {
+    // this is a little hacky, but whatever
+    global._SafeAreaInsets = {top: insets.top, bottom: insets.bottom}
+  }, [insets.top, insets.bottom])
+
 
   const {flush, hydrate} = useReduxPersist()
 
