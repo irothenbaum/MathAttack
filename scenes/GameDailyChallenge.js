@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {selectUserAnswer, selectCurrentQuestion, selectGameSettings} from '../redux/selectors'
+import {selectUserAnswer, selectCurrentQuestion} from '../redux/selectors'
 import {recordAnswer, generateNewQuestion} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {setAnswer} from '../redux/UISlice'
@@ -12,13 +12,12 @@ import GameStartTimer from '../components/GameStartTimer'
 import GameBackground from '../components/FX/GameBackground'
 import Equation from '../models/Equation'
 import CalculatorInput from '../components/UI/CalculatorInput'
-import {RoundBox, ScreenContainer} from '../styles/elements'
-import {spaceLarge, spaceSmall} from '../styles/layout'
-import {font4} from '../styles/typography'
+import {ScreenContainer} from '../styles/elements'
+import {spaceSmall} from '../styles/layout'
 import useAnimationStation from '../hooks/useAnimationStation'
 import InGameMenu from '../components/InGameMenu'
 import EquationAndAnswerInterface from '../components/UI/EquationAndAnswerInterface'
-import Icon, {X} from '../components/Icon'
+import Icon, {Check, Star, Fire, DailyChallenge} from '../components/Icon'
 import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
@@ -27,7 +26,7 @@ const NEXT_QUESTION_TIMEOUT = 2000
 const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
 
 function GameMarathon() {
-  const {shadow, red} = useColorsControl()
+  const {shadow, red, green, yellow, orange} = useColorsControl()
   const dispatch = useDispatch()
   const {isAnimatingForCorrect, animation: answerReactionAnimation, animateCorrect, animateIncorrect} = useAnswerReactionResults()
 
@@ -36,8 +35,7 @@ function GameMarathon() {
 
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
-  const settings = useSelector(selectGameSettings)
-  const [strikes, setStrikes] = useState(settings.numberOfStrikes)
+  const [countCorrect, setCountCorrect] = useState(0)
   const [hasAnsweredQuestion, setHasAnsweredQuestion] = useState(false)
 
   const handleGuess = () => {
@@ -47,6 +45,7 @@ function GameMarathon() {
     let correctAnswer = Equation.getSolution(currentQuestion.equation)
     if (QuestionResult.isCorrect(result)) {
       setHasAnsweredQuestion(true)
+      setCountCorrect(countCorrect + 1)
       animateCorrect()
       playSound(SOUND_CORRECT_DING).then()
       dispatch(setAnswer(''))
@@ -58,23 +57,13 @@ function GameMarathon() {
         ANIMATE_QUESTION_EASING,
       )
     } else {
-      let newStrikes = strikes - 1
-      setStrikes(newStrikes)
-
-      let hasStrikesRemaining = newStrikes > 0
-
       dispatch(setAnswer(''))
       playSound(SOUND_WRONG).then()
       animateIncorrect()
       animateNextQuestion(
         NEXT_QUESTION_TIMEOUT,
         () => {
-          if (hasStrikesRemaining) {
-            dispatch(setAnswer(''))
-            dispatch(generateNewQuestion(correctAnswer))
-          } else {
-            dispatch(goToScene(Scene_GameResults))
-          }
+          dispatch(goToScene(Scene_GameResults))
         },
         ANIMATE_QUESTION_EASING,
       )
@@ -86,19 +75,21 @@ function GameMarathon() {
     animateCorrect()
   }
 
-  const getColorForStrike = (isActive) => {
-    return isActive ? red : shadow
-  }
-
   return (
     <View style={styles.window}>
       <InGameMenu />
       {!currentQuestion && <GameStartTimer onStart={handleGameStart} />}
       <GameBackground animation={answerReactionAnimation} isAnimatingForCorrect={isAnimatingForCorrect} />
-      <View style={styles.strikesContainer}>
-        <Icon icon={X} size={font4} color={getColorForStrike(strikes < 3)} />
-        <Icon icon={X} size={font4} color={getColorForStrike(strikes < 2)} />
-        <Icon icon={X} size={font4} color={getColorForStrike(strikes < 1)} />
+      <View style={styles.countsContains}>
+        <Icon icon={DailyChallenge} color={red} />
+        {countCorrect}
+        {countCorrect === 0 ? null : countCorrect < 5 ? (
+          <Icon icon={Check} color={green} />
+        ) : countCorrect < 10 ? (
+          <Icon icon={Star} color={yellow} />
+        ) : (
+          <Icon icon={Fire} color={orange} />
+        )}
       </View>
       <View style={styles.equationContainer}>
         <EquationAndAnswerInterface
@@ -129,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  strikesContainer: {
+  countsContains: {
     paddingTop: spaceSmall,
     flexDirection: 'row',
     justifyContent: 'center',

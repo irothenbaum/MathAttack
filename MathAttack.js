@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {selectCurrentScene} from './redux/selectors'
 import {
   Scene_GameClassic,
@@ -29,6 +29,7 @@ import HighScores from './scenes/HighScores'
 import useColorsControl from './hooks/useColorsControl'
 import LoadingSplash from './components/LoadingSplash'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import NotificationHelper from './lib/NotificationHelper'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -49,6 +50,7 @@ function MathAttack() {
   const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
   const isDark = useDarkMode()
   const {background} = useColorsControl()
+  const dispatch = useDispatch()
 
   const insets = useSafeAreaInsets()
   useEffect(() => {
@@ -56,11 +58,14 @@ function MathAttack() {
     global._SafeAreaInsets = {top: insets.top, bottom: insets.bottom}
   }, [insets.top, insets.bottom])
 
-
   const {flush, hydrate} = useReduxPersist()
 
   useEffect(() => {
-    hydrate().then(() => setIsReady(true))
+    hydrate()
+      .then(() => {
+        NotificationHelper.Instance().setDispatch(dispatch)
+      })
+      .then(() => setIsReady(true))
   }, [])
 
   useEffect(() => {

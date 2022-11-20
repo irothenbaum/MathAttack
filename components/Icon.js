@@ -24,6 +24,8 @@ import {faSubtract} from '@fortawesome/free-solid-svg-icons/faSubtract'
 import {faDivide} from '@fortawesome/free-solid-svg-icons/faDivide'
 import {faMedal} from '@fortawesome/free-solid-svg-icons/faMedal'
 import {faUpRightAndDownLeftFromCenter} from '@fortawesome/free-solid-svg-icons/faUpRightAndDownLeftFromCenter'
+import {faFire} from '@fortawesome/free-solid-svg-icons/faFire'
+import {faCalendarCheck} from '@fortawesome/free-solid-svg-icons/faCalendarCheck'
 import useColorsControl from '../hooks/useColorsControl'
 
 function Icon(props) {
@@ -41,27 +43,29 @@ function Icon(props) {
 
 export const ArrowLeft = faChevronLeft
 export const ArrowRight = faChevronRight
-export const X = faTimes
 export const Check = faCheck
-export const Star = faStar
-export const Classic = faHourglassHalf
-export const Marathon = faRunning
-export const Estimate = faBullseye
-export const Versus = faFistRaised
-export const Expand = faUpRightAndDownLeftFromCenter
-export const Crescendo = faArrowUpRightDots
-export const Settings = faCog
-export const Loading = faSpinner
-export const Question = faQuestion
 export const CircleActive = faCircle
 export const CircleInactive = faDotCircle
-export const VolumeOn = faVolumeHigh
-export const VolumeOff = faVolumeMute
+export const Classic = faHourglassHalf
+export const Crescendo = faArrowUpRightDots
+export const DailyChallenge = faCalendarCheck
+export const Estimate = faBullseye
+export const Expand = faUpRightAndDownLeftFromCenter
+export const Fire = faFire
+export const HighScores = faMedal
+export const Loading = faSpinner
+export const Marathon = faRunning
 export const OperationMultiply = faTimes
 export const OperationAdd = faPlus
 export const OperationSubtract = faSubtract
 export const OperationDivide = faDivide
-export const HighScores = faMedal
+export const Question = faQuestion
+export const Star = faStar
+export const Settings = faCog
+export const Versus = faFistRaised
+export const VolumeOn = faVolumeHigh
+export const VolumeOff = faVolumeMute
+export const X = faTimes
 
 Icon.propTypes = {
   icon: PropTypes.any.isRequired,

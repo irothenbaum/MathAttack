@@ -6,7 +6,7 @@ export const Scene_GameEstimate = 'GameEstimate'
 export const Scene_GameMarathon = 'GameMarathon'
 export const Scene_GameVersus = 'GameVersus'
 // export const Scene_GameFractions = 'GameFractions'
-// export const Scene_GameDaily = 'Daily'
+export const Scene_GameDailyChallenge = 'DailyChallenge'
 export const Scene_HighScores = 'HighScores'
 
 export const Scene_Settings = 'Settings'

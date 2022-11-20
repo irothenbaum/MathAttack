@@ -16,7 +16,7 @@ function useSoundPlayer() {
     if (areSoundsMuted) {
       return
     }
-    const s = await SoundHelper.playSound(soundName, volume)
+    const s = await SoundHelper.Instance().playSound(soundName, volume)
     playingSounds.current = [...playingSounds.current, s]
     return s.id
   }
