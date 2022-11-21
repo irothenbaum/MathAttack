@@ -33,7 +33,7 @@ function InGameMenu(props) {
   const handleEndGame = async () => {
     // give the screen a chance to cleanup
     if (typeof props.onEnd === 'function') {
-      await props.onEnd()
+      return await props.onEnd()
     }
 
     if (results.length === 0) {

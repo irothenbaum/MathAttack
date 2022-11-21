@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import {selectGameSettings} from '../redux/selectors'
 import {useSelector} from 'react-redux'
 import {ANSWER_TIMEOUT} from '../constants/game'
-import {fadeColor, getScreenPositionFromLayoutEvent, termStrToTerm} from '../lib/utilities'
+import {fadeColor, getScreenPositionFromLayoutEvent, selectRandom, termStrToTerm} from '../lib/utilities'
 import Svg, {Line} from 'react-native-svg'
 import useColorsControl from '../hooks/useColorsControl'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -31,7 +31,7 @@ function termToStr(t) {
  */
 function shuffleArray(comps) {
   for (let i = 0; i < comps.length; i++) {
-    let randomIndex = Math.floor(Math.random() * comps.length)
+    let randomIndex = selectRandom(comps.length)
     if (randomIndex !== i) {
       const temp = comps[randomIndex]
       comps[randomIndex] = comps[i]
@@ -209,17 +209,17 @@ function CrescendoInterface(props) {
           )}
         </Svg>
       </View>
-      <View style={styles.firstTermContainer}
-            onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}>
+      <View
+        style={styles.firstTermContainer}
+        onLayout={(e) => getScreenPositionFromLayoutEvent(e).then((pos) => (firstTermPosition.current = pos))}
+      >
         <View
           style={[
             styles.staticTermCircle,
             {borderColor: props.isResultCorrect ? getResultColor(props.isResultCorrect) : green, backgroundColor: background},
           ]}
         >
-          <UIText>
-            {firstTerm}
-          </UIText>
+          <UIText>{firstTerm}</UIText>
         </View>
       </View>
       <View style={styles.pathsContainer}>

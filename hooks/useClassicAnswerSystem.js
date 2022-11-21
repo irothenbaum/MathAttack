@@ -13,6 +13,8 @@ import useDoOnceTimer from './useDoOnceTimer'
 import {setAnswer} from '../redux/UISlice'
 import {SOUND_WRONG} from '../lib/SoundHelper'
 import useSoundPlayer from './useSoundPlayer'
+import useVibration from './useVibration'
+import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
 
 export const NEXT_QUESTION_TIMEOUT = 2000
 const NEXT_QUESTION_TIMER = 'next-question-timer'
@@ -31,6 +33,7 @@ function useClassicAnswerSystem(questionDurationMS, numberOfQuestions, questionG
   const {isAnimatingForCorrect, animation, animateCorrect, animateIncorrect} = useAnswerReactionResults()
   const {setTimer, isTimerSet} = useDoOnceTimer()
   const {playSound} = useSoundPlayer()
+  const {vibrateOnce} = useVibration()
 
   const dispatch = useDispatch()
 
@@ -71,6 +74,7 @@ function useClassicAnswerSystem(questionDurationMS, numberOfQuestions, questionG
     dispatch(recordAnswer(typeof lastGuess.current === 'number' ? lastGuess.current : ANSWER_TIMEOUT))
     animateIncorrect()
     playSound(SOUND_WRONG).then()
+    vibrateOnce(VIBRATE_ONCE_WRONG)
     handleNextQuestion(suddenDeath)
   }
 

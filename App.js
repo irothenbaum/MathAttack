@@ -1,12 +1,12 @@
-import React, {useEffect} from 'react'
-import {View, StatusBar, useColorScheme} from 'react-native'
+import React from 'react'
+import {StatusBar, useColorScheme} from 'react-native'
 import {Provider} from 'react-redux'
 import store from './redux/store'
 import MathAttack from './MathAttack'
-import {SafeAreaProvider, SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context'
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context'
 
 // just to speed up dev time
-// global.skipOnDev = true
+global.skipOnDev = true
 
 global.hasAnimated = global.skipOnDev || false
 global._SafeAreaInsets = {top: 0, bottom: 0}

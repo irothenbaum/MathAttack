@@ -13,6 +13,8 @@ import QuestionResult from '../models/QuestionResult'
 import {SOUND_BUTTON_CHIME, SOUND_WRONG} from '../lib/SoundHelper'
 import {setAnswer} from '../redux/UISlice'
 import CrescendoInterface, {getMaxFakesForRound} from '../components/CrescendoInterface'
+import useVibration from '../hooks/useVibration'
+import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
 
 // lol, basically
 const INFINITE = 9999999
@@ -26,6 +28,7 @@ function GameCrescendo(props) {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectGameSettings)
   const {playSound} = useSoundPlayer()
+  const {vibrateOnce} = useVibration()
   const round = useRef(1)
 
   const generateNextCrescendoQuestion = () => {
@@ -48,6 +51,7 @@ function GameCrescendo(props) {
     } else {
       animateIncorrect()
       playSound(SOUND_WRONG).then()
+      vibrateOnce(VIBRATE_ONCE_WRONG)
       handleNextQuestion(true)
     }
 

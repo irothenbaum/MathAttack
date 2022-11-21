@@ -1,4 +1,4 @@
-import {Scene_GameClassic, Scene_GameCrescendo, Scene_GameEstimate, Scene_GameMarathon, Scene_GameVersus} from '../constants/scenes'
+import {ALL_GAMES} from '../constants/game'
 
 export const selectCurrentScene = (state) => state.Navigation.currentScene
 export const selectCurrentSceneParams = (state) => state.Navigation.currentSceneParams
@@ -7,30 +7,16 @@ export const selectUserInput = (state) => state.UI.answerInput
 export const selectCurrentQuestion = (state) => state.Game.currentQuestion
 export const selectGameSettings = (state) => state.Settings
 export const selectClassicGameResults = (state) => state.Game.questionResults
-export const selectLastGameTypePlayed = (state) => state.Global.currentGame
-export const selectHighScoresForGame = (state, game) => state.HighScores.highScores[game]
+export const selectLastGameTypePlayed = (state) => state.Game.currentGame
+export const selectHighScoresForGame = (state, game) => state.HighScores.highScores[game] || []
 export const selectHighScoresForLastGamePlayed = (state) => selectHighScoresForGame(state, selectLastGameTypePlayed(state))
 export const selectViewingGameResult = (state) => state.HighScores.viewingGameResult
 
 export const selectLastGameResults = (state) => {
   const lastGameType = selectLastGameTypePlayed(state)
-  switch (lastGameType) {
-    case Scene_GameClassic:
-      return selectClassicGameResults(state)
 
-    case Scene_GameMarathon:
-      return selectClassicGameResults(state)
-
-    case Scene_GameEstimate:
-      return selectClassicGameResults(state)
-
-    case Scene_GameVersus:
-      return selectClassicGameResults(state)
-
-    case Scene_GameCrescendo:
-      return selectClassicGameResults(state)
-
-    default:
-      throw new Error('Cannot get last game results currentGame = ' + state.Global.currentGame)
+  if (ALL_GAMES.includes(lastGameType)) {
+    return selectClassicGameResults(state)
   }
+  throw new Error('Cannot get last game results currentGame = ' + state.Game.currentGame)
 }

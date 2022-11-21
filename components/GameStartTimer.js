@@ -9,6 +9,7 @@ import {SOUND_BEEP, SOUND_START} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import Icon, {OperationAdd, OperationDivide, OperationMultiply, OperationSubtract} from './Icon'
 import useColorsControl from '../hooks/useColorsControl'
+import {selectRandom} from '../lib/utilities'
 
 const START_TIME = 3
 
@@ -21,7 +22,7 @@ function getRandomIconIndex(previousIndex) {
   let nextIndex
 
   do {
-    nextIndex = Math.floor(Math.random() * icons.length)
+    nextIndex = selectRandom(icons.length)
   } while (nextIndex === previousIndex)
 
   return nextIndex

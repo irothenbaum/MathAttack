@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import {selectCurrentScene} from './redux/selectors'
+import {useSelector} from 'react-redux'
+import {selectCurrentScene, selectGameSettings} from './redux/selectors'
 import {
   Scene_GameClassic,
   Scene_GameCrescendo,
+  Scene_GameDailyChallenge,
   Scene_GameEstimate,
   Scene_GameMarathon,
   Scene_GameResults,
@@ -29,7 +30,8 @@ import HighScores from './scenes/HighScores'
 import useColorsControl from './hooks/useColorsControl'
 import LoadingSplash from './components/LoadingSplash'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import NotificationHelper from './lib/NotificationHelper'
+import {scheduleReminders} from './lib/dailyChallenge'
+import GameDailyChallenge from './scenes/GameDailyChallenge'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -40,6 +42,7 @@ const SceneMap = {
   [Scene_GameEstimate]: GameEstimate,
   [Scene_GameCrescendo]: GameCrescendo,
   [Scene_GameVersus]: GameVersus,
+  [Scene_GameDailyChallenge]: GameDailyChallenge,
   [Scene_HighScores]: HighScores,
 }
 
@@ -50,7 +53,7 @@ function MathAttack() {
   const {animate: animateScreenChange, animation: screenChangeAnimation, isAnimating: isChangingScreens} = useAnimationStation()
   const isDark = useDarkMode()
   const {background} = useColorsControl()
-  const dispatch = useDispatch()
+  const gameSettings = useSelector(selectGameSettings)
 
   const insets = useSafeAreaInsets()
   useEffect(() => {
@@ -61,11 +64,7 @@ function MathAttack() {
   const {flush, hydrate} = useReduxPersist()
 
   useEffect(() => {
-    hydrate()
-      .then(() => {
-        NotificationHelper.Instance().setDispatch(dispatch)
-      })
-      .then(() => setIsReady(true))
+    hydrate().then(() => setIsReady(true))
   }, [])
 
   useEffect(() => {
@@ -81,6 +80,15 @@ function MathAttack() {
     }
     flush().then()
   }, [currentScene, isReady])
+
+  useEffect(() => {
+    if (!isReady) {
+      return
+    }
+
+    // whenever our gameSettings change, we reschedule our reminders
+    scheduleReminders(gameSettings)
+  }, [isReady, gameSettings])
 
   let SceneComponent = isReady ? SceneMap[currentScene] : LoadingSplash
 

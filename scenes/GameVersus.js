@@ -7,6 +7,9 @@ import WaitingForOpponent from './VersusFlow/WaitingForOpponent'
 import VersusRound from './VersusFlow/VersusRound'
 import ResultsAndPlayAgain from './VersusFlow/ResultsAndPlayAgain'
 import {WON_FLAG_LOST, WON_FLAG_WON} from '../constants/versus'
+import {goToScene} from '../redux/NavigationSlice'
+import {Scene_Menu} from '../constants/scenes'
+import {useDispatch} from 'react-redux'
 
 const STEP_joinOrHost = 'joinOrHost'
 const STEP_waiting = 'waiting'
@@ -16,6 +19,7 @@ const STEP_results = 'results'
 const STEPS = [STEP_joinOrHost, STEP_waiting, STEP_versusRound, STEP_results]
 
 function GameVersus() {
+  const dispatch = useDispatch()
   const socket = useRef(null)
   const [step, setStep] = useState(STEPS[0])
   const [connectCode, setConnectCode] = useState('')
@@ -63,6 +67,7 @@ function GameVersus() {
     if (socket.current) {
       socket.current.broadcastEndGame()
     }
+    dispatch(goToScene(Scene_Menu))
   }
 
   // -----------------------------------------------------------------------------------------

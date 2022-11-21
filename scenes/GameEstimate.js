@@ -22,6 +22,8 @@ import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
 import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
+import useVibration from '../hooks/useVibration'
+import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
 
 function GameEstimate() {
   const gameSettings = useSelector(selectGameSettings)
@@ -32,6 +34,7 @@ function GameEstimate() {
   const [tempAnswer, setTempAnswer] = useState(0)
   const [isPerfectAnswer, setIsPerfectAnswer] = useState(false)
   const {playSound} = useSoundPlayer()
+  const {vibrateOnce} = useVibration()
 
   const {
     handleNextQuestion,
@@ -63,6 +66,7 @@ function GameEstimate() {
     } else {
       animateIncorrect()
       playSound(SOUND_WRONG).then()
+      vibrateOnce(VIBRATE_ONCE_WRONG)
     }
     handleNextQuestion()
   }

@@ -1,9 +1,9 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {Scene_GameClassic, Scene_GameEstimate, Scene_GameMarathon, Scene_GameCrescendo} from '../constants/scenes'
 import {serializeObject} from '../lib/utilities'
+import {ALL_GAMES} from '../constants/game'
 
-// keep the top 10 only
-const HIGH_SCORE_TABLE_COUNT = 10
+// keep the top 20 only
+const HIGH_SCORE_TABLE_COUNT = 20
 
 const highScoresSlice = createSlice({
   name: 'HighScores',
@@ -11,12 +11,11 @@ const highScoresSlice = createSlice({
     // if we change the scoring logic in a meaningful way, we'll need to be able to clear the scores properly.
     // we'll use this version number to do that (somehow, later)
     scoreVersion: 1,
-    highScores: {
-      [Scene_GameClassic]: [],
-      [Scene_GameEstimate]: [],
-      [Scene_GameMarathon]: [],
-      [Scene_GameCrescendo]: [],
-    },
+    // start off every high scores entry with an empty array
+    highScores: ALL_GAMES.map((agr, g) => {
+      agr[g] = []
+      return agr
+    }, {}),
     viewingGameResult: null,
   },
   reducers: {
@@ -25,7 +24,7 @@ const highScoresSlice = createSlice({
     },
 
     recordHighScore: (state, {payload}) => {
-      state.highScores[payload.game] = [...state.highScores[payload.game], payload]
+      state.highScores[payload.game] = [...(state.highScores[payload.game] || []), payload]
         .sort((a, b) => {
           return a.finalScore < b.finalScore
             ? 1

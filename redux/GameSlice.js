@@ -6,6 +6,7 @@ import {serializeObject} from '../lib/utilities'
 const INITIAL_STATE = {
   settings: {},
   questionResults: [],
+  currentGame: undefined,
   currentQuestion: undefined,
 }
 
@@ -24,7 +25,7 @@ const gameSlice = createSlice({
       state.currentQuestion = payload
     },
     startNewGame: (state, {payload}) => {
-      Object.assign(state, INITIAL_STATE, {settings: payload})
+      Object.assign(state, INITIAL_STATE, {settings: payload.settings, currentGame: payload.game})
     },
 
     generateNewEstimationQuestion: (state) => {
@@ -41,9 +42,12 @@ const gameSlice = createSlice({
 export const recordAnswer = (answer) => (dispatch) => dispatch(gameSlice.actions.recordAnswer(answer))
 
 // When you start a new game, we freeze the settings object so it must be passed into this function
-/** @param {GameSettings} classicGameSettings */
-export const startNewGame = (classicGameSettings) => (dispatch) => {
-  dispatch(gameSlice.actions.startNewGame(classicGameSettings))
+/**
+ * @param {string} game
+ * @param {GameSettings} classicGameSettings
+ */
+export const startNewGame = (game, classicGameSettings) => (dispatch) => {
+  dispatch(gameSlice.actions.startNewGame({game: game, settings: classicGameSettings}))
 }
 
 /** @param {number?} term1 */

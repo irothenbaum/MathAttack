@@ -4,6 +4,7 @@ import {COLOR_SCHEME_LIGHT} from '../constants/game'
 const GameSettings = {
   // shared:
   muteSounds: false,
+  disableVibration: false,
   colorScheme: COLOR_SCHEME_LIGHT, // default to Light
   minValue: 0,
   maxValue: 100,

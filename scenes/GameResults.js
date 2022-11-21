@@ -1,43 +1,33 @@
 import React, {useRef, useEffect, useState} from 'react'
-import {View, StyleSheet, FlatList} from 'react-native'
+import {View, StyleSheet, Alert} from 'react-native'
 import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
-import {startNewGame as startNewClassicGame} from '../redux/GameSlice'
-import {startNewGame as startNewMarathonGame} from '../redux/GameSlice'
-import {startNewGame as startNewEstimateGame} from '../redux/GameSlice'
-import {startNewGame as startNewCrescendoGame} from '../redux/GameSlice'
-import {startNewGame as startNewVersusGame} from '../redux/GameSlice'
-import {
-  Scene_GameClassic,
-  Scene_GameCrescendo,
-  Scene_GameEstimate,
-  Scene_GameMarathon,
-  Scene_GameVersus,
-  Scene_Menu,
-} from '../constants/scenes'
-import {selectGameSettings, selectLastGameResults, selectLastGameTypePlayed, selectHighScoresForLastGamePlayed} from '../redux/selectors'
+import {Scene_GameDailyChallenge, Scene_GameEstimate, Scene_Menu} from '../constants/scenes'
+import {selectLastGameResults, selectLastGameTypePlayed} from '../redux/selectors'
 import NormalText from '../components/NormalText'
 import QuestionResult from '../models/QuestionResult'
 import GameResult from '../models/GameResult'
 import {spaceDefault, spaceSmall} from '../styles/layout'
 import UIText from '../components/UIText'
-import {formatNumber} from '../lib/utilities'
+import {formatNumber, selectRandom} from '../lib/utilities'
 import {setAnswer} from '../redux/UISlice'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import {recordHighScore} from '../redux/HighScoresSlice'
 import useReduxPersist from '../hooks/useReduxPersist'
 import HighScoresTable from '../components/Scoring/HighScoresTable'
 import SingleGameResultBottomPanel from '../components/Scoring/SingleGameResultBottomPanel'
+import usePlayGame from '../hooks/usePlayGame'
+import {ALL_GAMES} from '../constants/game'
 
 function GameResults() {
   const dispatch = useDispatch()
-  const settings = useSelector(selectGameSettings)
   const results = useSelector(selectLastGameResults)
   const lastGameTypePlayed = useSelector(selectLastGameTypePlayed)
   const {flush} = useReduxPersist()
   const thisGameRef = useRef()
+  const {play} = usePlayGame()
 
   const QuestionResultClass = lastGameTypePlayed === Scene_GameEstimate ? EstimationQuestionResult : QuestionResult
 
@@ -51,37 +41,32 @@ function GameResults() {
     // record our high score then flush to persist
     thisGameRef.current = new GameResult(lastGameTypePlayed, results, '')
     dispatch(recordHighScore(thisGameRef.current))
-    flush()
+    flush().then()
     return () => {}
   }, [])
 
   const handlePlayAgain = () => {
-    switch (lastGameTypePlayed) {
-      case Scene_GameClassic:
-        dispatch(startNewClassicGame(settings))
-        break
-
-      case Scene_GameMarathon:
-        dispatch(startNewMarathonGame(settings))
-        break
-
-      case Scene_GameEstimate:
-        dispatch(startNewEstimateGame(settings))
-        break
-
-      case Scene_GameCrescendo:
-        dispatch(startNewCrescendoGame(settings))
-        break
-
-      case Scene_GameVersus:
-        dispatch(startNewVersusGame(settings))
-        break
-
-      default:
-        throw new Error('Cannot replay game, unknown type' + lastGameTypePlayed)
+    if (lastGameTypePlayed === Scene_GameDailyChallenge) {
+      Alert.alert(
+        null,
+        'The Daily Challenge can only be played once per day. Check back tomorrow to play again. In the meantime, keep training with one of the other game modes.',
+        [
+          {
+            text: 'Play random game',
+            onPress: () => play(selectRandom(ALL_GAMES)),
+          },
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel',
+          },
+        ],
+      )
+      // cannot play again
+      return
     }
 
-    dispatch(goToScene(lastGameTypePlayed))
+    play(lastGameTypePlayed)
   }
 
   const handleMenu = () => {

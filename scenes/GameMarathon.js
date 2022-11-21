@@ -22,6 +22,8 @@ import Icon, {X} from '../components/Icon'
 import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
+import useVibration from '../hooks/useVibration'
+import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
 
 const NEXT_QUESTION_TIMEOUT = 2000
 const ANIMATE_QUESTION_EASING = Easing.inOut(Easing.exp)
@@ -33,6 +35,7 @@ function GameMarathon() {
 
   const {animation: nextQuestionAnimation, animate: animateNextQuestion, isAnimating: isAnimatingNextQuestion} = useAnimationStation()
   const {playSound} = useSoundPlayer()
+  const {vibrateOnce} = useVibration()
 
   const userAnswer = useSelector(selectUserAnswer)
   const currentQuestion = useSelector(selectCurrentQuestion)
@@ -65,6 +68,7 @@ function GameMarathon() {
 
       dispatch(setAnswer(''))
       playSound(SOUND_WRONG).then()
+      vibrateOnce(VIBRATE_ONCE_WRONG)
       animateIncorrect()
       animateNextQuestion(
         NEXT_QUESTION_TIMEOUT,

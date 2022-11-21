@@ -16,6 +16,8 @@ import {setAnswer} from '../redux/UISlice'
 import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import {SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
+import useVibration from '../hooks/useVibration'
+import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
 
 function GameClassic() {
   const dispatch = useDispatch()
@@ -23,6 +25,7 @@ function GameClassic() {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const gameSettings = useSelector(selectGameSettings)
   const {playSound} = useSoundPlayer()
+  const {vibrateOnce} = useVibration()
 
   const {
     handleNextQuestion,
@@ -49,6 +52,7 @@ function GameClassic() {
     } else {
       markLastGuess(userAnswer)
       playSound(SOUND_WRONG).then()
+      vibrateOnce(VIBRATE_ONCE_WRONG)
       animateIncorrect()
     }
 

@@ -1,6 +1,5 @@
 import {configureStore} from '@reduxjs/toolkit'
 import {combineReducers} from 'redux'
-import Global from './GlobalSlice'
 import Settings from './SettingsSlice'
 import HighScores from './HighScoresSlice'
 import Navigation from './NavigationSlice'
@@ -12,7 +11,6 @@ const reducer = combineReducers({
   Settings,
   Navigation,
   UI,
-  Global,
   Game,
 })
 

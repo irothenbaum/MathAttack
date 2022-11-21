@@ -11,6 +11,7 @@ import {
   Scene_GameVersus,
   Scene_Settings,
   Scene_HighScores,
+  Scene_GameDailyChallenge,
 } from '../constants/scenes'
 import {screenHeight, spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
 import {setAnswer} from '../redux/UISlice'
@@ -32,6 +33,9 @@ import Icon, {HighScores, Classic, Estimate, Marathon, Settings, Versus, Crescen
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
 import usePlayGame from '../hooks/usePlayGame'
+import Equation from '../models/Equation'
+import Phrase from '../models/Phrase'
+import {serializeObject} from '../lib/utilities'
 
 const pjson = require('../package.json')
 
@@ -140,6 +144,14 @@ function Menu() {
             onPress={() => play(Scene_GameVersus)}
             icon={Versus}
             blurCount={3}
+          />
+        </View>
+        <View style={styles.gameButtonContainer}>
+          <MenuButton
+            size={MenuButton.SIZE_SMALL}
+            title={GAME_LABEL_VERSUS}
+            onPress={() => play(Scene_GameDailyChallenge, {equation: serializeObject(new Equation(new Phrase(13, '+', 14)))})}
+            icon={Versus}
           />
         </View>
 
