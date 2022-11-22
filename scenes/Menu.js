@@ -11,9 +11,9 @@ import {
   Scene_GameVersus,
   Scene_Settings,
   Scene_HighScores,
-  Scene_GameDailyChallenge,
+  Scene_GameFractions,
 } from '../constants/scenes'
-import {screenHeight, spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
+import {screenHeight, spaceDefault, spaceSmall} from '../styles/layout'
 import {setAnswer} from '../redux/UISlice'
 import NormalText from '../components/NormalText'
 import {font1} from '../styles/typography'
@@ -24,18 +24,17 @@ import {
   GAME_LABEL_MARATHON,
   GAME_LABEL_VERSUS,
   SLAM_ANIMATION_DURATION,
+  GAME_LABEL_FRACTIONS,
 } from '../constants/game'
 import {ScreenContainer} from '../styles/elements'
 import TitleTypeform from '../components/TitleTypeform'
 import useAnimationStation from '../hooks/useAnimationStation'
 import {SOUND_TAP} from '../lib/SoundHelper'
-import Icon, {HighScores, Classic, Estimate, Marathon, Settings, Versus, Crescendo} from '../components/Icon'
+import Icon, {HighScores, Classic, Estimate, Marathon, Settings, Versus, Crescendo, Fractions} from '../components/Icon'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
 import usePlayGame from '../hooks/usePlayGame'
-import Equation from '../models/Equation'
-import Phrase from '../models/Phrase'
-import {serializeObject} from '../lib/utilities'
+import GameGallery, {GameGalleryItem} from '../components/GameGallery'
 
 const pjson = require('../package.json')
 
@@ -50,6 +49,7 @@ function Menu() {
   const [isWaiting, setIsWaiting] = useState(true)
   const [isReady, setIsReady] = useState(false)
   const [topPosition, setTopPosition] = useState(0)
+  const [gameGroup, setGameGroup] = useState(0)
   const logoRef = useRef()
   const {shadow} = useColorsControl()
   const {animate: animateLogo, animation: logoAnimation} = useAnimationStation()
@@ -101,51 +101,68 @@ function Menu() {
     <View style={styles.window}>
       <View style={[styles.innerContainer, {opacity: isReady ? 1 : 0}]}>
         <TitleTypeform style={{alignSelf: 'center', zIndex: 10}} ref={logoRef} />
-        <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_CLASSIC}
-            onPress={() => play(Scene_GameClassic)}
-            icon={Classic}
-            blurCount={3}
-          />
-        </View>
-        <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_MARATHON}
-            onPress={() => play(Scene_GameMarathon)}
-            icon={Marathon}
-            blurCount={3}
-          />
-        </View>
-        <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_ESTIMATE}
-            onPress={() => play(Scene_GameEstimate)}
-            icon={Estimate}
-            blurCount={3}
-          />
-        </View>
-        <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_CRESCENDO}
-            onPress={() => play(Scene_GameCrescendo)}
-            icon={Crescendo}
-            blurCount={3}
-          />
-        </View>
-        <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_LARGE}
-            title={GAME_LABEL_VERSUS}
-            onPress={() => play(Scene_GameVersus)}
-            icon={Versus}
-            blurCount={3}
-          />
-        </View>
+
+        <GameGallery titles={['Classic', 'Twist']} style={{flex: 0}} selected={gameGroup} onSelect={setGameGroup}>
+          <GameGalleryItem>
+            <View style={styles.gameButtonContainer}>
+              <MenuButton
+                size={MenuButton.SIZE_LARGE}
+                title={GAME_LABEL_CLASSIC}
+                onPress={() => play(Scene_GameClassic)}
+                icon={Classic}
+                blurCount={3}
+              />
+            </View>
+            <View style={styles.gameButtonContainer}>
+              <MenuButton
+                size={MenuButton.SIZE_LARGE}
+                title={GAME_LABEL_MARATHON}
+                onPress={() => play(Scene_GameMarathon)}
+                icon={Marathon}
+                blurCount={3}
+              />
+            </View>
+            <View style={styles.gameButtonContainer}>
+              <MenuButton
+                size={MenuButton.SIZE_LARGE}
+                title={GAME_LABEL_VERSUS}
+                onPress={() => play(Scene_GameVersus)}
+                icon={Versus}
+                blurCount={3}
+              />
+            </View>
+          </GameGalleryItem>
+
+          <GameGalleryItem>
+            <View style={styles.gameButtonContainer}>
+              <MenuButton
+                size={MenuButton.SIZE_LARGE}
+                title={GAME_LABEL_ESTIMATE}
+                onPress={() => play(Scene_GameEstimate)}
+                icon={Estimate}
+                blurCount={3}
+              />
+            </View>
+            <View style={styles.gameButtonContainer}>
+              <MenuButton
+                size={MenuButton.SIZE_LARGE}
+                title={GAME_LABEL_CRESCENDO}
+                onPress={() => play(Scene_GameCrescendo)}
+                icon={Crescendo}
+                blurCount={3}
+              />
+            </View>
+            <View style={styles.gameButtonContainer}>
+              <MenuButton
+                size={MenuButton.SIZE_LARGE}
+                title={GAME_LABEL_FRACTIONS}
+                onPress={() => play(Scene_GameFractions)}
+                icon={Fractions}
+                blurCount={3}
+              />
+            </View>
+          </GameGalleryItem>
+        </GameGallery>
 
         <View style={styles.footnoteContainer}>
           <NormalText style={styles.footnote}>v{pjson.version}</NormalText>
@@ -202,12 +219,7 @@ const styles = StyleSheet.create({
 
   innerContainer: {
     ...ScreenContainer,
-    paddingHorizontal: spaceDefault,
     paddingBottom: 100,
-  },
-
-  title: {
-    marginBottom: spaceLarge,
   },
 
   gameButtonContainer: {

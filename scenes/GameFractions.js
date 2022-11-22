@@ -1,31 +1,31 @@
 import React, {useState} from 'react'
-import {Animated, View, StyleSheet, Pressable} from 'react-native'
-import InGameMenu from '../components/InGameMenu'
-import {ScreenContainer} from '../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectGameSettings, selectUserAnswer} from '../redux/selectors'
-import GameStartTimer from '../components/GameStartTimer'
-import {generateNewEstimationQuestion, recordAnswer} from '../redux/GameSlice'
-import EstimationInterface from '../components/UI/EstimationInterface'
-import ComplexEquationComponent from '../components/ComplexEquationComponent'
-import {spaceDefault, spaceLarge} from '../styles/layout'
-import UIText from '../components/UIText'
-import {font4} from '../styles/typography'
-import GameBackground from '../components/FX/GameBackground'
-import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
-import {setAnswer} from '../redux/UISlice'
-import {getVibrateStylesForAnimation} from '../lib/utilities'
-import Equation from '../models/Equation'
-import EstimationQuestionResult from '../models/EstimationQuestionResult'
-import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
-import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
-import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
-import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 import useVibration from '../hooks/useVibration'
+import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
+import {generateNewEstimationQuestion, recordAnswer} from '../redux/GameSlice'
+import EstimationQuestionResult from '../models/EstimationQuestionResult'
+import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
+import {setAnswer} from '../redux/UISlice'
+import {Animated, Pressable, StyleSheet, View} from 'react-native'
+import InGameMenu from '../components/InGameMenu'
+import GameStartTimer from '../components/GameStartTimer'
+import GameBackground from '../components/FX/GameBackground'
+import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
+import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
+import {getVibrateStylesForAnimation} from '../lib/utilities'
+import ComplexEquationComponent from '../components/ComplexEquationComponent'
+import UIText from '../components/UIText'
+import Equation from '../models/Equation'
+import FractionInterface from '../components/UI/FractionInterface'
+import {ScreenContainer} from '../styles/elements'
+import {spaceDefault, spaceLarge} from '../styles/layout'
+import {font4} from '../styles/typography'
 
-function GameEstimate() {
+function GameFractions(props) {
   const gameSettings = useSelector(selectGameSettings)
   const {shadow, shadowStrong, foreground, getResultColor} = useColorsControl()
   const currentQuestion = useSelector(selectCurrentQuestion)
@@ -123,7 +123,7 @@ function GameEstimate() {
             </View>
           </Pressable>
         </Animated.View>
-        <EstimationInterface
+        <FractionInterface
           onChangeTempAnswer={setTempAnswer}
           onSubmitAnswer={handleGuess}
           equationTimer={equationTimer}
@@ -186,4 +186,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default GameEstimate
+export default GameFractions

@@ -27,6 +27,7 @@ import {faUpRightAndDownLeftFromCenter} from '@fortawesome/free-solid-svg-icons/
 import {faFire} from '@fortawesome/free-solid-svg-icons/faFire'
 import {faCalendarCheck} from '@fortawesome/free-solid-svg-icons/faCalendarCheck'
 import {faWaveSquare} from '@fortawesome/free-solid-svg-icons/faWaveSquare'
+import {faPercent} from '@fortawesome/free-solid-svg-icons/faPercent'
 import useColorsControl from '../hooks/useColorsControl'
 
 function Icon(props) {
@@ -53,6 +54,7 @@ export const DailyChallenge = faCalendarCheck
 export const Estimate = faBullseye
 export const Expand = faUpRightAndDownLeftFromCenter
 export const Fire = faFire
+export const Fractions = faPercent
 export const HighScores = faMedal
 export const Loading = faSpinner
 export const Marathon = faRunning

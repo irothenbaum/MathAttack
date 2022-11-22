@@ -1,6 +1,21 @@
 import {COLOR_SCHEME_LIGHT} from '../constants/game'
 
-/** @typedef GameSettings */
+/**
+ * @typedef GameSettings
+ * @property {boolean} muteSounds
+ * @property {boolean} disableVibration
+ * @property {number} colorScheme
+ * @property {number} minValue
+ * @property {number} maxValue
+ * @property {number} decimalPlaces
+ * @property {boolean} autoSubmit
+ * @property {boolean} allowNegative
+ * @property {number} equationDuration
+ * @property {number} classicNumberOfRounds
+ * @property {number} numberOfStrikes
+ * @property {number} estimateItems
+ * @property {number} crescendoRoundDuration
+ */
 const GameSettings = {
   // shared:
   muteSounds: false,
@@ -23,7 +38,7 @@ const GameSettings = {
   estimateItems: 4,
 
   // crescendo:
-  crescendoRoundDuration: 1000000, // 10000,
+  crescendoRoundDuration: Number.MAX_SAFE_INTEGER,
 }
 
 export default GameSettings

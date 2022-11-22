@@ -1,4 +1,5 @@
 import Equation from './Equation'
+import Phrase from './Phrase'
 import {OPERATION_ADD, OPERATION_SUBTRACT} from './Phrase'
 
 class GameQuestion {
@@ -31,6 +32,19 @@ class GameQuestion {
       Date.now(),
       Date.now() + gameSettings.equationDuration,
     )
+  }
+
+  /**
+   * @param {GameSettings} gameSettings
+   */
+  static getRandomFractionQuestionFromSettings(gameSettings) {
+    const denominator = Equation.roundIfNeeded(
+      gameSettings.minValue + Math.random() * (gameSettings.maxValue - gameSettings.minValue),
+      gameSettings,
+    )
+    const numerator = Equation.roundIfNeeded(gameSettings.minValue + Math.random() * (denominator - gameSettings.minValue), gameSettings)
+
+    return new GameQuestion(new Equation(new Phrase()))
   }
 
   /**

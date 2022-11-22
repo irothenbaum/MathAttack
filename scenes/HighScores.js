@@ -2,11 +2,18 @@ import React, {useState} from 'react'
 import {StyleSheet, View, Pressable} from 'react-native'
 import TitleText from '../components/TitleText'
 import {spaceDefault, spaceExtraSmall, spaceSmall} from '../styles/layout'
-import {Scene_GameClassic, Scene_GameCrescendo, Scene_GameEstimate, Scene_GameMarathon, Scene_Menu} from '../constants/scenes'
+import {
+  Scene_GameClassic,
+  Scene_GameCrescendo,
+  Scene_GameEstimate,
+  Scene_GameFractions,
+  Scene_GameMarathon,
+  Scene_Menu,
+} from '../constants/scenes'
 import {SCENE_TO_LABEL} from '../constants/game'
 import HighScoresTable from '../components/Scoring/HighScoresTable'
 import SubTitleText from '../components/SubTitleText'
-import Icon, {ArrowLeft, Classic, Crescendo, Estimate, Marathon} from '../components/Icon'
+import Icon, {ArrowLeft, Classic, Crescendo, Estimate, Fractions, Marathon} from '../components/Icon'
 import {goToScene} from '../redux/NavigationSlice'
 import useBackAction from '../hooks/useBackAction'
 import useColorsControl from '../hooks/useColorsControl'
@@ -19,6 +26,7 @@ const GamesMap = {
   [Scene_GameMarathon]: Marathon,
   [Scene_GameEstimate]: Estimate,
   [Scene_GameCrescendo]: Crescendo,
+  [Scene_GameFractions]: Fractions,
 }
 
 function HighScores() {

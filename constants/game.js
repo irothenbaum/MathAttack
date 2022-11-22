@@ -5,16 +5,18 @@ import {
   Scene_GameMarathon,
   Scene_GameVersus,
   Scene_GameDailyChallenge,
+  Scene_GameFractions,
 } from './scenes'
 
 export const ANSWER_TIMEOUT = -99999.1
 
-export const GAME_LABEL_CLASSIC = 'Classic'
+export const GAME_LABEL_CLASSIC = 'Timed'
 export const GAME_LABEL_MARATHON = 'Marathon'
 export const GAME_LABEL_ESTIMATE = 'Estimation'
 export const GAME_LABEL_VERSUS = 'Versus'
 export const GAME_LABEL_CRESCENDO = 'Crescendo'
 export const GAME_LABEL_DAILY_CHALLENGE = 'Daily Challenge'
+export const GAME_LABEL_FRACTIONS = 'Fractions'
 
 export const SCENE_TO_LABEL = {
   [Scene_GameClassic]: GAME_LABEL_CLASSIC,
@@ -23,6 +25,7 @@ export const SCENE_TO_LABEL = {
   [Scene_GameVersus]: GAME_LABEL_VERSUS,
   [Scene_GameCrescendo]: GAME_LABEL_CRESCENDO,
   [Scene_GameDailyChallenge]: GAME_LABEL_DAILY_CHALLENGE,
+  [Scene_GameFractions]: GAME_LABEL_FRACTIONS,
 }
 
 export const ALL_GAMES = Object.keys(SCENE_TO_LABEL)

@@ -206,18 +206,15 @@ class Equation {
   static getSolution(obj) {
     return Phrase.getSolution(obj.phrase)
   }
+
+  /**
+   * @param {number} val
+   * @param {GameSettings} settings
+   * @returns {number}
+   */
+  static roundIfNeeded(val, settings) {
+    return roundIfNeeded(val, settings)
+  }
 }
 
 export default Equation
-
-/*
-
-
- 0              20
- | ------------ |
-
-A = 17
-0              20
- | ---------A-- |
-
- */
