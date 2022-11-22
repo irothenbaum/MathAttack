@@ -5,17 +5,23 @@ import useColorsControl from '../../hooks/useColorsControl'
 import {selectRandom} from '../../lib/utilities'
 import UIText from '../UIText'
 import useAnimationStation from '../../hooks/useAnimationStation'
-import {font4} from '../../styles/typography'
+import {font3} from '../../styles/typography'
+import {spaceExtraSmall, spaceSmall} from '../../styles/layout'
+import {BoxShadow} from '../../styles/elements'
 
 const REACTIONS = ['Awesome!', 'Nice!', 'Spot on!', 'Bingo!', 'Too easy!', 'Yes!', 'Perfect!', 'Genius!']
 
 function AnswerReaction(props) {
-  const {orange, shadow} = useColorsControl()
+  const {orange, green, red, magenta, yellow, blue, background, shadow} = useColorsControl()
   const [reaction, setReaction] = useState('')
   const {animate, isAnimating, animation} = useAnimationStation()
+  const [color, setColor] = useState(orange)
+  const [rotation, setRotation] = useState(0)
 
   useEffect(() => {
     setReaction(selectRandom(REACTIONS))
+    setColor(selectRandom([orange, green, red, magenta, yellow, blue]))
+    setRotation(selectRandom(40) - 20)
     animate(props.duration)
   }, [props.duration])
 
@@ -25,13 +31,13 @@ function AnswerReaction(props) {
         style={[
           styles.reaction,
           {
-            textShadowColor: shadow,
-            transform: [{rotateZ: `-15deg`}],
-            color: orange,
+            transform: [{rotateZ: `${rotation}deg`}],
+            backgroundColor: color,
+            color: background,
             marginTop: isAnimating
               ? animation.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [20, -20],
+                  outputRange: [30, -30],
                 })
               : 0,
             opacity: isAnimating
@@ -58,10 +64,12 @@ const styles = StyleSheet.create({
   },
 
   reaction: {
-    textShadowOffset: {width: 0, height: 2},
-    textShadowRadius: 10,
+    ...BoxShadow,
+    paddingHorizontal: spaceSmall,
+    paddingVertical: spaceExtraSmall,
+    borderRadius: 4,
     fontWeight: 'bold',
-    fontSize: font4,
+    fontSize: font3,
   },
 })
 

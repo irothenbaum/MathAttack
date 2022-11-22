@@ -21,6 +21,9 @@ const settingsSlice = createSlice({
     setMuteSounds: (state, {payload}) => {
       state.muteSounds = payload
     },
+    setDisableVibration: (state, {payload}) => {
+      state.disableVibration = payload
+    },
     setColorScheme: (state, {payload}) => {
       state.colorScheme = payload
     },
@@ -35,6 +38,7 @@ export const setDecimalPlaces = (places) => (dispatch) => dispatch(settingsSlice
 export const setEquationDuration = (durationMS) => (dispatch) => dispatch(settingsSlice.actions.setEquationDuration(durationMS))
 export const setAutoSubmitCorrect = (isActive) => (dispatch) => dispatch(settingsSlice.actions.setAutoSubmitCorrect(isActive))
 export const setMuteSounds = (isMuted) => (dispatch) => dispatch(settingsSlice.actions.setMuteSounds(isMuted))
+export const setDisableVibration = (isDisabled) => (dispatch) => dispatch(settingsSlice.actions.setDisableVibration(isDisabled))
 export const hydrateFromCache = (payload) => (dispatch) => dispatch(settingsSlice.actions.hydrateFromCache(payload))
 export const setColorScheme = (payload) => (dispatch) => dispatch(settingsSlice.actions.setColorScheme(payload))
 

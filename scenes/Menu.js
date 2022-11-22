@@ -146,14 +146,6 @@ function Menu() {
             blurCount={3}
           />
         </View>
-        <View style={styles.gameButtonContainer}>
-          <MenuButton
-            size={MenuButton.SIZE_SMALL}
-            title={GAME_LABEL_VERSUS}
-            onPress={() => play(Scene_GameDailyChallenge, {equation: serializeObject(new Equation(new Phrase(13, '+', 14)))})}
-            icon={Versus}
-          />
-        </View>
 
         <View style={styles.footnoteContainer}>
           <NormalText style={styles.footnote}>v{pjson.version}</NormalText>

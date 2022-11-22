@@ -26,6 +26,7 @@ import {faMedal} from '@fortawesome/free-solid-svg-icons/faMedal'
 import {faUpRightAndDownLeftFromCenter} from '@fortawesome/free-solid-svg-icons/faUpRightAndDownLeftFromCenter'
 import {faFire} from '@fortawesome/free-solid-svg-icons/faFire'
 import {faCalendarCheck} from '@fortawesome/free-solid-svg-icons/faCalendarCheck'
+import {faWaveSquare} from '@fortawesome/free-solid-svg-icons/faWaveSquare'
 import useColorsControl from '../hooks/useColorsControl'
 
 function Icon(props) {
@@ -65,6 +66,8 @@ export const Settings = faCog
 export const Versus = faFistRaised
 export const VolumeOn = faVolumeHigh
 export const VolumeOff = faVolumeMute
+export const VibrateOn = faWaveSquare
+export const VibrateOff = faSubtract
 export const X = faTimes
 
 Icon.propTypes = {

@@ -11,6 +11,7 @@ import {
   setAutoSubmitCorrect,
   setColorScheme,
   setDecimalPlaces,
+  setDisableVibration,
   setMinMaxValues,
   setMuteSounds,
 } from '../redux/SettingsSlice'
@@ -19,7 +20,7 @@ import {Scene_Menu} from '../constants/scenes'
 import BooleanInput from '../components/BooleanInput'
 import DefaultSettings from '../models/GameSettings'
 import UIText from '../components/UIText'
-import Icon, {ArrowLeft, VolumeOff, VolumeOn} from '../components/Icon'
+import Icon, {ArrowLeft, VibrateOff, VibrateOn, VolumeOff, VolumeOn} from '../components/Icon'
 import MenuButton from '../components/MenuButton'
 import {ALL_GAMES, COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM} from '../constants/game'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -145,10 +146,17 @@ function Settings() {
             </View>
             <BooleanInput
               style={styles.inputRow}
-              value={settings.muteSounds}
-              onChange={(v) => dispatch(setMuteSounds(v))}
-              label={'Mute sounds'}
+              value={!settings.muteSounds}
+              onChange={(v) => dispatch(setMuteSounds(!v))}
+              label={'Sounds'}
               icon={settings.muteSounds ? VolumeOff : VolumeOn}
+            />
+            <BooleanInput
+              style={styles.inputRow}
+              value={!settings.disableVibration}
+              onChange={(v) => dispatch(setDisableVibration(!v))}
+              label={'Vibration'}
+              icon={settings.disableVibration ? VibrateOff : VibrateOn}
             />
             <NumberInput
               style={styles.inputRow}

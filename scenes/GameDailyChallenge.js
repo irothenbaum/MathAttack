@@ -37,6 +37,7 @@ import GameResult from '../models/GameResult'
 import {font1, font2} from '../styles/typography'
 import AnswerReaction from '../components/FX/AnswerReaction'
 import TitleText from '../components/TitleText'
+import useReduxPersist from '../hooks/useReduxPersist'
 
 const NEXT_QUESTION_TIMER = 'next-question-timer'
 const NEXT_QUESTION_TIMEOUT = 1000
@@ -60,9 +61,11 @@ function GameDailyChallenge() {
   const currentQuestion = useSelector(selectCurrentQuestion)
   const [countCorrect, setCountCorrect] = useState(0)
   const [hasAnsweredQuestion, setHasAnsweredQuestion] = useState(false)
+  const {flush} = useReduxPersist()
 
   useEffect(() => {
     if (!sceneParams || !sceneParams.equation) {
+      console.log('Missing scene params', sceneParams)
       // this shouldn't happen, but if it does we'll just make up a question
       dispatch(setCurrentQuestion(GameQuestion.getRandomFromSettings(gameSettings)))
     } else {
@@ -81,6 +84,7 @@ function GameDailyChallenge() {
     const gameResult = new GameResult(Scene_GameDailyChallenge, results, '')
     dispatch(recordHighScore(gameResult))
     setIsGameOver(true)
+    flush().then()
   }
 
   const handleGuess = () => {

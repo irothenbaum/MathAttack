@@ -32,6 +32,7 @@ import LoadingSplash from './components/LoadingSplash'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {scheduleReminders} from './lib/dailyChallenge'
 import GameDailyChallenge from './scenes/GameDailyChallenge'
+import NotificationHelper from './lib/NotificationHelper'
 
 const SceneMap = {
   [Scene_Menu]: Menu,
@@ -64,7 +65,9 @@ function MathAttack() {
   const {flush, hydrate} = useReduxPersist()
 
   useEffect(() => {
-    hydrate().then(() => setIsReady(true))
+    hydrate()
+      .then(() => NotificationHelper.Instance().handleInitialNotification())
+      .then(() => setIsReady(true))
   }, [])
 
   useEffect(() => {
