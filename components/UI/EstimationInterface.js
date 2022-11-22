@@ -1,15 +1,15 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import {Animated, PanResponder, View, StyleSheet} from 'react-native'
+import {Animated, View, StyleSheet} from 'react-native'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectGameSettings, selectUserAnswer} from '../../redux/selectors'
 import UIText from '../UIText'
-import {font2, font3, font1} from '../../styles/typography'
+import {font2} from '../../styles/typography'
 import {spaceDefault} from '../../styles/layout'
 import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
 import PropTypes from 'prop-types'
-import Icon, {ArrowLeft} from '../Icon'
 import useColorsControl from '../../hooks/useColorsControl'
+import {VerticalDraggableCircle, SLIDER_SIZE} from './DraggableCircle'
 
 const numberOfSteps = 10
 
@@ -75,7 +75,7 @@ function EstimationInterface(props) {
             styles.timerBar,
             {
               backgroundColor: foreground,
-              left: -8,
+              left: -timerBarWidth,
             },
           ]}
         >
@@ -121,8 +121,7 @@ function EstimationInterface(props) {
   )
 }
 
-const sliderSize = 70
-const halfSlider = sliderSize / 2
+const halfSlider = SLIDER_SIZE / 2
 const rulerFontSize = font2
 const timerBarWidth = 8
 const markerWidth = 30
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     height: '100%',
-    width: 8,
+    width: timerBarWidth,
   },
 
   container: {
@@ -190,30 +189,6 @@ const styles = StyleSheet.create({
     fontSize: rulerFontSize,
   },
 
-  slider: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    backgroundColor: 'rgba(255,255,255,0.5)',
-    bottom: 0,
-    right: 0,
-    zIndex: 10,
-    opacity: 0, // we're using this to hide the slider until startingPosition is established
-    borderWidth: 4,
-    borderRadius: halfSlider,
-    height: sliderSize,
-    width: sliderSize,
-  },
-
-  sliderActive: {
-    backgroundColor: 'rgba(255,255,255, 0.3)',
-  },
-
-  sliderInActive: {
-    backgroundColor: 'rgba(255,255,255, 1)',
-  },
-
   sliderContainer: {
     position: 'absolute',
     top: halfSlider,
@@ -237,7 +212,7 @@ EstimationInterface.propTypes = {
 export default EstimationInterface
 
 /**
- * @typedef CorrectAnswerDetails
+ * @typedef CorrectVerticalAnswerDetails
  * @property {number} guess
  * @property {number} guessTop
  * @property {number} answer
@@ -254,8 +229,8 @@ function Slider(props) {
   const settings = useSelector(selectGameSettings)
   const [startingPosition, setStartingPosition] = useState(undefined)
   const currentQuestion = useSelector(selectCurrentQuestion)
-  /** @type {CorrectAnswerDetails} correctAnswerDetails */
-  const [correctAnswerDetails, setCorrectAnswerDetails] = useState(undefined)
+  /** @type {CorrectVerticalAnswerDetails} correctAnswerDetails */
+  const [correctAnswerDetails, setCorrectVerticalAnswerDetails] = useState(undefined)
 
   const range = settings.maxValue - settings.minValue
 
@@ -264,7 +239,7 @@ function Slider(props) {
   const getAnswerFromTopValue = useCallback(
     (topValue) => {
       const rawAnswer = ((containerHeight - (topValue + halfSlider)) / containerHeight) * range + settings.minValue
-      return settings.decimalPlaces > 0 ? rawAnswer.toFixed(1) : Math.round(rawAnswer)
+      return settings.decimalPlaces > 0 ? parseFloat(rawAnswer.toFixed(1)) : Math.round(rawAnswer)
     },
     [containerHeight, range, settings],
   )
@@ -293,7 +268,7 @@ function Slider(props) {
     const guessPosition = top + halfSlider
     const correctAnswer = Equation.getSolution(currentQuestion.equation)
     const correctPosition = getTopFromAnswerValue(correctAnswer)
-    setCorrectAnswerDetails({
+    setCorrectVerticalAnswerDetails({
       answer: correctAnswer,
       answerTop: correctPosition,
       guess: guess,
@@ -330,95 +305,16 @@ function Slider(props) {
         />
       )}
       {typeof startingPosition === 'number' && (
-        <DraggableCircle
+        <VerticalDraggableCircle
           showDecimals={settings.decimalPlaces > 0}
           value={tempValue}
           startingPosition={startingPosition}
-          minTop={-halfSlider}
-          maxTop={containerHeight - halfSlider}
+          minVal={-halfSlider}
+          maxVal={containerHeight - halfSlider}
           onDrag={handleSlide}
           onDragComplete={handleSubmitAnswer}
         />
       )}
     </View>
   )
-}
-
-/**
- * @see https://necolas.github.io/react-native-web/docs/pan-responder/
- */
-class DraggableCircle extends React.Component {
-  constructor(props) {
-    super(props)
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: this._handlePanResponderGrant.bind(this),
-      onPanResponderMove: this._handlePanResponderMove,
-      onPanResponderRelease: this._handlePanResponderEnd,
-      onPanResponderTerminate: this._handlePanResponderEnd,
-    })
-    this._isPressed = false
-    this._previousTop = 0
-    this._circleTopStyle = this._previousTop
-  }
-
-  _normalizeTopValue(top) {
-    return Math.min(Math.max(this._previousTop + top, this.props.minTop), this.props.maxTop)
-  }
-
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    if (typeof nextProps.startingPosition === 'number' && nextProps.startingPosition !== this._startingTop && !this._isPressed) {
-      this._startingTop = nextProps.startingPosition
-      this._previousTop = this._circleTopStyle = this._normalizeTopValue(nextProps.startingPosition)
-      this._updateNativeStyles()
-    }
-    return nextProps.value !== this.props.value
-  }
-
-  componentDidMount() {
-    this._updateNativeStyles()
-  }
-
-  render() {
-    const mainValue = this.props.showDecimals ? parseInt(this.props.value) : Math.round(this.props.value)
-    const decimal = (this.props.value - mainValue).toFixed(3).substr(1)
-
-    return (
-      <View ref={(c) => (this.circle = c)} style={styles.slider} {...this._panResponder.panHandlers}>
-        <Icon style={{position: 'absolute', left: -22}} icon={ArrowLeft} />
-        <UIText style={{alignSelf: 'center', lineHeight: font3}}>{mainValue}</UIText>
-        {this.props.showDecimals && <UIText style={{alignSelf: 'center', fontSize: font1, lineHeight: font1}}>{decimal}</UIText>}
-      </View>
-    )
-  }
-
-  _updateNativeStyles() {
-    this.circle &&
-      this.circle.setNativeProps({
-        style: {
-          opacity: typeof this._startingTop === 'number' ? 1 : 0,
-          top: this._circleTopStyle,
-          ...(this._isPressed ? styles.sliderActive : styles.sliderInActive),
-        },
-      })
-  }
-
-  _handlePanResponderGrant() {
-    this._isPressed = true
-    this._updateNativeStyles()
-  }
-
-  _handlePanResponderMove = (e: Object, gestureState: Object) => {
-    this._circleTopStyle = this._normalizeTopValue(gestureState.dy)
-    this.props.onDrag(this._circleTopStyle)
-    this._updateNativeStyles()
-  }
-
-  _handlePanResponderEnd = (e: Object, gestureState: Object) => {
-    this._previousTop = this._circleTopStyle
-    this.props.onDragComplete(this._previousTop)
-    this._isPressed = false
-    this._updateNativeStyles()
-  }
 }

@@ -5,7 +5,7 @@ import useColorsControl from '../hooks/useColorsControl'
 import useSoundPlayer from '../hooks/useSoundPlayer'
 import useVibration from '../hooks/useVibration'
 import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
-import {generateNewEstimationQuestion, recordAnswer} from '../redux/GameSlice'
+import {generateNewFractionsQuestion, recordAnswer} from '../redux/GameSlice'
 import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
@@ -17,13 +17,14 @@ import GameBackground from '../components/FX/GameBackground'
 import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
 import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
 import {getVibrateStylesForAnimation} from '../lib/utilities'
-import ComplexEquationComponent from '../components/ComplexEquationComponent'
 import UIText from '../components/UIText'
 import Equation from '../models/Equation'
 import FractionInterface from '../components/UI/FractionInterface'
 import {ScreenContainer} from '../styles/elements'
-import {spaceDefault, spaceLarge} from '../styles/layout'
+import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
 import {font4} from '../styles/typography'
+import Phrase from '../models/Phrase'
+import TitleText from '../components/TitleText'
 
 function GameFractions(props) {
   const gameSettings = useSelector(selectGameSettings)
@@ -45,7 +46,7 @@ function GameFractions(props) {
     isAnimatingForCorrect,
     isShowingAnswer,
     questionsRemaining,
-  } = useClassicAnswerSystem(gameSettings.equationDuration, gameSettings.classicNumberOfRounds, generateNewEstimationQuestion)
+  } = useClassicAnswerSystem(gameSettings.equationDuration, gameSettings.classicNumberOfRounds, generateNewFractionsQuestion)
 
   const handleGuess = () => {
     if (!currentQuestion || isShowingAnswer) {
@@ -72,11 +73,12 @@ function GameFractions(props) {
   }
 
   const handleGameStart = () => {
-    dispatch(generateNewEstimationQuestion())
+    dispatch(generateNewFractionsQuestion())
     dispatch(setAnswer(0))
   }
 
   const answerColor = isShowingAnswer ? getResultColor(isAnimatingForCorrect) : foreground
+  const [numerator, denominator] = currentQuestion ? Phrase.getDiscreteTerms(currentQuestion.equation.phrase) : [0, 0]
 
   return (
     <View style={styles.window}>
@@ -113,8 +115,22 @@ function GameFractions(props) {
           ]}
         >
           <View style={styles.questionContainer}>
-            {currentQuestion && <ComplexEquationComponent equation={currentQuestion.equation} />}
+            {currentQuestion && (
+              <View style={styles.questionContainer}>
+                <TitleText>{numerator}</TitleText>
+                <View style={[styles.divider, {backgroundColor: foreground}]} />
+                <TitleText>{denominator}</TitleText>
+              </View>
+            )}
           </View>
+          <FractionInterface
+            onChangeTempAnswer={setTempAnswer}
+            onSubmitAnswer={handleGuess}
+            equationTimer={equationTimer}
+            isAnimatingNextQuestion={isShowingAnswer}
+            isAnimatingForCorrect={isAnimatingForCorrect}
+            answerReactionAnimation={animation}
+          />
           <Pressable onPress={handleGuess} style={{width: '100%'}}>
             <View style={[styles.answerContainer, {borderColor: shadow}]}>
               <UIText style={[styles.answerText, {color: answerColor}]}>
@@ -123,14 +139,6 @@ function GameFractions(props) {
             </View>
           </Pressable>
         </Animated.View>
-        <FractionInterface
-          onChangeTempAnswer={setTempAnswer}
-          onSubmitAnswer={handleGuess}
-          equationTimer={equationTimer}
-          isAnimatingNextQuestion={isShowingAnswer}
-          isAnimatingForCorrect={isAnimatingForCorrect}
-          answerReactionAnimation={animation}
-        />
       </View>
     </View>
   )
@@ -162,6 +170,7 @@ const styles = StyleSheet.create({
   },
 
   answerContainer: {
+    marginTop: spaceDefault,
     padding: spaceDefault,
     paddingRight: spaceLarge,
     borderTopWidth: 2,
@@ -183,6 +192,12 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  divider: {
+    width: '30%',
+    height: 6,
+    marginVertical: spaceSmall,
   },
 })
 

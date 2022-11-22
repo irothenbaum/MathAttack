@@ -4,6 +4,7 @@ import {
   Scene_GameCrescendo,
   Scene_GameDailyChallenge,
   Scene_GameEstimate,
+  Scene_GameFractions,
   Scene_GameMarathon,
   Scene_GameVersus,
 } from '../constants/scenes'
@@ -23,6 +24,7 @@ function usePlayGame() {
         case Scene_GameMarathon:
         case Scene_GameVersus:
         case Scene_GameClassic:
+        case Scene_GameFractions:
         case Scene_GameDailyChallenge:
           dispatch(startNewGame(game, settings))
           dispatch(goToScene(game, sceneParams))

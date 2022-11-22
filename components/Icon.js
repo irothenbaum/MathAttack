@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import {font3} from '../styles/typography'
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons/faChevronRight'
+import {faChevronUp} from '@fortawesome/free-solid-svg-icons/faChevronUp'
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes'
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck'
 import {faStar} from '@fortawesome/free-solid-svg-icons/faStar'
@@ -45,6 +46,7 @@ function Icon(props) {
 
 export const ArrowLeft = faChevronLeft
 export const ArrowRight = faChevronRight
+export const ArrowUp = faChevronUp
 export const Check = faCheck
 export const CircleActive = faCircle
 export const CircleInactive = faDotCircle
