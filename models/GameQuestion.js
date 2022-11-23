@@ -1,6 +1,7 @@
 import Equation from './Equation'
 import Phrase, {OPERATION_DIVIDE} from './Phrase'
 import {OPERATION_ADD, OPERATION_SUBTRACT} from './Phrase'
+import {v4 as uuid} from 'uuid'
 
 class GameQuestion {
   /**
@@ -9,6 +10,7 @@ class GameQuestion {
    * @param {number} expiresAt
    */
   constructor(equation, createdAt, expiresAt) {
+    this.id = uuid()
     this.equation = equation
     this.createdAt = createdAt
     this.expiresAt = expiresAt
@@ -50,7 +52,11 @@ class GameQuestion {
       gameSettings,
     )
 
-    return new GameQuestion(new Equation(new Phrase(numerator, OPERATION_DIVIDE, denominator)))
+    return new GameQuestion(
+      new Equation(new Phrase(numerator, OPERATION_DIVIDE, denominator)),
+      Date.now(),
+      Date.now() + gameSettings.equationDuration,
+    )
   }
 
   /**

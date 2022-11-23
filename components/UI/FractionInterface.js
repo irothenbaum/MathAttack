@@ -9,6 +9,7 @@ import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
 import NormalText from '../NormalText'
 import FractionQuestionResult from '../../models/FractionQuestionResult'
+import ClickHereTip from './ClickHereTip'
 
 const halfSlider = SLIDER_SIZE / 2
 
@@ -18,12 +19,21 @@ function FractionInterface(props) {
   const {foreground, green, red, blue} = useColorsControl()
   const answer = useSelector(selectUserAnswer)
   const settings = useSelector(selectGameSettings)
+  const [hasMovedSlider, setHasMovedSlider] = useState(false)
 
   useEffect(() => {
     if (settings.autoSubmit && answer) {
       props.onSubmitAnswer(answer)
     }
   }, [answer])
+
+  const handleSlide = (v, t) => {
+    if (!hasMovedSlider) {
+      setHasMovedSlider(true)
+    }
+
+    props.onChangeTempAnswer(v)
+  }
 
   return (
     <View style={styles.container}>
@@ -59,9 +69,10 @@ function FractionInterface(props) {
           <NormalText style={styles.boxLabelText}>1</NormalText>
         </View>
         <Slider
-          onSlide={(v, t) => props.onChangeTempAnswer(v)}
+          onSlide={handleSlide}
           showCorrectAnswer={props.isAnimatingNextQuestion}
           isAnswerCorrect={props.isAnimatingForCorrect}
+          showTip={!hasMovedSlider}
         />
       </View>
     </View>
@@ -162,7 +173,7 @@ export default FractionInterface
 function Slider(props) {
   const {green, red, orange} = useColorsControl()
   const [containerWidth, setContainerWidth] = useState(undefined)
-  const [tempValue, setTempValue] = useState(0)
+  const [tempValue, setTempValue] = useState(0.5)
   const settings = useSelector(selectGameSettings)
   const [startingPosition, setStartingPosition] = useState(undefined)
   const currentQuestion = useSelector(selectCurrentQuestion)
@@ -244,6 +255,16 @@ function Slider(props) {
       {!showCorrectAnswerMarker && (
         <View style={[styles.selectedBox, {borderColor: green, backgroundColor: orange, width: getLeftFromAnswerValue(tempValue) || 0}]} />
       )}
+      <View style={{position: 'absolute', bottom: -(SLIDER_SIZE + TAIL_SIZE), width: '100%', height: '100%'}}>
+        <ClickHereTip
+          style={{
+            alignSelf: 'center',
+            position: 'static',
+            width: 3 * SLIDER_SIZE,
+          }}
+          show={props.showTip}
+        />
+      </View>
       {typeof startingPosition === 'number' && (
         <HorizontalDraggableCircle
           showDecimals={false}
@@ -264,5 +285,7 @@ function Slider(props) {
 Slider.propTypes = {
   isAnswerCorrect: PropTypes.bool,
   showCorrectAnswer: PropTypes.bool,
+  style: PropTypes.any,
   onSlide: PropTypes.func,
+  showTip: PropTypes.bool,
 }

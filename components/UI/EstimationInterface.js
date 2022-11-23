@@ -4,12 +4,13 @@ import {useDispatch, useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectGameSettings, selectUserAnswer} from '../../redux/selectors'
 import UIText from '../UIText'
 import {font2} from '../../styles/typography'
-import {spaceDefault} from '../../styles/layout'
+import {spaceDefault, spaceLarge} from '../../styles/layout'
 import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
 import PropTypes from 'prop-types'
 import useColorsControl from '../../hooks/useColorsControl'
 import {VerticalDraggableCircle, SLIDER_SIZE} from './DraggableCircle'
+import ClickHereTip from './ClickHereTip'
 
 const numberOfSteps = 10
 
@@ -42,6 +43,7 @@ function EstimationInterface(props) {
   const [bottomNotchTopPosition, setBottomNotchTopPosition] = useState(1)
   const answer = useSelector(selectUserAnswer)
   const settings = useSelector(selectGameSettings)
+  const [hasMovedSlider, setHasMovedSlider] = useState(false)
 
   useEffect(() => {
     if (settings.autoSubmit && answer) {
@@ -53,6 +55,14 @@ function EstimationInterface(props) {
   const range = settings.maxValue - settings.minValue
   const stepSize = range / numberOfSteps
 
+  const handleSlide = (v, t) => {
+    if (!hasMovedSlider) {
+      setHasMovedSlider(true)
+    }
+
+    props.onChangeTempAnswer(v)
+  }
+
   return (
     <View
       style={styles.container}
@@ -62,7 +72,8 @@ function EstimationInterface(props) {
       }}
     >
       <Slider
-        onSlide={(v, t) => props.onChangeTempAnswer(v)}
+        onSlide={handleSlide}
+        showTip={!hasMovedSlider}
         style={{
           top: topNotchTopPosition + fontSizeAdjust,
           bottom: containerBottomPosition - fontSizeAdjust - bottomNotchTopPosition,
@@ -304,6 +315,9 @@ function Slider(props) {
           ]}
         />
       )}
+      <View style={{position: 'absolute', width: SLIDER_SIZE * 2, bottom: 0, right: -spaceDefault}}>
+        <ClickHereTip show={props.showTip} />
+      </View>
       {typeof startingPosition === 'number' && (
         <VerticalDraggableCircle
           showDecimals={settings.decimalPlaces > 0}
@@ -317,4 +331,11 @@ function Slider(props) {
       )}
     </View>
   )
+}
+
+Slider.propTypes = {
+  showCorrectAnswer: PropTypes.bool,
+  style: PropTypes.any,
+  onSlide: PropTypes.func,
+  showTip: PropTypes.bool,
 }

@@ -2,6 +2,7 @@ import QuestionResult from './QuestionResult'
 import Equation from './Equation'
 import Phrase from './Phrase'
 import {ANSWER_TIMEOUT} from '../constants/game'
+import {applyTimeBoostToScore} from '../lib/utilities'
 
 class EstimationQuestionResult extends QuestionResult {
   /**
@@ -57,10 +58,11 @@ class EstimationQuestionResult extends QuestionResult {
     // take this as a ratio over over the correct answer
     const accuracyRatio = (correctAnswer - accuracy) / correctAnswer
 
-    // boosted by the inverse number of seconds
-    const finalValue = Math.floor((complexity * accuracyRatio) / (obj.timeToAnswerMS / 1000))
+    const answerValue = complexity * accuracyRatio
 
-    return Math.max(finalValue, 0)
+    console.log(answerValue, obj.timeToAnswerMS)
+
+    return applyTimeBoostToScore(answerValue, obj.timeToAnswerMS)
   }
 }
 

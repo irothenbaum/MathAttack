@@ -1,6 +1,6 @@
 import DefaultResultsHeader from './DefaultResultsHeader'
 import {FlatList} from 'react-native'
-import {Scene_GameEstimate} from '../../constants/scenes'
+import {Scene_GameEstimate, Scene_GameFractions} from '../../constants/scenes'
 import EstimationRoundResult from './EstimationRoundResult'
 import DefaultRoundResult from './DefaultRoundResult'
 import BottomPanel from '../BottomPanel'
@@ -8,6 +8,7 @@ import React from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectViewingGameResult} from '../../redux/selectors'
 import {setViewingGameResult} from '../../redux/HighScoresSlice'
+import FractionRoundResult from './FractionRoundResult'
 
 function SingleGameResultBottomPanel() {
   const dispatch = useDispatch()
@@ -23,6 +24,8 @@ function SingleGameResultBottomPanel() {
           renderItem={({item, index}) =>
             selectedScore.game === Scene_GameEstimate ? (
               <EstimationRoundResult count={index + 1} result={item} />
+            ) : selectedScore.game === Scene_GameFractions ? (
+              <FractionRoundResult count={index + 1} result={item} />
             ) : (
               <DefaultRoundResult count={index + 1} result={item} />
             )

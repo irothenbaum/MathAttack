@@ -1,6 +1,7 @@
 import {ANSWER_TIMEOUT} from '../constants/game'
 import Equation from './Equation'
 import Phrase from './Phrase'
+import {applyTimeBoostToScore} from '../lib/utilities'
 
 class QuestionResult {
   /**
@@ -37,6 +38,7 @@ class QuestionResult {
    * @returns {number}
    */
   static getQuestionComplexity(obj) {
+    // TODO: More points for * and /, no?
     return Phrase.getDiscreteTerms(obj.question.equation.phrase)
       .concat(obj.answer)
       .reduce((sum, t) => {
@@ -52,16 +54,8 @@ class QuestionResult {
     if (!QuestionResult.isCorrect(obj)) {
       return 0
     }
-
     const complexity = QuestionResult.getQuestionComplexity(obj)
-
-    return Math.floor(
-      complexity + complexity / (Math.max(1, obj.timeToAnswerMS) / 1000), // boosted by the inverse number of seconds
-      // If you answer a question in 0.5 seconds, you get 3x the complexity
-      // if you answer in 1 second, you get 2x the complexity.
-      // if you answer it in 2 seconds you get 1.5x the complexity
-      // if you answer it in 10 seconds you get 1.1x the complexity
-    )
+    return applyTimeBoostToScore(complexity, obj.timeToAnswerMS)
   }
 }
 
