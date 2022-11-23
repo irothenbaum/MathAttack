@@ -28,7 +28,7 @@ const GameSettings = {
   allowNegative: true,
 
   // classic
-  equationDuration: 50000000, // 5000,
+  equationDuration: 5000,
   classicNumberOfRounds: 6,
 
   // marathon:

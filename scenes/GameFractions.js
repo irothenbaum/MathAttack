@@ -6,7 +6,7 @@ import useSoundPlayer from '../hooks/useSoundPlayer'
 import useVibration from '../hooks/useVibration'
 import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
 import {generateNewFractionsQuestion, recordAnswer} from '../redux/GameSlice'
-import EstimationQuestionResult from '../models/EstimationQuestionResult'
+import FractionQuestionResult from '../models/FractionQuestionResult'
 import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
 import {setAnswer} from '../redux/UISlice'
@@ -28,7 +28,7 @@ import TitleText from '../components/TitleText'
 
 function GameFractions(props) {
   const gameSettings = useSelector(selectGameSettings)
-  const {shadow, shadowStrong, foreground, getResultColor} = useColorsControl()
+  const {shadow, sunbeamStrong, foreground, getResultColor} = useColorsControl()
   const currentQuestion = useSelector(selectCurrentQuestion)
   const answer = useSelector(selectUserAnswer)
   const dispatch = useDispatch()
@@ -53,11 +53,11 @@ function GameFractions(props) {
       return
     }
 
-    let result = new EstimationQuestionResult(currentQuestion, answer)
+    let result = new FractionQuestionResult(currentQuestion, answer)
     dispatch(recordAnswer(answer))
-    const isPerfect = EstimationQuestionResult.isPerfect(result)
+    const isPerfect = FractionQuestionResult.isPerfect(result)
     setIsPerfectAnswer(isPerfect)
-    if (EstimationQuestionResult.isCorrect(result)) {
+    if (FractionQuestionResult.isCorrect(result)) {
       animateCorrect()
       if (isPerfect) {
         playSound(SOUND_CORRECT_CHIME).then()
@@ -80,6 +80,8 @@ function GameFractions(props) {
   const answerColor = isShowingAnswer ? getResultColor(isAnimatingForCorrect) : foreground
   const [numerator, denominator] = currentQuestion ? Phrase.getDiscreteTerms(currentQuestion.equation.phrase) : [0, 0]
 
+  const formattedAnswerValue = (isShowingAnswer ? Equation.getSolution(currentQuestion.equation) : answer || tempAnswer).toFixed(2)
+
   return (
     <View style={styles.window}>
       <InGameMenu />
@@ -91,7 +93,7 @@ function GameFractions(props) {
           style={[
             styles.perfectAnswer,
             {
-              backgroundColor: shadowStrong,
+              backgroundColor: sunbeamStrong,
               opacity: animation
                 ? animation.interpolate({
                     inputRange: [0, 0.1],
@@ -108,19 +110,19 @@ function GameFractions(props) {
       <RoundsRemainingUI style={{flexShrink: 0}} remaining={questionsRemaining} total={gameSettings.classicNumberOfRounds} />
 
       <View style={styles.innerContainer}>
-        <Animated.View
-          style={[
-            styles.questionAndAnswerContainer,
-            !!animation && !isAnimatingForCorrect ? getVibrateStylesForAnimation(animation, null, 0.25) : null,
-          ]}
-        >
+        <View style={styles.questionAndAnswerContainer}>
           <View style={styles.questionContainer}>
             {currentQuestion && (
-              <View style={styles.questionContainer}>
+              <Animated.View
+                style={[
+                  styles.questionContainer,
+                  !!animation && !isAnimatingForCorrect ? getVibrateStylesForAnimation(animation, null, 0.25) : null,
+                ]}
+              >
                 <TitleText>{numerator}</TitleText>
                 <View style={[styles.divider, {backgroundColor: foreground}]} />
                 <TitleText>{denominator}</TitleText>
-              </View>
+              </Animated.View>
             )}
           </View>
           <FractionInterface
@@ -133,12 +135,10 @@ function GameFractions(props) {
           />
           <Pressable onPress={handleGuess} style={{width: '100%'}}>
             <View style={[styles.answerContainer, {borderColor: shadow}]}>
-              <UIText style={[styles.answerText, {color: answerColor}]}>
-                {isShowingAnswer ? Equation.getSolution(currentQuestion.equation) : answer || tempAnswer}
-              </UIText>
+              <UIText style={[styles.answerText, {color: answerColor}]}>{formattedAnswerValue}</UIText>
             </View>
           </Pressable>
-        </Animated.View>
+        </View>
       </View>
     </View>
   )

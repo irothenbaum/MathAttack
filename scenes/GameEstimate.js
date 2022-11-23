@@ -27,7 +27,7 @@ import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
 
 function GameEstimate() {
   const gameSettings = useSelector(selectGameSettings)
-  const {shadow, shadowStrong, foreground, getResultColor} = useColorsControl()
+  const {shadow, sunbeamStrong, foreground, getResultColor} = useColorsControl()
   const currentQuestion = useSelector(selectCurrentQuestion)
   const answer = useSelector(selectUserAnswer)
   const dispatch = useDispatch()
@@ -89,7 +89,7 @@ function GameEstimate() {
           style={[
             styles.perfectAnswer,
             {
-              backgroundColor: shadowStrong,
+              backgroundColor: sunbeamStrong,
               opacity: animation
                 ? animation.interpolate({
                     inputRange: [0, 0.1],

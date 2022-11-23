@@ -7,6 +7,8 @@ import useColorsControl from '../../hooks/useColorsControl'
 import {HorizontalDraggableCircle, SLIDER_SIZE, TAIL_SIZE} from './DraggableCircle'
 import Equation from '../../models/Equation'
 import {setAnswer} from '../../redux/UISlice'
+import NormalText from '../NormalText'
+import FractionQuestionResult from '../../models/FractionQuestionResult'
 
 const halfSlider = SLIDER_SIZE / 2
 
@@ -50,7 +52,17 @@ function FractionInterface(props) {
       </View>
 
       <View style={[styles.box, {backgroundColor: blue}]}>
-        <Slider onSlide={(v, t) => props.onChangeTempAnswer(v)} showCorrectAnswer={props.isAnimatingNextQuestion} />
+        <View style={[styles.boxLabel, {left: 0, backgroundColor: foreground}]}>
+          <NormalText style={styles.boxLabelText}>0</NormalText>
+        </View>
+        <View style={[styles.boxLabel, {right: 0, backgroundColor: foreground}]}>
+          <NormalText style={styles.boxLabelText}>1</NormalText>
+        </View>
+        <Slider
+          onSlide={(v, t) => props.onChangeTempAnswer(v)}
+          showCorrectAnswer={props.isAnimatingNextQuestion}
+          isAnswerCorrect={props.isAnimatingForCorrect}
+        />
       </View>
     </View>
   )
@@ -58,7 +70,9 @@ function FractionInterface(props) {
 
 const timerBarHeight = 8
 const markerWidth = 30
-const barHeight = 100
+const barHeight = 50
+
+const overflowMarkingAmount = 8
 
 const styles = StyleSheet.create({
   container: {
@@ -69,6 +83,23 @@ const styles = StyleSheet.create({
     height: barHeight,
     marginBottom: SLIDER_SIZE + TAIL_SIZE,
     width: '100%',
+    overflow: 'visible',
+  },
+
+  boxLabel: {
+    position: 'absolute',
+    top: -overflowMarkingAmount,
+    bottom: -overflowMarkingAmount,
+    width: 2,
+    overflow: 'visible',
+    zIndex: 6, //
+  },
+
+  boxLabelText: {
+    position: 'absolute',
+    top: -30, // this is to get the text above the measure line
+    left: -6, // this is to center the txt over the measure line
+    width: 15, // this is to ensure enough space to print the text
   },
 
   timerBar: {
@@ -85,18 +116,15 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     right: 0,
-    zIndex: 10,
+    zIndex: 5,
   },
 
   correctAnswerMarker: {
     position: 'absolute',
+    top: -overflowMarkingAmount,
     left: -(timerBarHeight / 2 + markerWidth / 2),
-    height: barHeight,
-    width: 6,
-    borderLeftWidth: 4,
-    borderRightWidth: 4,
-    borderColor: 'transparent',
-    zIndex: 10,
+    height: barHeight + 2 * overflowMarkingAmount,
+    zIndex: 2,
   },
 
   selectedBox: {
@@ -104,6 +132,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     height: barHeight,
+    borderRightWidth: 2,
   },
 })
 
@@ -186,6 +215,9 @@ function Slider(props) {
     dispatch(setAnswer(guess))
   }
 
+  const showCorrectAnswerMarker =
+    props.showCorrectAnswer && correctAnswerDetails && correctAnswerDetails.answerDif > FractionQuestionResult.PERFECT_ANSWER_THRESHOLD
+
   return (
     <View
       style={[styles.sliderContainer, props.style]}
@@ -197,20 +229,21 @@ function Slider(props) {
         setContainerWidth(width)
       }}
     >
-      {props.showCorrectAnswer && correctAnswerDetails && correctAnswerDetails.answerDif > 0 && (
+      {showCorrectAnswerMarker && (
         <View
           style={[
             styles.correctAnswerMarker,
             {
               left: correctAnswerDetails.markerLeft,
               width: correctAnswerDetails.markerWidth,
-              backgroundColor: red,
-              ...(correctAnswerDetails.answer > correctAnswerDetails.guess ? {borderRightColor: green} : {borderLeftColor: green}),
+              backgroundColor: props.isAnswerCorrect ? green : red,
             },
           ]}
         />
       )}
-      <View style={[styles.selectedBox, {backgroundColor: orange, width: getLeftFromAnswerValue(tempValue) || 0}]} />
+      {!showCorrectAnswerMarker && (
+        <View style={[styles.selectedBox, {borderColor: green, backgroundColor: orange, width: getLeftFromAnswerValue(tempValue) || 0}]} />
+      )}
       {typeof startingPosition === 'number' && (
         <HorizontalDraggableCircle
           showDecimals={false}
@@ -226,4 +259,10 @@ function Slider(props) {
       )}
     </View>
   )
+}
+
+Slider.propTypes = {
+  isAnswerCorrect: PropTypes.bool,
+  showCorrectAnswer: PropTypes.bool,
+  onSlide: PropTypes.func,
 }
