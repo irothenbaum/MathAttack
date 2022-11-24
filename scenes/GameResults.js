@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
 
   highscoresContainer: {
     flex: 1,
+    paddingBottom: spaceDefault,
   },
 })
 

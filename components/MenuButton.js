@@ -34,6 +34,13 @@ const BLUR_DURATION = 1000
 const BLUR_DELAY = 1000
 const PRESS_DELAY = 500
 
+/**
+ * @typedef ColorPackage
+ * @property {string} background
+ * @property {string} text
+ * @property {string} border
+ */
+
 function MenuButton(props) {
   const {animate, animation, cancel} = useAnimationStation()
   const {setTimer} = useDoOnceTimer()
@@ -48,18 +55,32 @@ function MenuButton(props) {
 
   let bgColor
   let textColor
+  let borderColor
   if (props.isDisabled) {
     bgColor = backgroundTint
     textColor = grey
+    borderColor = grey
+  } else if (props.colorPackage) {
+    bgColor = props.colorPackage.background
+    borderColor = props.colorPackage.border
+    textColor = props.colorPackage.text
   } else {
     switch (variant) {
       case MenuButton.VARIANT_DESTRUCTIVE:
+        borderColor = foreground
         bgColor = red
         textColor = foreground
         break
 
+      case MenuButton.VARIANT_INVERSE:
+        borderColor = red
+        bgColor = red
+        textColor = background
+        break
+
       case MenuButton.VARIANT_DEFAULT:
       default:
+        borderColor = red
         bgColor = background
         textColor = red
         break
@@ -110,7 +131,7 @@ function MenuButton(props) {
             return (
               <ButtonShadow
                 key={i}
-                color={textColor}
+                color={borderColor}
                 animationStyle={{
                   ...getOutOfFocusStylesForAnimation(animation, undefined, undefined, spaceSmall),
                   opacity: (i + 1) / (props.blurCount + 1),
@@ -139,10 +160,11 @@ function MenuButton(props) {
           styles.primary,
           {
             backgroundColor: bgColor,
-            borderColor: textColor,
-            justifyContent: props.icon ? 'flex-start' : 'center',
+            borderColor: borderColor,
+            justifyContent: props.icon && props.title ? 'flex-start' : 'center',
             zIndex: 10,
           },
+          props.buttonStyle,
         ]}
         onPress={canPress ? handlePress : () => {}}
       >
@@ -150,8 +172,8 @@ function MenuButton(props) {
           <Icon icon={Loading} color={textColor} transform={{rotate: 90}} />
         ) : (
           <React.Fragment>
-            {props.icon && <Icon color={textColor} icon={props.icon} style={styles.icon} size={size} />}
-            <UIText style={{color: foreground, fontSize: size}}>{props.title}</UIText>
+            {props.icon ? <Icon color={textColor} icon={props.icon} style={props.title ? styles.icon : undefined} size={size} /> : null}
+            {props.title ? <UIText style={{color: foreground, fontSize: size}}>{props.title}</UIText> : null}
           </React.Fragment>
         )}
       </Pressable>
@@ -185,7 +207,7 @@ const styles = StyleSheet.create({
 })
 
 MenuButton.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   onPress: PropTypes.func,
   onPressStart: PropTypes.func, // must return true to continue processing the long press
   isDisabled: PropTypes.bool,
@@ -193,8 +215,10 @@ MenuButton.propTypes = {
   size: PropTypes.number,
   icon: PropTypes.any,
   style: PropTypes.any,
+  buttonStyle: PropTypes.any,
   isLoading: PropTypes.bool,
   blurCount: PropTypes.number,
+  colorPackage: PropTypes.any,
 }
 
 MenuButton.SIZE_X_LARGE = font4
@@ -204,5 +228,6 @@ MenuButton.SIZE_SMALL = font1
 
 MenuButton.VARIANT_DEFAULT = 'default'
 MenuButton.VARIANT_DESTRUCTIVE = 'destructive'
+MenuButton.VARIANT_INVERSE = 'inverse'
 
 export default MenuButton

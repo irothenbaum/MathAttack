@@ -60,8 +60,6 @@ class EstimationQuestionResult extends QuestionResult {
 
     const answerValue = complexity * accuracyRatio
 
-    console.log(answerValue, obj.timeToAnswerMS)
-
     return applyTimeBoostToScore(answerValue, obj.timeToAnswerMS)
   }
 }

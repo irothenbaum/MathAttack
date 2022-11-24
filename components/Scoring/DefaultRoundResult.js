@@ -8,7 +8,7 @@ import {font2} from '../../styles/typography'
 import React from 'react'
 import resultStyles from './sharedStyles'
 
-function DefaultRoundResult({result, count}) {
+function DefaultRoundResult({result}) {
   const {green, red} = useColorsControl()
   const correctAnswer = Equation.getSolution(result.question.equation)
   const userAnswer = result.answer

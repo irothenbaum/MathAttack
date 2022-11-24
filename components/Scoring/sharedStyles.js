@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native'
 import {spaceDefault, spaceExtraLarge, spaceSmall} from '../../styles/layout'
-import {font4} from '../../styles/typography'
+import {font3} from '../../styles/typography'
 
 export default StyleSheet.create({
   singleResultContainer: {
@@ -45,12 +45,11 @@ export default StyleSheet.create({
   },
 
   correctAnswerCheck: {
-    fontSize: font4,
     marginLeft: spaceSmall,
   },
 
   correctAnswerText: {
-    fontSize: font4,
+    fontSize: font3,
     fontWeight: 'bold',
   },
 })

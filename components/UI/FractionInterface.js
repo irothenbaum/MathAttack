@@ -10,6 +10,7 @@ import {setAnswer} from '../../redux/UISlice'
 import NormalText from '../NormalText'
 import FractionQuestionResult from '../../models/FractionQuestionResult'
 import ClickHereTip from './ClickHereTip'
+import {spaceExtraLarge, spaceLarge} from '../../styles/layout'
 
 const halfSlider = SLIDER_SIZE / 2
 
@@ -39,7 +40,7 @@ function FractionInterface(props) {
     <View style={styles.container}>
       <View
         style={[
-          styles.timerBar,
+          styles.timerBarContainer,
           {
             backgroundColor: foreground,
           },
@@ -51,7 +52,7 @@ function FractionInterface(props) {
               styles.timerBar,
               {
                 backgroundColor: red,
-                height: props.equationTimer.interpolate({
+                width: props.equationTimer.interpolate({
                   inputRange: [0, 1],
                   outputRange: ['0%', '100%'],
                 }),
@@ -80,9 +81,7 @@ function FractionInterface(props) {
 }
 
 const timerBarHeight = 8
-const markerWidth = 30
-const barHeight = 50
-
+const boxHeight = 50
 const overflowMarkingAmount = 8
 
 const styles = StyleSheet.create({
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
   },
 
   box: {
-    height: barHeight,
+    height: boxHeight,
     marginBottom: SLIDER_SIZE + TAIL_SIZE,
     width: '100%',
     overflow: 'visible',
@@ -113,11 +112,16 @@ const styles = StyleSheet.create({
     width: 15, // this is to ensure enough space to print the text
   },
 
+  timerBarContainer: {
+    width: '100%',
+    marginBottom: spaceExtraLarge,
+    height: timerBarHeight,
+  },
+
   timerBar: {
     position: 'absolute',
     top: 0,
-    left: 0,
-    width: '100%',
+    right: 0,
     height: timerBarHeight,
   },
 
@@ -133,8 +137,7 @@ const styles = StyleSheet.create({
   correctAnswerMarker: {
     position: 'absolute',
     top: -overflowMarkingAmount,
-    left: -(timerBarHeight / 2 + markerWidth / 2),
-    height: barHeight + 2 * overflowMarkingAmount,
+    height: boxHeight + 2 * overflowMarkingAmount,
     zIndex: 2,
   },
 
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    height: barHeight,
+    height: boxHeight,
     borderRightWidth: 2,
   },
 })
@@ -229,6 +232,9 @@ function Slider(props) {
   const showCorrectAnswerMarker =
     props.showCorrectAnswer && correctAnswerDetails && correctAnswerDetails.answerDif > FractionQuestionResult.PERFECT_ANSWER_THRESHOLD
 
+  // multiple by 100 so we can deal with percentages
+  const draggableValue = tempValue * 100
+
   return (
     <View
       style={[styles.sliderContainer, props.style]}
@@ -268,9 +274,9 @@ function Slider(props) {
       {typeof startingPosition === 'number' && (
         <HorizontalDraggableCircle
           showDecimals={false}
-          value={tempValue * 100} // multiple by 100 so we can deal with percentages
+          value={tempValue === 1 ? tempValue : draggableValue}
           startingPosition={startingPosition}
-          suffix={'.'}
+          suffix={draggableValue < 10 ? '.0' : tempValue === 1 ? '' : '.'}
           minVal={-halfSlider}
           maxVal={containerWidth - halfSlider}
           onDrag={handleSlide}
