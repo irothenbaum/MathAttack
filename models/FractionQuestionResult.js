@@ -1,5 +1,7 @@
 import QuestionResult from './QuestionResult'
 import EstimationQuestionResult from './EstimationQuestionResult'
+import Equation from './Equation'
+import {applyTimeBoostToScore} from '../lib/utilities'
 
 class FractionQuestionResult extends EstimationQuestionResult {
   /**
@@ -16,7 +18,29 @@ class FractionQuestionResult extends EstimationQuestionResult {
    * @returns {boolean}
    */
   static isPerfect(obj) {
-    return EstimationQuestionResult.getAccuracy(obj) < FractionQuestionResult.PERFECT_ANSWER_THRESHOLD
+    return FractionQuestionResult.getAccuracy(obj) < FractionQuestionResult.PERFECT_ANSWER_THRESHOLD
+  }
+
+  /**
+   * @param {QuestionResult} obj
+   * @returns {number}
+   */
+  static scoreValue(obj) {
+    if (!FractionQuestionResult.isCorrect(obj)) {
+      return 0
+    }
+
+    const complexity = FractionQuestionResult.getQuestionComplexity(obj)
+    const correctAnswer = Equation.getSolution(obj.question.equation)
+    // determine how close to the correct answer we were
+    const accuracy = FractionQuestionResult.getAccuracy(obj)
+
+    // take this as a ratio over over the correct answer
+    const accuracyRatio = (correctAnswer - accuracy) / correctAnswer
+
+    const answerValue = complexity * accuracyRatio
+
+    return applyTimeBoostToScore(answerValue, obj.timeToAnswerMS)
   }
 }
 

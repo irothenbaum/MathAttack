@@ -40,7 +40,7 @@ const startingPosition = screenHeight * 0.3
 const SCENE_TO_DESCRIPTION = {
   [Scene_GameClassic]: 'Race against the clock to solve these simple arithmetic questions before time runs out.',
   [Scene_GameMarathon]:
-    "Slow and steady wins the race, but it's three strikes and your out. See how many of these simple arithmetic questions you can answer correctly.",
+    "Slow and steady wins the race, but it's three strikes and you're out. See how many of these simple arithmetic questions you can answer correctly.",
   [Scene_GameVersus]: 'Challenge a friend and see whose brain calculator is faster.',
   [Scene_GameEstimate]:
     "You won't have enough time to calculate exactly, but see how well you can estimate the right answer before time runs out.",

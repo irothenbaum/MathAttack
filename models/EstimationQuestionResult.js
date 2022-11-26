@@ -50,7 +50,7 @@ class EstimationQuestionResult extends QuestionResult {
       return 0
     }
 
-    const complexity = QuestionResult.getQuestionComplexity(obj)
+    const complexity = EstimationQuestionResult.getQuestionComplexity(obj)
     const correctAnswer = Equation.getSolution(obj.question.equation)
     // determine how close to the correct answer we were
     const accuracy = EstimationQuestionResult.getAccuracy(obj)

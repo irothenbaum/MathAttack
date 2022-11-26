@@ -73,19 +73,19 @@ function GameResults() {
 
   return (
     <View style={styles.window}>
-      <TitleText>Game Over</TitleText>
+      <View style={styles.innerContainer}>
+        <TitleText>Game Over</TitleText>
 
-      <View style={styles.resultsContainer}>
-        <View>
+        <View style={{marginTop: spaceDefault}}>
           <NormalText>Questions: {results.length}</NormalText>
           <NormalText>Correct: {results.filter(QuestionResultClass.isCorrect).length}</NormalText>
 
           <UIText>Score: {formatNumber(score)}</UIText>
         </View>
+      </View>
 
-        <View style={styles.highscoresContainer}>
-          <HighScoresTable game={lastGameTypePlayed} highlightScoreId={thisGameRef.current ? thisGameRef.current.id : undefined} />
-        </View>
+      <View style={styles.highscoresContainer}>
+        <HighScoresTable game={lastGameTypePlayed} highlightScoreId={thisGameRef.current ? thisGameRef.current.id : undefined} />
       </View>
 
       <View style={styles.buttonContainer}>
@@ -102,22 +102,21 @@ const styles = StyleSheet.create({
   window: {
     width: '100%',
     height: '100%',
+  },
+
+  innerContainer: {
     padding: spaceDefault,
   },
 
-  resultsContainer: {
+  highscoresContainer: {
     flex: 1,
     marginTop: spaceDefault,
+    paddingBottom: spaceDefault,
   },
 
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-
-  highscoresContainer: {
-    flex: 1,
-    paddingBottom: spaceDefault,
   },
 })
 
