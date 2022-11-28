@@ -1,28 +1,44 @@
 import useColorsControl from '../../hooks/useColorsControl'
-import {Pressable, StyleSheet, View} from 'react-native'
+import {Easing, Pressable, StyleSheet, View} from 'react-native'
 import {fadeColor, formatNumber} from '../../lib/utilities'
 import NormalText from '../NormalText'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {spaceDefault, spaceSmall} from '../../styles/layout'
 import Icon, {Expand} from '../Icon'
 import {font1} from '../../styles/typography'
+import useAnimationStation from '../../hooks/useAnimationStation'
+
+const LOOP_DURATION = 1000
 
 /**
  * @param {{result: GameResult}} props
  */
 function HighScoreEntry(props) {
-  const {foreground, blue, shadowLight, green} = useColorsControl()
+  const {loop, isAnimating, animation} = useAnimationStation()
+  const {foreground, blue, shadowLight, green, background} = useColorsControl()
   const textColor = foreground
+
+  useEffect(() => {
+    if (props.isHighlighted) {
+      loop(LOOP_DURATION, Easing.out(Easing.linear))
+    }
+  }, [])
+
+  const bgColor = props.place % 2 === 0 ? shadowLight : background
 
   return (
     <Pressable onPress={props.onPress}>
       <View
         style={[
           styles.scoreEntryContainer,
-          props.place % 2 === 0 ? {backgroundColor: shadowLight} : undefined,
-          props.isHighlighted ? {backgroundColor: fadeColor(green, 0.2)} : undefined,
+          {
+            backgroundColor:
+              isAnimating && !!animation
+                ? animation.interpolate({inputRange: [0, 0.5, 1], outputRange: [bgColor, fadeColor(green, 0.2), bgColor]})
+                : bgColor,
+          },
         ]}
       >
         <NormalText style={[styles.recordText, {width: '10%', color: textColor}]}>{props.place}.</NormalText>

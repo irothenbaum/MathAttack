@@ -1,31 +1,32 @@
 import React, {useState} from 'react'
-import {Animated, View, StyleSheet, Pressable} from 'react-native'
-import InGameMenu from '../components/InGameMenu'
-import {ScreenContainer} from '../styles/elements'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectCurrentQuestion, selectGameSettings, selectUserAnswer} from '../redux/selectors'
-import GameStartTimer from '../components/GameStartTimer'
-import {generateNewEstimationQuestion, recordAnswer} from '../redux/GameSlice'
-import EstimationInterface from '../components/UI/EstimationInterface'
-import ComplexEquationComponent from '../components/ComplexEquationComponent'
-import {spaceDefault, spaceLarge} from '../styles/layout'
-import UIText from '../components/UIText'
-import {font4} from '../styles/typography'
-import GameBackground from '../components/FX/GameBackground'
-import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
-import {setAnswer} from '../redux/UISlice'
-import {getVibrateStylesForAnimation} from '../lib/utilities'
-import Equation from '../models/Equation'
-import EstimationQuestionResult from '../models/EstimationQuestionResult'
-import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
-import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
-import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
-import useSoundPlayer from '../hooks/useSoundPlayer'
 import useColorsControl from '../hooks/useColorsControl'
+import useSoundPlayer from '../hooks/useSoundPlayer'
 import useVibration from '../hooks/useVibration'
+import useClassicAnswerSystem from '../hooks/useClassicAnswerSystem'
+import {generateNewFractionsQuestion, recordAnswer} from '../redux/GameSlice'
+import FractionQuestionResult from '../models/FractionQuestionResult'
+import {SOUND_CORRECT_CHIME, SOUND_CORRECT_DING, SOUND_WRONG} from '../lib/SoundHelper'
 import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
+import {setAnswer} from '../redux/UISlice'
+import {Animated, Pressable, StyleSheet, View} from 'react-native'
+import InGameMenu from '../components/InGameMenu'
+import GameStartTimer from '../components/GameStartTimer'
+import GameBackground from '../components/FX/GameBackground'
+import PerfectAnswerCelebration from '../components/UI/PerfectAnswerCelebration'
+import RoundsRemainingUI from '../components/UI/RoundsRemainingUI'
+import {getVibrateStylesForAnimation} from '../lib/utilities'
+import UIText from '../components/UIText'
+import Equation from '../models/Equation'
+import FractionInterface from '../components/UI/FractionInterface'
+import {ScreenContainer} from '../styles/elements'
+import {spaceDefault, spaceLarge, spaceSmall} from '../styles/layout'
+import {font4} from '../styles/typography'
+import Phrase from '../models/Phrase'
+import TitleText from '../components/TitleText'
 
-function GameEstimate() {
+function GameFractions(props) {
   const gameSettings = useSelector(selectGameSettings)
   const {shadow, sunbeamStrong, foreground, getResultColor} = useColorsControl()
   const currentQuestion = useSelector(selectCurrentQuestion)
@@ -45,18 +46,18 @@ function GameEstimate() {
     isAnimatingForCorrect,
     isShowingAnswer,
     questionsRemaining,
-  } = useClassicAnswerSystem(gameSettings.equationDuration, gameSettings.classicNumberOfRounds, generateNewEstimationQuestion)
+  } = useClassicAnswerSystem(gameSettings.equationDuration, gameSettings.classicNumberOfRounds, generateNewFractionsQuestion)
 
   const handleGuess = () => {
     if (!currentQuestion || isShowingAnswer) {
       return
     }
 
-    let result = new EstimationQuestionResult(currentQuestion, answer)
+    let result = new FractionQuestionResult(currentQuestion, answer)
     dispatch(recordAnswer(answer))
-    const isPerfect = EstimationQuestionResult.isPerfect(result)
+    const isPerfect = FractionQuestionResult.isPerfect(result)
     setIsPerfectAnswer(isPerfect)
-    if (EstimationQuestionResult.isCorrect(result)) {
+    if (FractionQuestionResult.isCorrect(result)) {
       animateCorrect()
       if (isPerfect) {
         playSound(SOUND_CORRECT_CHIME).then()
@@ -72,11 +73,14 @@ function GameEstimate() {
   }
 
   const handleGameStart = () => {
-    dispatch(generateNewEstimationQuestion())
+    dispatch(generateNewFractionsQuestion())
     dispatch(setAnswer(0))
   }
 
   const answerColor = isShowingAnswer ? getResultColor(isAnimatingForCorrect) : foreground
+  const [numerator, denominator] = currentQuestion ? Phrase.getDiscreteTerms(currentQuestion.equation.phrase) : [0, 0]
+
+  const formattedAnswerValue = (isShowingAnswer ? Equation.getSolution(currentQuestion.equation) : answer || tempAnswer).toFixed(2)
 
   return (
     <View style={styles.window}>
@@ -106,31 +110,35 @@ function GameEstimate() {
       <RoundsRemainingUI style={{flexShrink: 0}} remaining={questionsRemaining} total={gameSettings.classicNumberOfRounds} />
 
       <View style={styles.innerContainer}>
-        <Animated.View
-          style={[
-            styles.questionAndAnswerContainer,
-            !!animation && !isAnimatingForCorrect ? getVibrateStylesForAnimation(animation, null, 0.25) : null,
-          ]}
-        >
+        <View style={styles.questionAndAnswerContainer}>
           <View style={styles.questionContainer}>
-            {currentQuestion && <ComplexEquationComponent equation={currentQuestion.equation} />}
+            {currentQuestion && (
+              <Animated.View
+                style={[
+                  styles.questionContainer,
+                  !!animation && !isAnimatingForCorrect ? getVibrateStylesForAnimation(animation, null, 0.25) : null,
+                ]}
+              >
+                <TitleText>{numerator}</TitleText>
+                <View style={[styles.divider, {backgroundColor: foreground}]} />
+                <TitleText>{denominator}</TitleText>
+              </Animated.View>
+            )}
           </View>
+          <FractionInterface
+            onChangeTempAnswer={setTempAnswer}
+            onSubmitAnswer={handleGuess}
+            equationTimer={equationTimer}
+            isAnimatingNextQuestion={isShowingAnswer}
+            isAnimatingForCorrect={isAnimatingForCorrect}
+            answerReactionAnimation={animation}
+          />
           <Pressable onPress={handleGuess} style={{width: '100%'}}>
             <View style={[styles.answerContainer, {borderColor: shadow}]}>
-              <UIText style={[styles.answerText, {color: answerColor}]}>
-                {isShowingAnswer ? Equation.getSolution(currentQuestion.equation) : answer || tempAnswer}
-              </UIText>
+              <UIText style={[styles.answerText, {color: answerColor}]}>{formattedAnswerValue}</UIText>
             </View>
           </Pressable>
-        </Animated.View>
-        <EstimationInterface
-          onChangeTempAnswer={setTempAnswer}
-          onSubmitAnswer={handleGuess}
-          equationTimer={equationTimer}
-          isAnimatingNextQuestion={isShowingAnswer}
-          isAnimatingForCorrect={isAnimatingForCorrect}
-          answerReactionAnimation={animation}
-        />
+        </View>
       </View>
     </View>
   )
@@ -162,6 +170,7 @@ const styles = StyleSheet.create({
   },
 
   answerContainer: {
+    marginTop: spaceDefault,
     padding: spaceDefault,
     paddingRight: spaceLarge,
     borderTopWidth: 2,
@@ -184,6 +193,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  divider: {
+    width: '30%',
+    height: 6,
+    marginVertical: spaceSmall,
+  },
 })
 
-export default GameEstimate
+export default GameFractions

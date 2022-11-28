@@ -33,6 +33,9 @@ import {fadeColor} from '../lib/utilities'
  * @property {string} shadowLight
  * @property {string} shadow
  * @property {string} shadowStrong
+ * @property {string} sunbeamLight
+ * @property {string} sunbeam
+ * @property {string} sunbeamStrong
  *
  * @property {string} background
  * @property {string} backgroundTint
@@ -53,6 +56,9 @@ const darkTheme = {
   shadowLight: fadeColor(white, 0.1),
   shadow: fadeColor(white, 0.3),
   shadowStrong: fadeColor(white, 0.6),
+  sunbeamLight: fadeColor(black, 0.1),
+  sunbeam: fadeColor(black, 0.3),
+  sunbeamStrong: fadeColor(black, 0.6),
   background: black,
   backgroundTint: darkGrey,
   grey: grey,
@@ -71,6 +77,9 @@ const lightTheme = {
   shadowLight: fadeColor(black, 0.1),
   shadow: fadeColor(black, 0.3),
   shadowStrong: fadeColor(black, 0.6),
+  sunbeamLight: fadeColor(white, 0.1),
+  sunbeam: fadeColor(white, 0.3),
+  sunbeamStrong: fadeColor(white, 0.6),
   background: white,
   backgroundTint: lightGrey,
   grey: middleGrey,

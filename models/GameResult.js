@@ -1,14 +1,15 @@
-import {Scene_GameEstimate} from '../constants/scenes'
+import {Scene_GameEstimate, Scene_GameFractions} from '../constants/scenes'
 import EstimationQuestionResult from './EstimationQuestionResult'
 import QuestionResult from './QuestionResult'
 import {v4 as uuid} from 'uuid'
+import FractionQuestionResult from './FractionQuestionResult'
 
 /**
  * @param {string} game
  * @returns {EstimationQuestionResult|QuestionResult}
  */
-function getQuestionRequestClassForGame(game) {
-  return game === Scene_GameEstimate ? EstimationQuestionResult : QuestionResult
+export function getQuestionRequestClassForGame(game) {
+  return game === Scene_GameEstimate ? EstimationQuestionResult : game === Scene_GameFractions ? FractionQuestionResult : QuestionResult
 }
 
 class GameResult {

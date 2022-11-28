@@ -6,6 +6,7 @@ import {
   Scene_GameCrescendo,
   Scene_GameDailyChallenge,
   Scene_GameEstimate,
+  Scene_GameFractions,
   Scene_GameMarathon,
   Scene_GameResults,
   Scene_GameVersus,
@@ -32,6 +33,7 @@ import LoadingSplash from './components/LoadingSplash'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {scheduleReminders} from './lib/dailyChallenge'
 import GameDailyChallenge from './scenes/GameDailyChallenge'
+import GameFractions from './scenes/GameFractions'
 import NotificationHelper from './lib/NotificationHelper'
 
 const SceneMap = {
@@ -44,6 +46,7 @@ const SceneMap = {
   [Scene_GameCrescendo]: GameCrescendo,
   [Scene_GameVersus]: GameVersus,
   [Scene_GameDailyChallenge]: GameDailyChallenge,
+  [Scene_GameFractions]: GameFractions,
   [Scene_HighScores]: HighScores,
 }
 

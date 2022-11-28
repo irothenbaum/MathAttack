@@ -4,16 +4,14 @@ import TitleText from '../components/TitleText'
 import MenuButton from '../components/MenuButton'
 import {useDispatch, useSelector} from 'react-redux'
 import {goToScene} from '../redux/NavigationSlice'
-import {Scene_GameDailyChallenge, Scene_GameEstimate, Scene_Menu} from '../constants/scenes'
+import {Scene_GameDailyChallenge, Scene_Menu} from '../constants/scenes'
 import {selectLastGameResults, selectLastGameTypePlayed} from '../redux/selectors'
 import NormalText from '../components/NormalText'
-import QuestionResult from '../models/QuestionResult'
-import GameResult from '../models/GameResult'
-import {spaceDefault, spaceSmall} from '../styles/layout'
+import GameResult, {getQuestionRequestClassForGame} from '../models/GameResult'
+import {spaceDefault} from '../styles/layout'
 import UIText from '../components/UIText'
 import {formatNumber, selectRandom} from '../lib/utilities'
 import {setAnswer} from '../redux/UISlice'
-import EstimationQuestionResult from '../models/EstimationQuestionResult'
 import {recordHighScore} from '../redux/HighScoresSlice'
 import useReduxPersist from '../hooks/useReduxPersist'
 import HighScoresTable from '../components/Scoring/HighScoresTable'
@@ -29,7 +27,7 @@ function GameResults() {
   const thisGameRef = useRef()
   const {play} = usePlayGame()
 
-  const QuestionResultClass = lastGameTypePlayed === Scene_GameEstimate ? EstimationQuestionResult : QuestionResult
+  const QuestionResultClass = getQuestionRequestClassForGame(lastGameTypePlayed)
 
   const score = results.reduce((total, r) => {
     return total + QuestionResultClass.scoreValue(r)
@@ -75,19 +73,19 @@ function GameResults() {
 
   return (
     <View style={styles.window}>
-      <TitleText>Game Over</TitleText>
+      <View style={styles.innerContainer}>
+        <TitleText>Game Over</TitleText>
 
-      <View style={styles.resultsContainer}>
-        <View>
+        <View style={{marginTop: spaceDefault}}>
           <NormalText>Questions: {results.length}</NormalText>
           <NormalText>Correct: {results.filter(QuestionResultClass.isCorrect).length}</NormalText>
 
           <UIText>Score: {formatNumber(score)}</UIText>
         </View>
+      </View>
 
-        <View style={styles.highscoresContainer}>
-          <HighScoresTable game={lastGameTypePlayed} highlightScoreId={thisGameRef.current ? thisGameRef.current.id : undefined} />
-        </View>
+      <View style={styles.highscoresContainer}>
+        <HighScoresTable game={lastGameTypePlayed} highlightScoreId={thisGameRef.current ? thisGameRef.current.id : undefined} />
       </View>
 
       <View style={styles.buttonContainer}>
@@ -104,21 +102,21 @@ const styles = StyleSheet.create({
   window: {
     width: '100%',
     height: '100%',
+  },
+
+  innerContainer: {
     padding: spaceDefault,
   },
 
-  resultsContainer: {
+  highscoresContainer: {
     flex: 1,
     marginTop: spaceDefault,
+    paddingBottom: spaceDefault,
   },
 
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-
-  highscoresContainer: {
-    flex: 1,
   },
 })
 

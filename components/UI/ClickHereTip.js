@@ -43,7 +43,7 @@ function ClickHereTip(props) {
   const interpolatedMargin = animation.interpolate({inputRange: [0, 1], outputRange: [-10, 20]})
   const interpolatedOpacity = animation.interpolate({inputRange: [0, 0.8, 1], outputRange: [1, 0, 0]})
 
-  return (
+  return props.show ? (
     <View style={[styles.tipContainer, props.style]}>
       <Animated.View
         style={[
@@ -70,7 +70,7 @@ function ClickHereTip(props) {
         <Icon style={{opacity: 0.8}} icon={ArrowLeft} color={blue} />
       </Animated.View>
     </View>
-  )
+  ) : null
 }
 
 ClickHereTip.propTypes = {

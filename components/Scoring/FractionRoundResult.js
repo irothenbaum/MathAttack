@@ -1,30 +1,39 @@
 import useColorsControl from '../../hooks/useColorsControl'
 import Equation from '../../models/Equation'
-import EstimationQuestionResult from '../../models/EstimationQuestionResult'
-import {View} from 'react-native'
+import FractionQuestionResult from '../../models/FractionQuestionResult'
+import {View, StyleSheet} from 'react-native'
 import NormalText from '../NormalText'
 import Icon, {Star} from '../Icon'
 import {font2} from '../../styles/typography'
 import React from 'react'
 import sharedStyles from './sharedStyles'
 import PropTypes from 'prop-types'
+import {spaceExtraSmall, spaceLarge} from '../../styles/layout'
+
+/**
+ * @param {number} val
+ * @returns {string}
+ */
+function formatDecimal(val) {
+  return val.toFixed(2).substr(1)
+}
 
 function EstimationRoundResult({result}) {
-  const {yellow, red} = useColorsControl()
-  const correctAnswer = Equation.getSolution(result.question.equation)
-  const userAnswer = result.answer
+  const {yellow, red, foreground} = useColorsControl()
+  const correctAnswer = formatDecimal(Equation.getSolution(result.question.equation))
+  const userAnswer = formatDecimal(result.answer)
 
-  const isTimeout = EstimationQuestionResult.isTimeout(result)
-  const isExact = EstimationQuestionResult.isPerfect(result)
-  const score = EstimationQuestionResult.scoreValue(result)
-  const isCorrect = EstimationQuestionResult.isCorrect(result)
+  const isTimeout = FractionQuestionResult.isTimeout(result)
+  const isExact = FractionQuestionResult.isPerfect(result)
+  const score = FractionQuestionResult.scoreValue(result)
+  const isCorrect = FractionQuestionResult.isCorrect(result)
 
   return (
     <View style={sharedStyles.singleResultContainer}>
       <View style={sharedStyles.singleResultEquation}>
-        {Equation.getLeftSideInfixNotation(result.question.equation).map((str, index) => {
-          return <NormalText key={`${str}-${index}`}>{str}</NormalText>
-        })}
+        <NormalText>{result.question.equation.phrase.term1}</NormalText>
+        <View style={[styles.fractionLine, {backgroundColor: foreground}]} />
+        <NormalText>{result.question.equation.phrase.term2}</NormalText>
       </View>
       <NormalText style={sharedStyles.singleResultEquals}>{isExact ? '=' : '~'}</NormalText>
       <View style={sharedStyles.singleResultAnswer}>
@@ -55,6 +64,14 @@ function EstimationRoundResult({result}) {
 }
 
 export default EstimationRoundResult
+
+const styles = StyleSheet.create({
+  fractionLine: {
+    width: spaceLarge,
+    height: 2,
+    marginVertical: spaceExtraSmall,
+  },
+})
 
 EstimationRoundResult.propTypes = {
   result: PropTypes.any,

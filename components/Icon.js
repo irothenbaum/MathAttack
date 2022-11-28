@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import {font3} from '../styles/typography'
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons/faChevronRight'
+import {faChevronUp} from '@fortawesome/free-solid-svg-icons/faChevronUp'
 import {faTimes} from '@fortawesome/free-solid-svg-icons/faTimes'
 import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck'
 import {faStar} from '@fortawesome/free-solid-svg-icons/faStar'
@@ -27,6 +28,7 @@ import {faUpRightAndDownLeftFromCenter} from '@fortawesome/free-solid-svg-icons/
 import {faFire} from '@fortawesome/free-solid-svg-icons/faFire'
 import {faCalendarCheck} from '@fortawesome/free-solid-svg-icons/faCalendarCheck'
 import {faWaveSquare} from '@fortawesome/free-solid-svg-icons/faWaveSquare'
+import {faPercent} from '@fortawesome/free-solid-svg-icons/faPercent'
 import useColorsControl from '../hooks/useColorsControl'
 
 function Icon(props) {
@@ -44,6 +46,7 @@ function Icon(props) {
 
 export const ArrowLeft = faChevronLeft
 export const ArrowRight = faChevronRight
+export const ArrowUp = faChevronUp
 export const Check = faCheck
 export const CircleActive = faCircle
 export const CircleInactive = faDotCircle
@@ -53,6 +56,7 @@ export const DailyChallenge = faCalendarCheck
 export const Estimate = faBullseye
 export const Expand = faUpRightAndDownLeftFromCenter
 export const Fire = faFire
+export const Fractions = faPercent
 export const HighScores = faMedal
 export const Loading = faSpinner
 export const Marathon = faRunning
