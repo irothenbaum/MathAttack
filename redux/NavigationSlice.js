@@ -7,17 +7,14 @@ const navigationSlice = createSlice({
   initialState: {
     currentScene: Scene_Menu,
     currentSceneParams: null,
-
     isTransitioningToScene: null,
   },
   reducers: {
     startTransitionToScene: (state, {payload}) => {
-      state.isTransitioningToScene = payload
+      return {...state, isTransitioningToScene: payload}
     },
     finishTransitionToScene: (state, {payload}) => {
-      state.isTransitioningToScene = null
-      state.currentScene = payload.scene
-      state.currentSceneParams = payload.params
+      return {...state, isTransitioningToScene: null, currentScene: payload.scene, currentSceneParams: payload.params}
     },
   },
 })

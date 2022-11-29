@@ -6,26 +6,25 @@ const settingsSlice = createSlice({
   initialState: {...GameSettings},
   reducers: {
     setMinMaxValues: (state, {payload}) => {
-      state.minValue = payload.min
-      state.maxValue = payload.max
+      return {...state, minValue: payload.min, maxValue: payload.max}
     },
     setDecimalPlaces: (state, {payload}) => {
-      state.decimalPlaces = payload
+      return {...state, decimalPlaces: payload}
     },
     setEquationDuration: (state, {payload}) => {
-      state.equationDuration = payload
+      return {...state, equationDuration: payload}
     },
     setAutoSubmitCorrect: (state, {payload}) => {
-      state.autoSubmit = payload
+      return {...state, autoSubmit: payload}
     },
     setMuteSounds: (state, {payload}) => {
-      state.muteSounds = payload
+      return {...state, muteSounds: payload}
     },
     setDisableVibration: (state, {payload}) => {
-      state.disableVibration = payload
+      return {...state, disableVibration: payload}
     },
     setColorScheme: (state, {payload}) => {
-      state.colorScheme = payload
+      return {...state, colorScheme: payload}
     },
     hydrateFromCache: (state, {payload}) => {
       return {...state, ...payload}
