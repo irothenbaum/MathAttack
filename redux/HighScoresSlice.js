@@ -20,38 +20,42 @@ const highScoresSlice = createSlice({
   },
   reducers: {
     clearHighScores: (state, {payload}) => {
-      state.highScores[payload] = []
+      return {...state, highScores: {...state.highScores, [payload]: []}}
     },
 
     recordHighScore: (state, {payload}) => {
-      state.highScores[payload.game] = [...(state.highScores[payload.game] || []), payload]
-        .sort((a, b) => {
-          return a.finalScore < b.finalScore
-            ? 1
-            : a.finalScore > b.finalScore
-            ? -1
-            : a.dateCreated < b.dateCreated
-            ? -1
-            : a.dateCreated > b.dateCreated
-            ? 1
-            : 0
-        })
-        .slice(0, HIGH_SCORE_TABLE_COUNT)
+      return {
+        ...state,
+        highScores: {
+          ...state.highScores,
+          [payload.game]: [...(state.highScores[payload.game] || []), payload]
+            .sort((a, b) => {
+              return a.finalScore < b.finalScore
+                ? 1
+                : a.finalScore > b.finalScore
+                ? -1
+                : a.dateCreated < b.dateCreated
+                ? -1
+                : a.dateCreated > b.dateCreated
+                ? 1
+                : 0
+            })
+            .slice(0, HIGH_SCORE_TABLE_COUNT),
+        },
+      }
     },
     hydrateFromCache: (state, {payload}) => {
       if (payload.scoreVersion === state.scoreVersion) {
         return {...state, ...payload}
       }
-      return state
+      return {...state}
     },
 
     setViewingGameResult: (state, {payload}) => {
-      if (payload.game && payload.resultId) {
-        state.viewingGameResult = state.highScores[payload.game].find((g) => g.id === payload.resultId)
-      } else {
-        state.viewingGameResult = null
+      return {
+        ...state,
+        viewingGameResult: payload.game && payload.resultId ? state.highScores[payload.game].find((g) => g.id === payload.resultId) : null,
       }
-      return state
     },
   },
 })

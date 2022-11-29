@@ -2,6 +2,7 @@ import {ANSWER_TIMEOUT} from '../constants/game'
 import Equation from './Equation'
 import Phrase from './Phrase'
 import {applyTimeBoostToScore} from '../lib/utilities'
+import {v4 as uuid} from 'uuid'
 
 class QuestionResult {
   /**
@@ -10,6 +11,7 @@ class QuestionResult {
    * @param {number} timeToAnswerMS
    */
   constructor(question, answer, timeToAnswerMS) {
+    this.id = uuid()
     this.question = question
     this.answer = answer
     this.timeToAnswerMS = timeToAnswerMS || 1 // do NOT want this value to hit 0

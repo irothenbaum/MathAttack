@@ -16,28 +16,28 @@ const gameSlice = createSlice({
   reducers: {
     recordAnswer: (state, {payload}) => {
       let result = new QuestionResult(state.currentQuestion, payload, Date.now() - state.currentQuestion.createdAt)
-      state.questionResults = [...state.questionResults, serializeObject(result)]
+      return {...state, questionResults: [...state.questionResults, serializeObject(result)]}
     },
     generateNewQuestion: (state, {payload}) => {
-      state.currentQuestion = serializeObject(GameQuestion.getRandomFromSettings(state.settings, payload))
+      return {...state, currentQuestion: serializeObject(GameQuestion.getRandomFromSettings(state.settings, payload))}
     },
     setCurrentQuestion: (state, {payload}) => {
-      state.currentQuestion = payload
+      return {...state, currentQuestion: payload}
     },
     startNewGame: (state, {payload}) => {
-      Object.assign(state, INITIAL_STATE, {settings: payload.settings, currentGame: payload.game})
+      return {...state, ...INITIAL_STATE, settings: payload.settings, currentGame: payload.game}
     },
 
     generateNewEstimationQuestion: (state) => {
-      state.currentQuestion = serializeObject(GameQuestion.getRandomEstimateQuestionFromSettings(state.settings))
+      return {...state, currentQuestion: serializeObject(GameQuestion.getRandomEstimateQuestionFromSettings(state.settings))}
     },
 
-    generateNewFractionsQuestion: (state, {payload}) => {
-      state.currentQuestion = serializeObject(GameQuestion.getRandomFractionQuestionFromSettings(state.settings))
+    generateNewFractionsQuestion: (state) => {
+      return {...state, currentQuestion: serializeObject(GameQuestion.getRandomFractionQuestionFromSettings(state.settings))}
     },
 
     generateNewCrescendoQuestion: (state, {payload}) => {
-      state.currentQuestion = serializeObject(GameQuestion.getRandomCrescendoQuestionFromSettings(state.settings, payload))
+      return {...state, currentQuestion: serializeObject(GameQuestion.getRandomCrescendoQuestionFromSettings(state.settings, payload))}
     },
   },
 })
