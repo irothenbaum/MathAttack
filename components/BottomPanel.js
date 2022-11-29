@@ -1,7 +1,7 @@
 import {Animated, Pressable, StyleSheet} from 'react-native'
 import {font4} from '../styles/typography'
 import React, {useEffect, useState} from 'react'
-import {spaceExtraLarge, spaceSmall} from '../styles/layout'
+import {spaceExtraLarge, spaceLarge, spaceSmall} from '../styles/layout'
 import {BoxShadow, FullScreenOverlay} from '../styles/elements'
 import PropTypes from 'prop-types'
 import useAnimationStation from '../hooks/useAnimationStation'
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     width: '100%',
     marginTop: spaceExtraLarge,
+    flex: 1,
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
     ...BoxShadow,
