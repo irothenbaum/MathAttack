@@ -1,9 +1,6 @@
 import {black} from './colors'
 import {spaceDefault, spaceSmall} from './layout'
 import {font3} from './typography'
-import {Dimensions} from 'react-native'
-
-export const {width, height} = Dimensions.get('window')
 
 export const ScreenContainer = {
   height: '100%',
@@ -21,11 +18,11 @@ export const RoundBox = {
 }
 
 export const FullScreenOverlay = {
-  height: height,
-  width: width,
   position: 'absolute',
+  top: 0,
   bottom: 0,
   left: 0,
+  right: 0,
   alignItems: 'center',
   justifyContent: 'center',
 }

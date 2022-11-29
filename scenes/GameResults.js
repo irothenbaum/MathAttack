@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
+    padding: spaceDefault,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
