@@ -28,6 +28,7 @@ import useColorsControl from '../hooks/useColorsControl'
 import usePlayGame from '../hooks/usePlayGame'
 import Modal from '../components/Modal'
 import SubTitleText from '../components/SubTitleText'
+import useBackAction from '../hooks/useBackAction'
 
 const pjson = require('../package.json')
 
@@ -72,6 +73,14 @@ function Menu() {
   const {playSound} = useSoundPlayer()
 
   const {play} = usePlayGame()
+
+  const backAction = () => {
+    if (preparePlay) {
+      setPreparePlay(undefined)
+      return true
+    }
+  }
+  useBackAction(backAction)
 
   useEffect(() => {
     dispatch(setAnswer(''))

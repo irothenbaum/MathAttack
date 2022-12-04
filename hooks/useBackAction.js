@@ -9,8 +9,6 @@ function useBackAction(onBack) {
       BackHandler.removeEventListener('hardwareBackPress', onBack)
     }
   }, [onBack])
-
-  return {}
 }
 
 export default useBackAction

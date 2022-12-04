@@ -1,5 +1,5 @@
 import useColorsControl from '../../hooks/useColorsControl'
-import {Easing, Pressable, StyleSheet, View} from 'react-native'
+import {Easing, Pressable, StyleSheet, Animated} from 'react-native'
 import {fadeColor, formatNumber} from '../../lib/utilities'
 import NormalText from '../NormalText'
 import moment from 'moment'
@@ -30,13 +30,13 @@ function HighScoreEntry(props) {
 
   return (
     <Pressable onPress={props.onPress}>
-      <View
+      <Animated.View
         style={[
           styles.scoreEntryContainer,
           {
             backgroundColor:
               isAnimating && !!animation
-                ? animation.interpolate({inputRange: [0, 0.5, 1], outputRange: [bgColor, fadeColor(green, 0.2), bgColor]})
+                ? animation.interpolate({inputRange: [0, 0.5, 1], outputRange: [bgColor, fadeColor(green, 0.3), bgColor]})
                 : bgColor,
           },
         ]}
@@ -47,7 +47,7 @@ function HighScoreEntry(props) {
         </NormalText>
         <NormalText style={[styles.scoreText, {color: textColor}]}>{formatNumber(props.result.finalScore)}</NormalText>
         <Icon icon={Expand} color={blue} size={font1} style={styles.expandIcon} />
-      </View>
+      </Animated.View>
     </Pressable>
   )
 }

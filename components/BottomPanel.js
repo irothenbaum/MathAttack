@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import useAnimationStation from '../hooks/useAnimationStation'
 import Icon, {X} from './Icon'
 import useColorsControl from '../hooks/useColorsControl'
+import useBackAction from '../hooks/useBackAction'
 
 const OPEN_TIME = 200
 const CLOSE_TIME = OPEN_TIME
@@ -15,6 +16,14 @@ function BottomPanel(props) {
   const {shadowStrong, background} = useColorsControl()
   const {animate, animation, isAnimating} = useAnimationStation()
   const [isVisible, setIsVisible] = useState(false)
+
+  const backAction = () => {
+    if (props.isOpen) {
+      props.onClose()
+      return true
+    }
+  }
+  useBackAction(backAction)
 
   useEffect(() => {
     if (props.isOpen) {
