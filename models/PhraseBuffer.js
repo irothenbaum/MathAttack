@@ -1,4 +1,5 @@
 import Phrase from './Phrase'
+import {floatFix} from '../lib/utilities'
 
 class PhraseBuffer {
   constructor() {
@@ -14,7 +15,7 @@ class PhraseBuffer {
   addTerm(term, operation) {
     if (this.term1 === undefined) {
       // we ignore the operation
-      this.term1 = term
+      this.term1 = floatFix(term)
       return
     }
 
@@ -29,7 +30,7 @@ class PhraseBuffer {
     }
 
     this.operation = operation
-    this.term2 = term
+    this.term2 = floatFix(term)
   }
 
   /**

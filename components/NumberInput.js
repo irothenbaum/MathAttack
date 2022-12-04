@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {TextInput, StyleSheet, View} from 'react-native'
 import PropTypes from 'prop-types'
 import NormalText from './NormalText'
@@ -6,12 +6,17 @@ import {InputStyles} from '../styles/elements'
 import useColorsControl from '../hooks/useColorsControl'
 
 function NumberInput(props) {
+  const [valCache, setValCache] = useState()
   const {foreground} = useColorsControl()
 
-  const handleChange = (valStr) => {
-    let val = parseInt(valStr)
+  useEffect(() => {
+    setValCache('' + props.value)
+  }, [props.value])
+
+  const handleChange = () => {
+    let val = parseInt(valCache)
     if (isNaN(val)) {
-      val = null
+      val = props.min || props.max
     } else {
       if (typeof props.max === 'number') {
         val = Math.min(props.max, val)
@@ -30,10 +35,10 @@ function NumberInput(props) {
       <View style={[styles.inputFrame, {borderColor: foreground}]}>
         <TextInput
           style={[styles.input, {color: foreground}]}
-          value={typeof props.value === 'number' ? '' + props.value : ''}
+          value={valCache}
           keyboardType={'numeric'}
-          onChangeText={handleChange}
-          onBlur={() => handleChange(props.value || props.min)}
+          onChangeText={setValCache}
+          onBlur={handleChange}
         />
       </View>
     </View>

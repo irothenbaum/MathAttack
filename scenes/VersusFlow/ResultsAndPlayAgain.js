@@ -58,6 +58,7 @@ function ResultsAndPlayAgain(props) {
   //   serializeObject(new QuestionResult(new GameQuestion(new Equation(new Phrase(12, '+', 5)), Date.now(), Date.now()), 5, 100)),
   // ]
   const lastResult = results[results.length - 1]
+  const correctAnswer = Equation.getSolution(lastResult.question.equation)
 
   const handlePlayAgain = () => {
     props.socket.broadcastReady()
@@ -94,9 +95,7 @@ function ResultsAndPlayAgain(props) {
       wonText = 'You answered the correct answer: ' + lastResult.answer
     } else {
       // we won because the opponent answered incorrectly
-      wonText = `${props.opponentName} answered ${lastResult.answer}, the correct answer was ${Equation.getSolution(
-        lastResult.question.equation,
-      )}`
+      wonText = `${props.opponentName} answered ${lastResult.answer}, the correct answer was ${correctAnswer}`
     }
   } else {
     // we lost, but why?...
@@ -106,7 +105,7 @@ function ResultsAndPlayAgain(props) {
       wonText = `${props.opponentName} answered the correct answer: ${lastResult.answer}`
     } else {
       // lost because we answered incorrectly
-      wonText = `You answered ${lastResult.answer}, but the correct answer was ${Equation.getSolution(lastResult.question.equation)}`
+      wonText = `You answered ${lastResult.answer}, but the correct answer was ${correctAnswer}`
     }
   }
 

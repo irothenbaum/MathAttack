@@ -12,7 +12,7 @@ import {faHourglassHalf} from '@fortawesome/free-solid-svg-icons/faHourglassHalf
 import {faRunning} from '@fortawesome/free-solid-svg-icons/faRunning'
 import {faBullseye} from '@fortawesome/free-solid-svg-icons/faBullseye'
 import {faCog} from '@fortawesome/free-solid-svg-icons/faCog'
-import {faFistRaised} from '@fortawesome/free-solid-svg-icons/faFistRaised'
+import {faChess} from '@fortawesome/free-solid-svg-icons/faChess'
 import {faArrowUpRightDots} from '@fortawesome/free-solid-svg-icons/faArrowUpRightDots'
 import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner'
 import {faQuestion} from '@fortawesome/free-solid-svg-icons/faQuestion'
@@ -67,7 +67,7 @@ export const OperationDivide = faDivide
 export const Question = faQuestion
 export const Star = faStar
 export const Settings = faCog
-export const Versus = faFistRaised
+export const Versus = faChess
 export const VolumeOn = faVolumeHigh
 export const VolumeOff = faVolumeMute
 export const VibrateOn = faWaveSquare

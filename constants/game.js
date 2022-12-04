@@ -38,3 +38,4 @@ export const COLOR_SCHEME_LIGHT = 1
 export const COLOR_SCHEME_DARK = -1
 export const COLOR_SCHEME_SPECIAL = 2
 export const COLOR_SCHEME_SYSTEM = 0
+export const MAX_DECIMALS = 3

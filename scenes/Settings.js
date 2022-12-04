@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
 import {
   hydrateFromCache,
+  setAllowNegative,
   setAutoSubmitCorrect,
   setColorScheme,
   setDecimalPlaces,
@@ -20,9 +21,9 @@ import {Scene_Menu} from '../constants/scenes'
 import BooleanInput from '../components/BooleanInput'
 import DefaultSettings from '../models/GameSettings'
 import UIText from '../components/UIText'
-import Icon, {ArrowLeft, VibrateOff, VibrateOn, VolumeOff, VolumeOn} from '../components/Icon'
+import Icon, {ArrowLeft, OperationAdd, OperationSubtract, VibrateOff, VibrateOn, VolumeOff, VolumeOn} from '../components/Icon'
 import MenuButton from '../components/MenuButton'
-import {ALL_GAMES, COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM} from '../constants/game'
+import {ALL_GAMES, COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM, MAX_DECIMALS} from '../constants/game'
 import useAnimationStation from '../hooks/useAnimationStation'
 import {FullScreenOverlay} from '../styles/elements'
 import {getBackgroundColor} from '../lib/utilities'
@@ -148,14 +149,14 @@ function Settings() {
               style={styles.inputRow}
               value={!settings.muteSounds}
               onChange={(v) => dispatch(setMuteSounds(!v))}
-              label={'Sounds'}
+              label={'Sounds ' + (settings.muteSounds ? 'muted' : 'on')}
               icon={settings.muteSounds ? VolumeOff : VolumeOn}
             />
             <BooleanInput
               style={styles.inputRow}
               value={!settings.disableVibration}
               onChange={(v) => dispatch(setDisableVibration(!v))}
-              label={'Vibration'}
+              label={'Vibration ' + (settings.disableVibration ? 'off' : 'on')}
               icon={settings.disableVibration ? VibrateOff : VibrateOn}
             />
             <NumberInput
@@ -163,22 +164,38 @@ function Settings() {
               label={'Minimum answer value'}
               value={settings.minValue}
               min={0}
-              max={MAX_VALUE}
+              max={settings.maxValue}
               onChange={(v) => dispatch(setMinMaxValues(v, settings.maxValue))}
             />
             <NumberInput
               style={styles.inputRow}
               label={'Maximum answer value'}
               value={settings.maxValue}
-              min={0}
+              min={settings.minValue + 10 /* require at least 10 point difference between min and max */}
               max={MAX_VALUE}
               onChange={(v) => dispatch(setMinMaxValues(settings.minValue, v))}
+            />
+            <BooleanInput
+              style={styles.inputRow}
+              value={settings.allowNegative}
+              onChange={(v) => dispatch(setAllowNegative(v))}
+              label={settings.allowNegative ? 'Allow negatives' : 'Positives only'}
+              icon={settings.allowNegative ? OperationSubtract : OperationAdd}
             />
             <NumberInput
               style={styles.inputRow}
               label={'Decimal places'}
-              max={3}
+              max={MAX_DECIMALS}
               min={0}
+              value={settings.decimalPlaces}
+              onChange={(v) => dispatch(setDecimalPlaces(v))}
+            />
+
+            <NumberInput
+              style={styles.inputRow}
+              label={'Time to answer'}
+              max={10}
+              min={3}
               value={settings.decimalPlaces}
               onChange={(v) => dispatch(setDecimalPlaces(v))}
             />
@@ -187,7 +204,7 @@ function Settings() {
               style={styles.inputRow}
               value={settings.autoSubmit}
               onChange={(v) => dispatch(setAutoSubmitCorrect(v))}
-              label={'Auto submit answer'}
+              label={settings.autoSubmit ? 'Auto submit answer' : 'Must click to submit'}
             />
           </View>
 

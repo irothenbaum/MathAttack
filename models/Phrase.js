@@ -1,3 +1,5 @@
+import {floatFix} from '../lib/utilities'
+
 export const OPERATION_ADD = '+'
 export const OPERATION_SUBTRACT = '-'
 export const OPERATION_MULTIPLY = '*'
@@ -61,22 +63,30 @@ class Phrase {
    * @returns {number|*}
    */
   static performOperation(term1, operation, term2) {
+    let retVal
+
     switch (operation) {
       case OPERATION_ADD:
-        return term1 + term2
+        retVal = term1 + term2
+        break
 
       case OPERATION_SUBTRACT:
-        return term1 - term2
+        retVal = term1 - term2
+        break
 
       case OPERATION_MULTIPLY:
-        return term1 * term2
+        retVal = term1 * term2
+        break
 
       case OPERATION_DIVIDE:
-        return term1 / term2
+        retVal = term1 / term2
+        break
 
       default:
-        throw new Error('Unrecognized operation ' + obj.operation)
+        throw new Error('Unrecognized operation ' + operation)
     }
+
+    return floatFix(retVal)
   }
 
   /**

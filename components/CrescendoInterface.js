@@ -225,7 +225,7 @@ function CrescendoInterface(props) {
       <View style={styles.pathsContainer}>
         {stepsToRender.map((termsArr, stepIndex) => (
           <CrescendoRow
-            correctTerms={correctTerms}
+            correctTerm={correctTerms[stepIndex]}
             termsArr={termsArr}
             key={`terms-row-${stepIndex}-${termsArr.join()}`}
             isTermSelected={(term) => selectedTerms[stepIndex] === term}

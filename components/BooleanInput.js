@@ -20,7 +20,7 @@ const RAIL_ON_OPACITY = 0.25
 function BooleanInput(props) {
   const {
     red: onHandleColor,
-    foreGround: borderColor,
+    foreground: borderColor,
     background: offHandleColor,
     backgroundTint: containerColor,
     grey: containerBorderColor,

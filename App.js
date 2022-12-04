@@ -6,7 +6,7 @@ import MathAttack from './MathAttack'
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context'
 
 // just to speed up dev time
-// global.skipOnDev = true
+global.skipOnDev = true
 
 global.hasAnimated = global.skipOnDev || false
 global._SafeAreaInsets = {top: 0, bottom: 0}

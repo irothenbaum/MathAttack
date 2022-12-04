@@ -92,8 +92,10 @@ function MathAttack() {
       return
     }
 
-    // whenever our gameSettings change, we reschedule our reminders
-    scheduleReminders(gameSettings)
+    if (typeof gameSettings.minValue === 'number' && typeof gameSettings.maxValue === 'number') {
+      // whenever our gameSettings change, we reschedule our reminders
+      scheduleReminders(gameSettings)
+    }
   }, [isReady, gameSettings])
 
   let SceneComponent = isReady ? SceneMap[currentScene] : LoadingSplash

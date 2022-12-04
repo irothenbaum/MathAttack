@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   },
 
   shadow: {
+    zIndex: 10,
     position: 'absolute',
     top: 0,
     left: 0,

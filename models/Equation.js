@@ -163,15 +163,13 @@ class Equation {
 
       // console.log(`next term: ${operation} ${newTerm}`)
 
-      // TODO: There's a bug here. If newTerm === 31 and operation === Subtract, but it's the first term we're adding
-      //  the PhraseBuffer will drop the operation, making term1 in the buffer = 31 (no negative),
-      //  but the next line applies the term and operation to runningTotal which will make running total -31
-      //  this makes phraseBuffer and runningTotal out of sync. Options are:
-      //  1: Don't allow subtract operations for the first term, knowing it will be dropped by the buffer
-      //  2. Convert a term1 to a negative if it's the first term and it's a subtract operation
-      //  3. Don't modify the runningTotal cache in this way- instead, always calculate it from the buffer
-
       phraseBuffer.addTerm(newTerm, operation)
+
+      // because PhraseBuffer drops the operation on the first term, if the first term was subtract it would
+      // actually behave like addition, so we assign it as addition so our running total stays in sync
+      if (operation === OPERATION_SUBTRACT && phraseBuffer.getTotalTerms() === 1) {
+        operation = OPERATION_ADD
+      }
       runningTotal = Phrase.performOperation(runningTotal, operation, newTerm)
     }
 

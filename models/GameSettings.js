@@ -28,7 +28,7 @@ const GameSettings = {
   allowNegative: true,
 
   // classic
-  equationDuration: 5000,
+  equationDuration: 10000,
   classicNumberOfRounds: 6,
 
   // marathon:
@@ -40,5 +40,7 @@ const GameSettings = {
   // crescendo:
   crescendoRoundDuration: Number.MAX_SAFE_INTEGER,
 }
+
+export const ImmutableSettings = ['estimateItems', 'crescendoRoundDuration', 'numberOfStrikes', 'classicNumberOfRounds', 'equationDuration']
 
 export default GameSettings

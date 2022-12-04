@@ -54,7 +54,7 @@ function CrescendoRow(props) {
       <ClickHereTip show={props.showTip} />
 
       {props.termsArr.map((t, termIndex) => {
-        const shouldFlash = props.isShowingResult && props.resultAnimation && props.correctTerms.includes(t)
+        const shouldFlash = props.isShowingResult && props.resultAnimation && props.correctTerm === t
         return (
           <Term
             termStr={t}
@@ -85,7 +85,7 @@ function CrescendoRow(props) {
 
 CrescendoRow.propTypes = {
   termsArr: PropTypes.array.isRequired,
-  correctTerms: PropTypes.array.isRequired,
+  correctTerm: PropTypes.string.isRequired,
   onRenderedTerm: PropTypes.func.isRequired,
   onPressTerm: PropTypes.func.isRequired,
   isTermSelected: PropTypes.func.isRequired,

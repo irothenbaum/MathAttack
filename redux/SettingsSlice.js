@@ -1,5 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit'
-import GameSettings from '../models/GameSettings'
+import GameSettings, {ImmutableSettings} from '../models/GameSettings'
+
+// some settings cannot be user controlled and should not be saved to cache in case we change them in future versions
+const immutableGameSettings = ImmutableSettings.reduce((agr, p) => {
+  agr[p] = GameSettings[p]
+  return agr
+}, {})
 
 const settingsSlice = createSlice({
   name: 'Settings',
@@ -26,12 +32,16 @@ const settingsSlice = createSlice({
     setColorScheme: (state, {payload}) => {
       return {...state, colorScheme: payload}
     },
+    setAllowNegative: (state, {payload}) => {
+      return {...state, allowNegative: payload}
+    },
     hydrateFromCache: (state, {payload}) => {
-      return {...state, ...payload}
+      return {...state, ...payload, ...immutableGameSettings}
     },
   },
 })
 
+export const setAllowNegative = (isAllowed) => (dispatch) => dispatch(settingsSlice.actions.setAllowNegative(isAllowed))
 export const setMinMaxValues = (min, max) => (dispatch) => dispatch(settingsSlice.actions.setMinMaxValues({min: min, max: max}))
 export const setDecimalPlaces = (places) => (dispatch) => dispatch(settingsSlice.actions.setDecimalPlaces(places))
 export const setEquationDuration = (durationMS) => (dispatch) => dispatch(settingsSlice.actions.setEquationDuration(durationMS))

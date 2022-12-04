@@ -90,7 +90,7 @@ function Menu() {
         () => {
           if (logoRef.current) {
             logoRef.current.measure((fx, fy, width, height, px, py) => {
-              setTopPosition(py)
+              setTopPosition(py - global._SafeAreaInsets.top)
             })
           }
 
