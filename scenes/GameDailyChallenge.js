@@ -40,7 +40,7 @@ import TitleText from '../components/TitleText'
 import useReduxPersist from '../hooks/useReduxPersist'
 
 const NEXT_QUESTION_TIMER = 'next-question-timer'
-const NEXT_QUESTION_TIMEOUT = 1000
+const NEXT_QUESTION_TIMEOUT = 2000
 
 function GameDailyChallenge() {
   const sceneParams = useSelector(selectCurrentSceneParams)
@@ -107,9 +107,12 @@ function GameDailyChallenge() {
     } else {
       playSound(SOUND_WRONG).then()
       vibrateOnce(VIBRATE_ONCE_WRONG)
-      animateIncorrect(handleEndGame)
+      animateIncorrect()
+      setTimer(NEXT_QUESTION_TIMER, handleEndGame, NEXT_QUESTION_TIMEOUT)
     }
   }
+
+  const isShowingAnswer = isTimerSet(NEXT_QUESTION_TIMER)
 
   return isGameOver ? (
     <View style={styles.window}>
@@ -164,9 +167,10 @@ function GameDailyChallenge() {
         </View>
       </View>
       <View style={styles.equationContainer}>
-        {isTimerSet(NEXT_QUESTION_TIMER) ? <AnswerReaction duration={NEXT_QUESTION_TIMEOUT} /> : null}
+        {isShowingAnswer && isAnimatingForCorrect ? <AnswerReaction duration={NEXT_QUESTION_TIMEOUT} /> : null}
         <EquationAndAnswerInterface
           onGuess={handleGuess}
+          isAnimatingNextQuestion={isShowingAnswer}
           isAnimatingForCorrect={isAnimatingForCorrect}
           answerReactionAnimation={answerReactionAnimation}
           showTipAfterMS={!hasAnsweredQuestion ? 2000 : undefined}
