@@ -25,7 +25,7 @@ class PhraseBuffer {
 
     // if we already have a term 2, we convert our term1, operation, and term2 into a single phrase as term1
     // then set this term2
-    if (this.term2) {
+    if (typeof this.term2 === 'number') {
       this.term1 = this.toPhrase()
     }
 
@@ -37,7 +37,7 @@ class PhraseBuffer {
    * @returns {Phrase}
    */
   toPhrase() {
-    if (!this.term1 || !this.operation || !this.term2) {
+    if (this.term1 !== 'number' || !this.operation || this.term2 !== 'number') {
       const e = new Error('Cannot construct a phrase')
       console.error(e)
       throw e
