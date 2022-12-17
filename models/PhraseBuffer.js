@@ -13,7 +13,7 @@ class PhraseBuffer {
    * @param {string?} operation
    */
   addTerm(term, operation) {
-    if (this.term1 === undefined) {
+    if (typeof this.term1 !== 'number') {
       // we ignore the operation
       this.term1 = floatFix(term)
       return
@@ -37,7 +37,7 @@ class PhraseBuffer {
    * @returns {Phrase}
    */
   toPhrase() {
-    if (this.term1 !== 'number' || !this.operation || this.term2 !== 'number') {
+    if (typeof this.term1 !== 'number' || !this.operation || typeof this.term2 !== 'number') {
       const e = new Error('Cannot construct a phrase')
       console.error(e)
       throw e
