@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Alert, Animated, View, StyleSheet, Pressable, ScrollView, useColorScheme} from 'react-native'
 import TitleText from '../components/TitleText'
 import {spaceDefault, spaceExtraLarge, spaceExtraSmall, spaceLarge} from '../styles/layout'
-import {font2} from '../styles/typography'
+import {font2, smallText} from '../styles/typography'
 import NumberInput from '../components/NumberInput'
 import {useDispatch, useSelector} from 'react-redux'
 import {selectGameSettings} from '../redux/selectors'
@@ -16,21 +16,41 @@ import {
   setEquationDuration,
   setMinMaxValues,
   setMuteSounds,
+  setDailyChallengeTime,
 } from '../redux/SettingsSlice'
 import {goToScene} from '../redux/NavigationSlice'
 import {Scene_Menu} from '../constants/scenes'
 import BooleanInput from '../components/BooleanInput'
 import DefaultSettings from '../models/GameSettings'
 import UIText from '../components/UIText'
-import Icon, {ArrowLeft, OperationAdd, OperationSubtract, VibrateOff, VibrateOn, VolumeOff, VolumeOn} from '../components/Icon'
+import Icon, {
+  X,
+  DailyChallenge,
+  ArrowLeft,
+  OperationAdd,
+  OperationSubtract,
+  VibrateOff,
+  VibrateOn,
+  VolumeOff,
+  VolumeOn,
+} from '../components/Icon'
 import MenuButton from '../components/MenuButton'
-import {ALL_GAMES, COLOR_SCHEME_DARK, COLOR_SCHEME_LIGHT, COLOR_SCHEME_SYSTEM, MAX_DECIMALS} from '../constants/game'
+import {
+  ALL_GAMES,
+  COLOR_SCHEME_DARK,
+  COLOR_SCHEME_LIGHT,
+  COLOR_SCHEME_SYSTEM,
+  DEFAULT_DAILY_CHALLENGE_TIME,
+  MAX_DECIMALS,
+} from '../constants/game'
 import useAnimationStation from '../hooks/useAnimationStation'
 import {FullScreenOverlay} from '../styles/elements'
 import {getBackgroundColor} from '../lib/utilities'
 import useBackAction from '../hooks/useBackAction'
 import useColorsControl from '../hooks/useColorsControl'
 import {clearHighScores} from '../redux/HighScoresSlice'
+import NormalText from '../components/NormalText'
+import NotificationHelper from '../lib/NotificationHelper'
 
 const MAX_VALUE = 999999
 
@@ -69,8 +89,8 @@ function Settings() {
     dispatch(hydrateFromCache(DefaultSettings))
   }
 
-  const handleResetHighScores = (force) => {
-    if (!force) {
+  const handleResetHighScores = (confirmed) => {
+    if (!confirmed) {
       Alert.alert('Are you sure?', 'This will erase all high scores saved on this device.', [
         {
           text: 'Yes, clear scores',
@@ -103,6 +123,20 @@ function Settings() {
     }, COLOR_SCHEME_CHANGE_DURATION / 2)
     return false
   }
+
+  const handleChangeDailyChallengeToggle = (isActive) => {
+    if (isActive) {
+      NotificationHelper.Instance()
+        .requestPermissions()
+        .then(() => {
+          dispatch(setDailyChallengeTime(DEFAULT_DAILY_CHALLENGE_TIME))
+        })
+    } else {
+      dispatch(setDailyChallengeTime(false))
+    }
+  }
+
+  const isDailyChallengeEnabled = typeof settings.dailyChallengeTime === 'number'
 
   return (
     <View style={styles.window}>
@@ -207,6 +241,21 @@ function Settings() {
               onChange={(v) => dispatch(setAutoSubmitCorrect(v))}
               label={settings.autoSubmit ? 'Auto submit answer' : 'Must click to submit'}
             />
+
+            <BooleanInput
+              style={styles.inputRow}
+              value={isDailyChallengeEnabled}
+              onChange={handleChangeDailyChallengeToggle}
+              icon={isDailyChallengeEnabled ? DailyChallenge : X}
+              label={settings.autoSubmit ? 'Daily Challenge' : 'Must click to submit'}
+            />
+
+            {isDailyChallengeEnabled && (
+              <View style={styles.inputRow}>
+                <NumberInput value={settings.dailyChallengeTime} onChange={(v) => dispatch(setDailyChallengeTime(v))} />
+                <NormalText style={styles.subText}>The time of day to receive the daily challenge</NormalText>
+              </View>
+            )}
           </View>
 
           {/*<View style={styles.sectionContainer}>*/}
@@ -266,6 +315,10 @@ const styles = StyleSheet.create({
   changeColorSchemeOverlay: {
     ...FullScreenOverlay,
     zIndex: 1000,
+  },
+
+  subText: {
+    ...smallText,
   },
 
   destructiveContainer: {

@@ -1,4 +1,4 @@
-import {COLOR_SCHEME_LIGHT} from '../constants/game'
+import {COLOR_SCHEME_LIGHT, DEFAULT_DAILY_CHALLENGE_TIME} from '../constants/game'
 
 /**
  * @typedef GameSettings
@@ -15,6 +15,7 @@ import {COLOR_SCHEME_LIGHT} from '../constants/game'
  * @property {number} numberOfStrikes
  * @property {number} estimateItems
  * @property {number} crescendoRoundDuration
+ * @property {number} dailyChallengeTime
  */
 const GameSettings = {
   // shared:
@@ -39,6 +40,9 @@ const GameSettings = {
 
   // crescendo:
   crescendoRoundDuration: Number.MAX_SAFE_INTEGER,
+
+  // daily challenge
+  dailyChallengeTime: DEFAULT_DAILY_CHALLENGE_TIME, // the time in minutes from midnight the daily challenge should pop, undefined if disabled
 }
 
 export const ImmutableSettings = ['estimateItems', 'crescendoRoundDuration', 'numberOfStrikes', 'classicNumberOfRounds', 'equationDuration']

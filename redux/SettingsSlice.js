@@ -35,6 +35,9 @@ const settingsSlice = createSlice({
     setAllowNegative: (state, {payload}) => {
       return {...state, allowNegative: payload}
     },
+    setDailyChallengeTime: (state, {payload}) => {
+      return {...state, dailyChallengeTime: payload}
+    },
     hydrateFromCache: (state, {payload}) => {
       return {...state, ...payload, ...immutableGameSettings}
     },
@@ -46,6 +49,7 @@ export const setMinMaxValues = (min, max) => (dispatch) => dispatch(settingsSlic
 export const setDecimalPlaces = (places) => (dispatch) => dispatch(settingsSlice.actions.setDecimalPlaces(places))
 export const setEquationDuration = (durationMS) => (dispatch) => dispatch(settingsSlice.actions.setEquationDuration(durationMS))
 export const setAutoSubmitCorrect = (isActive) => (dispatch) => dispatch(settingsSlice.actions.setAutoSubmitCorrect(isActive))
+export const setDailyChallengeTime = (timeInMinutes) => (dispatch) => dispatch(settingsSlice.actions.setDailyChallengeTime(timeInMinutes))
 export const setMuteSounds = (isMuted) => (dispatch) => dispatch(settingsSlice.actions.setMuteSounds(isMuted))
 export const setDisableVibration = (isDisabled) => (dispatch) => dispatch(settingsSlice.actions.setDisableVibration(isDisabled))
 export const hydrateFromCache = (payload) => (dispatch) => dispatch(settingsSlice.actions.hydrateFromCache(payload))
