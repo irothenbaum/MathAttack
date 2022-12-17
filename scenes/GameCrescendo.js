@@ -12,16 +12,9 @@ import {generateNewCrescendoQuestion, recordAnswer} from '../redux/GameSlice'
 import QuestionResult from '../models/QuestionResult'
 import {SOUND_BUTTON_CHIME, SOUND_WRONG} from '../lib/SoundHelper'
 import {setAnswer} from '../redux/UISlice'
-import CrescendoInterface, {getMaxFakesForRound} from '../components/CrescendoInterface'
+import CrescendoInterface from '../components/CrescendoInterface'
 import useVibration from '../hooks/useVibration'
 import {VIBRATE_ONCE_WRONG} from '../lib/VibrateHelper'
-
-// lol, basically
-const INFINITE = 9999999
-
-function log(base, number) {
-  return Math.log(number) / Math.log(base)
-}
 
 function GameCrescendo(props) {
   const dispatch = useDispatch()
@@ -32,13 +25,13 @@ function GameCrescendo(props) {
   const round = useRef(1)
 
   const generateNextCrescendoQuestion = () => {
-    const logBase = getMaxFakesForRound(round.current)
-    const numberOfTermsToGuess = Math.max(1, Math.ceil(log(logBase, round.current)))
+    const numberOfTermsToGuess = Math.max(1, Math.ceil(Math.log2(round.current)))
+    // +1 because the first term is always given
     return generateNewCrescendoQuestion(numberOfTermsToGuess + 1)
   }
 
   const {handleNextQuestion, animateCorrect, animateIncorrect, equationTimer, animation, isAnimatingForCorrect, isShowingAnswer} =
-    useClassicAnswerSystem(gameSettings.crescendoRoundDuration, INFINITE, generateNextCrescendoQuestion)
+    useClassicAnswerSystem(gameSettings.crescendoRoundDuration, gameSettings.crescendoRoundDuration, generateNextCrescendoQuestion)
 
   const handleGuess = (userAnswer) => {
     let result = new QuestionResult(currentQuestion, userAnswer)

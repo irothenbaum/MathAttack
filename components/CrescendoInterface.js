@@ -74,35 +74,47 @@ function CrescendoInterface(props) {
 
   // Equation change effect
   useEffect(() => {
+    // correct path is in array that stores the expected path of terms as elements in the order they appear in the equation
     const correctPath = []
+    // we inc by 2 to skip over the operators (as they'll be included in he correct path elements)
     for (let i = 0; i < numbersAndOperators.length; i += 2) {
       correctPath.push(termToStr({operation: numbersAndOperators[i], term: numbersAndOperators[i + 1]}))
     }
 
+    // we then determine how many total fakes (for all steps in the path) we need to make on this level/difficulty)
     let fakesToMake = Math.max(0, props.difficulty - correctPath.length)
     const maxFakesPerRow = getMaxFakesForRound(props.difficulty)
 
     const s = [...correctPath]
       // we do reverse so the later terms have the most fakes
       .reverse()
-      .map((t, i) => {
+      .map((correctTermOnThisStep, i) => {
         const fakesOnThisRow = Math.min(maxFakesPerRow, fakesToMake)
-        const termsToRender = [t]
+        // we always render the correct term so we initialize our terms array with that
+        const termsToRender = [correctTermOnThisStep]
+
+        // if we expect to make at least 1 fake term alongside the correct term
         if (fakesOnThisRow > 0) {
-          termsToRender.push(
-            ...[...new Array(fakesOnThisRow)].map(() => {
-              let termStr
-              do {
-                const eq = Equation.getRandomFromSettings(gameSettings)
-                termStr = termToStr({term: eq.phrase.term2, operation: eq.phrase.operation})
-              } while (termStr === t)
-              return termStr
-            }),
-          )
+          // here we generate an array of fake of terms
+          // we used to do this with a simple map, but we want to make sure we don't duplicate any fake values
+          // so we need to be able to reference the array of existing terms (hence storing it to the array as we go)
+          for (let count = 0; count < fakesOnThisRow; count++) {
+            let termStr
+            let iter = 0
+            do {
+              const eq = Equation.getRandomFromSettings(gameSettings)
+              termStr = termToStr({term: eq.phrase.term2, operation: eq.phrase.operation})
+              iter++
+              // we'll try up to 10 times before just using what we got
+            } while (termsToRender.includes(termStr) && iter < 10)
+            termsToRender.push(termStr)
+          }
         }
 
+        // deduce the number we created from the total we determined to make earlier
         fakesToMake -= fakesOnThisRow
 
+        // shuffle so the correct term may not be the first element every time
         return shuffleArray(termsToRender)
       })
       // but need to reverse back so the order is maintained

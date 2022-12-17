@@ -154,7 +154,8 @@ class Equation {
 
     // next we continue to select random terms until we've reached n-1 terms
     let runningTotal = term1 || 0
-    // if we're using a lot of numbers we apply a small scale to keep the values manageable
+    // if we're using a lot of numbers we apply a small scale to keep the values manageable (so none get too near to the max value)
+    // 4 is a magic number that basically just bounds the scale to something that feels reasonable - I'm not sure if it's best
     const termRange = answerRange / Math.min(totalTerms - 1, 4)
     while (phraseBuffer.getTotalTerms() < totalTerms - 1) {
       // console.log(`total terms: ${phraseBuffer.getTotalTerms()}`)
