@@ -18,6 +18,7 @@ import HighScoresTable from '../components/Scoring/HighScoresTable'
 import SingleGameResultBottomPanel from '../components/Scoring/SingleGameResultBottomPanel'
 import usePlayGame from '../hooks/usePlayGame'
 import {ALL_GAMES} from '../constants/game'
+import useBackAction from '../hooks/useBackAction'
 
 function GameResults() {
   const dispatch = useDispatch()
@@ -70,6 +71,12 @@ function GameResults() {
   const handleMenu = () => {
     dispatch(goToScene(Scene_Menu))
   }
+
+  const backAction = () => {
+    handleMenu()
+    return true
+  }
+  useBackAction(backAction)
 
   return (
     <View style={styles.window}>

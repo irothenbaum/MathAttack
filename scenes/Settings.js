@@ -13,6 +13,7 @@ import {
   setColorScheme,
   setDecimalPlaces,
   setDisableVibration,
+  setEquationDuration,
   setMinMaxValues,
   setMuteSounds,
 } from '../redux/SettingsSlice'
@@ -194,10 +195,10 @@ function Settings() {
             <NumberInput
               style={styles.inputRow}
               label={'Time to answer'}
-              max={10}
+              max={15}
               min={3}
-              value={settings.decimalPlaces}
-              onChange={(v) => dispatch(setDecimalPlaces(v))}
+              value={settings.equationDuration}
+              onChange={(v) => dispatch(setEquationDuration(v))}
             />
 
             <BooleanInput
