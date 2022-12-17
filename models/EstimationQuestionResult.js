@@ -28,8 +28,10 @@ class EstimationQuestionResult extends QuestionResult {
    * @returns {boolean}
    */
   static getCloseEnoughThreshold(obj) {
+    const terms = Phrase.getDiscreteTerms(obj.question.equation.phrase)
     // if there are 4 terms, must be within 20, if 5 terms, within 25, etc
-    return Phrase.getDiscreteTerms(obj.question.equation.phrase).length * 5
+    // OR 15% of the largest term (including answer, by magnitude), whichever is larger
+    return Math.max(terms.length * 5, terms.concat(obj.question.equation.answer).reduce((agr, n) => Math.max(agr, Math.abs(n)), 0) * 0.15)
   }
 
   /**
