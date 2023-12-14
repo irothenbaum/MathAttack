@@ -92,20 +92,19 @@ function ResultsAndPlayAgain(props) {
   if (props.wonFlag === WON_FLAG_WON) {
     if (QuestionResult.isCorrect(lastResult)) {
       // we won because we answered correctly
-      wonText = 'You answered the correct answer: ' + lastResult.answer
+      wonText = 'You submitted the correct answer: ' + lastResult.answer
     } else {
       // we won because the opponent answered incorrectly
-      wonText = `${props.opponentName} answered ${lastResult.answer}, the correct answer was ${correctAnswer}`
+      wonText = `${props.opponentName} submitted ${lastResult.answer}, the correct answer was ${correctAnswer}`
     }
   } else {
     // we lost, but why?...
-
-    if (QuestionResult.isTimeout(lastResult)) {
+    if (QuestionResult.isCorrect(lastResult)) {
       // lost because opponent answered correctly
-      wonText = `${props.opponentName} answered the correct answer: ${lastResult.answer}`
+      wonText = `${props.opponentName} submitted the correct answer: ${lastResult.answer}`
     } else {
       // lost because we answered incorrectly
-      wonText = `You answered ${lastResult.answer}, but the correct answer was ${correctAnswer}`
+      wonText = `You submitted ${lastResult.answer}, but the correct answer was ${correctAnswer}`
     }
   }
 

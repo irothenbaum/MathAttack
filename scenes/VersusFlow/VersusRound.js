@@ -13,7 +13,6 @@ import QuestionResult from '../../models/QuestionResult'
 import {recordAnswer, setCurrentQuestion} from '../../redux/GameSlice'
 import {setAnswer} from '../../redux/UISlice'
 import useColorsControl from '../../hooks/useColorsControl'
-import {ANSWER_TIMEOUT} from '../../constants/game'
 
 function VersusRound(props) {
   const questionListener = useRef()
@@ -38,8 +37,8 @@ function VersusRound(props) {
 
     // start listening for opponent answers
     answerListener.current = props.socket.on(EVENT_SubmitAnswer, (e) => {
-      dispatch(recordAnswer(ANSWER_TIMEOUT))
       let result = new QuestionResult(q, e.answer)
+      dispatch(recordAnswer(result.answer))
       if (QuestionResult.isCorrect(result)) {
         props.onLost()
       } else {
