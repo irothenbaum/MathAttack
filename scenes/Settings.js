@@ -228,7 +228,7 @@ function Settings() {
 
             <NumberInput
               style={styles.inputRow}
-              label={'Time to answer'}
+              label={'Time to answer (milliseconds)'}
               max={15}
               min={3}
               value={settings.equationDuration}
@@ -253,7 +253,7 @@ function Settings() {
             {isDailyChallengeEnabled && (
               <View style={styles.inputRow}>
                 <NumberInput value={settings.dailyChallengeTime} onChange={(v) => dispatch(setDailyChallengeTime(v))} />
-                <NormalText style={styles.subText}>The time of day to receive the daily challenge</NormalText>
+                <NormalText style={styles.subText}>The time of day (in minutes from midnight) to receive the daily challenge</NormalText>
               </View>
             )}
           </View>

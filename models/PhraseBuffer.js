@@ -37,9 +37,10 @@ class PhraseBuffer {
    * @returns {Phrase}
    */
   toPhrase() {
-    if (typeof this.term1 !== 'number' || !this.operation || typeof this.term2 !== 'number') {
+    if (!PhraseBuffer.isValidTerm(this.term1) || !this.operation || !PhraseBuffer.isValidTerm(this.term2)) {
       const e = new Error('Cannot construct a phrase')
       console.error(e)
+      console.log(this.term1, this.operation, this.term2)
       throw e
     }
     return new Phrase(this.term1, this.operation, this.term2)
@@ -63,6 +64,14 @@ class PhraseBuffer {
     }
 
     return count
+  }
+
+  /**
+   * @param {*} term
+   * @return {boolean}
+   */
+  static isValidTerm(term) {
+    return typeof term === 'number' || typeof term === 'object' && !!term
   }
 }
 
