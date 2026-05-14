@@ -130,6 +130,8 @@ function Settings() {
         .requestPermissions()
         .then(() => {
           dispatch(setDailyChallengeTime(DEFAULT_DAILY_CHALLENGE_TIME))
+        }).catch(err => {
+          console.error(err)
         })
     } else {
       dispatch(setDailyChallengeTime(false))

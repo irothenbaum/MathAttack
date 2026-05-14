@@ -53,6 +53,7 @@
     "webpack-cli": "^4.9.1",
     "ws": "^8.6.0"
   },
+  "postinstall": "npx patch-package",
   "jest": {
     "preset": "react-native"
   }
